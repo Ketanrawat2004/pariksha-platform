@@ -9,38 +9,416 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SuperadminSystemRouteImport } from './routes/superadmin.system'
+import { Route as SuperadminPaperLeakDetectorRouteImport } from './routes/superadmin.paper-leak-detector'
+import { Route as SuperadminDashboardRouteImport } from './routes/superadmin.dashboard'
+import { Route as SuperadminAuditLogRouteImport } from './routes/superadmin.audit-log'
+import { Route as SuperadminAdminsRouteImport } from './routes/superadmin.admins'
+import { Route as InvigilatorSeatingRouteImport } from './routes/invigilator.seating'
+import { Route as InvigilatorLiveMonitorRouteImport } from './routes/invigilator.live-monitor'
+import { Route as InvigilatorIncidentsRouteImport } from './routes/invigilator.incidents'
+import { Route as InvigilatorDashboardRouteImport } from './routes/invigilator.dashboard'
+import { Route as InvigilatorAttendanceRouteImport } from './routes/invigilator.attendance'
+import { Route as CandidateResultsRouteImport } from './routes/candidate.results'
+import { Route as CandidateProfileRouteImport } from './routes/candidate.profile'
+import { Route as CandidateNotificationsRouteImport } from './routes/candidate.notifications'
+import { Route as CandidateExamsRouteImport } from './routes/candidate.exams'
+import { Route as CandidateDashboardRouteImport } from './routes/candidate.dashboard'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminIntegrityRouteImport } from './routes/admin.integrity'
+import { Route as AdminExamsRouteImport } from './routes/admin.exams'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminCentersRouteImport } from './routes/admin.centers'
+import { Route as AdminCandidatesRouteImport } from './routes/admin.candidates'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuperadminSystemRoute = SuperadminSystemRouteImport.update({
+  id: '/superadmin/system',
+  path: '/superadmin/system',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperadminPaperLeakDetectorRoute =
+  SuperadminPaperLeakDetectorRouteImport.update({
+    id: '/superadmin/paper-leak-detector',
+    path: '/superadmin/paper-leak-detector',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SuperadminDashboardRoute = SuperadminDashboardRouteImport.update({
+  id: '/superadmin/dashboard',
+  path: '/superadmin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperadminAuditLogRoute = SuperadminAuditLogRouteImport.update({
+  id: '/superadmin/audit-log',
+  path: '/superadmin/audit-log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperadminAdminsRoute = SuperadminAdminsRouteImport.update({
+  id: '/superadmin/admins',
+  path: '/superadmin/admins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvigilatorSeatingRoute = InvigilatorSeatingRouteImport.update({
+  id: '/invigilator/seating',
+  path: '/invigilator/seating',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvigilatorLiveMonitorRoute = InvigilatorLiveMonitorRouteImport.update({
+  id: '/invigilator/live-monitor',
+  path: '/invigilator/live-monitor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvigilatorIncidentsRoute = InvigilatorIncidentsRouteImport.update({
+  id: '/invigilator/incidents',
+  path: '/invigilator/incidents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvigilatorDashboardRoute = InvigilatorDashboardRouteImport.update({
+  id: '/invigilator/dashboard',
+  path: '/invigilator/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvigilatorAttendanceRoute = InvigilatorAttendanceRouteImport.update({
+  id: '/invigilator/attendance',
+  path: '/invigilator/attendance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateResultsRoute = CandidateResultsRouteImport.update({
+  id: '/candidate/results',
+  path: '/candidate/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateProfileRoute = CandidateProfileRouteImport.update({
+  id: '/candidate/profile',
+  path: '/candidate/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateNotificationsRoute = CandidateNotificationsRouteImport.update({
+  id: '/candidate/notifications',
+  path: '/candidate/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateExamsRoute = CandidateExamsRouteImport.update({
+  id: '/candidate/exams',
+  path: '/candidate/exams',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateDashboardRoute = CandidateDashboardRouteImport.update({
+  id: '/candidate/dashboard',
+  path: '/candidate/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIntegrityRoute = AdminIntegrityRouteImport.update({
+  id: '/admin/integrity',
+  path: '/admin/integrity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminExamsRoute = AdminExamsRouteImport.update({
+  id: '/admin/exams',
+  path: '/admin/exams',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCentersRoute = AdminCentersRouteImport.update({
+  id: '/admin/centers',
+  path: '/admin/centers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCandidatesRoute = AdminCandidatesRouteImport.update({
+  id: '/admin/candidates',
+  path: '/admin/candidates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/admin/candidates': typeof AdminCandidatesRoute
+  '/admin/centers': typeof AdminCentersRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/exams': typeof AdminExamsRoute
+  '/admin/integrity': typeof AdminIntegrityRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/candidate/dashboard': typeof CandidateDashboardRoute
+  '/candidate/exams': typeof CandidateExamsRoute
+  '/candidate/notifications': typeof CandidateNotificationsRoute
+  '/candidate/profile': typeof CandidateProfileRoute
+  '/candidate/results': typeof CandidateResultsRoute
+  '/invigilator/attendance': typeof InvigilatorAttendanceRoute
+  '/invigilator/dashboard': typeof InvigilatorDashboardRoute
+  '/invigilator/incidents': typeof InvigilatorIncidentsRoute
+  '/invigilator/live-monitor': typeof InvigilatorLiveMonitorRoute
+  '/invigilator/seating': typeof InvigilatorSeatingRoute
+  '/superadmin/admins': typeof SuperadminAdminsRoute
+  '/superadmin/audit-log': typeof SuperadminAuditLogRoute
+  '/superadmin/dashboard': typeof SuperadminDashboardRoute
+  '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
+  '/superadmin/system': typeof SuperadminSystemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/admin/candidates': typeof AdminCandidatesRoute
+  '/admin/centers': typeof AdminCentersRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/exams': typeof AdminExamsRoute
+  '/admin/integrity': typeof AdminIntegrityRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/candidate/dashboard': typeof CandidateDashboardRoute
+  '/candidate/exams': typeof CandidateExamsRoute
+  '/candidate/notifications': typeof CandidateNotificationsRoute
+  '/candidate/profile': typeof CandidateProfileRoute
+  '/candidate/results': typeof CandidateResultsRoute
+  '/invigilator/attendance': typeof InvigilatorAttendanceRoute
+  '/invigilator/dashboard': typeof InvigilatorDashboardRoute
+  '/invigilator/incidents': typeof InvigilatorIncidentsRoute
+  '/invigilator/live-monitor': typeof InvigilatorLiveMonitorRoute
+  '/invigilator/seating': typeof InvigilatorSeatingRoute
+  '/superadmin/admins': typeof SuperadminAdminsRoute
+  '/superadmin/audit-log': typeof SuperadminAuditLogRoute
+  '/superadmin/dashboard': typeof SuperadminDashboardRoute
+  '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
+  '/superadmin/system': typeof SuperadminSystemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/admin/candidates': typeof AdminCandidatesRoute
+  '/admin/centers': typeof AdminCentersRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/exams': typeof AdminExamsRoute
+  '/admin/integrity': typeof AdminIntegrityRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/candidate/dashboard': typeof CandidateDashboardRoute
+  '/candidate/exams': typeof CandidateExamsRoute
+  '/candidate/notifications': typeof CandidateNotificationsRoute
+  '/candidate/profile': typeof CandidateProfileRoute
+  '/candidate/results': typeof CandidateResultsRoute
+  '/invigilator/attendance': typeof InvigilatorAttendanceRoute
+  '/invigilator/dashboard': typeof InvigilatorDashboardRoute
+  '/invigilator/incidents': typeof InvigilatorIncidentsRoute
+  '/invigilator/live-monitor': typeof InvigilatorLiveMonitorRoute
+  '/invigilator/seating': typeof InvigilatorSeatingRoute
+  '/superadmin/admins': typeof SuperadminAdminsRoute
+  '/superadmin/audit-log': typeof SuperadminAuditLogRoute
+  '/superadmin/dashboard': typeof SuperadminDashboardRoute
+  '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
+  '/superadmin/system': typeof SuperadminSystemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/admin/candidates'
+    | '/admin/centers'
+    | '/admin/dashboard'
+    | '/admin/exams'
+    | '/admin/integrity'
+    | '/admin/reports'
+    | '/candidate/dashboard'
+    | '/candidate/exams'
+    | '/candidate/notifications'
+    | '/candidate/profile'
+    | '/candidate/results'
+    | '/invigilator/attendance'
+    | '/invigilator/dashboard'
+    | '/invigilator/incidents'
+    | '/invigilator/live-monitor'
+    | '/invigilator/seating'
+    | '/superadmin/admins'
+    | '/superadmin/audit-log'
+    | '/superadmin/dashboard'
+    | '/superadmin/paper-leak-detector'
+    | '/superadmin/system'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/admin/candidates'
+    | '/admin/centers'
+    | '/admin/dashboard'
+    | '/admin/exams'
+    | '/admin/integrity'
+    | '/admin/reports'
+    | '/candidate/dashboard'
+    | '/candidate/exams'
+    | '/candidate/notifications'
+    | '/candidate/profile'
+    | '/candidate/results'
+    | '/invigilator/attendance'
+    | '/invigilator/dashboard'
+    | '/invigilator/incidents'
+    | '/invigilator/live-monitor'
+    | '/invigilator/seating'
+    | '/superadmin/admins'
+    | '/superadmin/audit-log'
+    | '/superadmin/dashboard'
+    | '/superadmin/paper-leak-detector'
+    | '/superadmin/system'
+  id:
+    | '__root__'
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/admin/candidates'
+    | '/admin/centers'
+    | '/admin/dashboard'
+    | '/admin/exams'
+    | '/admin/integrity'
+    | '/admin/reports'
+    | '/candidate/dashboard'
+    | '/candidate/exams'
+    | '/candidate/notifications'
+    | '/candidate/profile'
+    | '/candidate/results'
+    | '/invigilator/attendance'
+    | '/invigilator/dashboard'
+    | '/invigilator/incidents'
+    | '/invigilator/live-monitor'
+    | '/invigilator/seating'
+    | '/superadmin/admins'
+    | '/superadmin/audit-log'
+    | '/superadmin/dashboard'
+    | '/superadmin/paper-leak-detector'
+    | '/superadmin/system'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
+  AdminCandidatesRoute: typeof AdminCandidatesRoute
+  AdminCentersRoute: typeof AdminCentersRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminExamsRoute: typeof AdminExamsRoute
+  AdminIntegrityRoute: typeof AdminIntegrityRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  CandidateDashboardRoute: typeof CandidateDashboardRoute
+  CandidateExamsRoute: typeof CandidateExamsRoute
+  CandidateNotificationsRoute: typeof CandidateNotificationsRoute
+  CandidateProfileRoute: typeof CandidateProfileRoute
+  CandidateResultsRoute: typeof CandidateResultsRoute
+  InvigilatorAttendanceRoute: typeof InvigilatorAttendanceRoute
+  InvigilatorDashboardRoute: typeof InvigilatorDashboardRoute
+  InvigilatorIncidentsRoute: typeof InvigilatorIncidentsRoute
+  InvigilatorLiveMonitorRoute: typeof InvigilatorLiveMonitorRoute
+  InvigilatorSeatingRoute: typeof InvigilatorSeatingRoute
+  SuperadminAdminsRoute: typeof SuperadminAdminsRoute
+  SuperadminAuditLogRoute: typeof SuperadminAuditLogRoute
+  SuperadminDashboardRoute: typeof SuperadminDashboardRoute
+  SuperadminPaperLeakDetectorRoute: typeof SuperadminPaperLeakDetectorRoute
+  SuperadminSystemRoute: typeof SuperadminSystemRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +426,184 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/superadmin/system': {
+      id: '/superadmin/system'
+      path: '/superadmin/system'
+      fullPath: '/superadmin/system'
+      preLoaderRoute: typeof SuperadminSystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin/paper-leak-detector': {
+      id: '/superadmin/paper-leak-detector'
+      path: '/superadmin/paper-leak-detector'
+      fullPath: '/superadmin/paper-leak-detector'
+      preLoaderRoute: typeof SuperadminPaperLeakDetectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin/dashboard': {
+      id: '/superadmin/dashboard'
+      path: '/superadmin/dashboard'
+      fullPath: '/superadmin/dashboard'
+      preLoaderRoute: typeof SuperadminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin/audit-log': {
+      id: '/superadmin/audit-log'
+      path: '/superadmin/audit-log'
+      fullPath: '/superadmin/audit-log'
+      preLoaderRoute: typeof SuperadminAuditLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin/admins': {
+      id: '/superadmin/admins'
+      path: '/superadmin/admins'
+      fullPath: '/superadmin/admins'
+      preLoaderRoute: typeof SuperadminAdminsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invigilator/seating': {
+      id: '/invigilator/seating'
+      path: '/invigilator/seating'
+      fullPath: '/invigilator/seating'
+      preLoaderRoute: typeof InvigilatorSeatingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invigilator/live-monitor': {
+      id: '/invigilator/live-monitor'
+      path: '/invigilator/live-monitor'
+      fullPath: '/invigilator/live-monitor'
+      preLoaderRoute: typeof InvigilatorLiveMonitorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invigilator/incidents': {
+      id: '/invigilator/incidents'
+      path: '/invigilator/incidents'
+      fullPath: '/invigilator/incidents'
+      preLoaderRoute: typeof InvigilatorIncidentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invigilator/dashboard': {
+      id: '/invigilator/dashboard'
+      path: '/invigilator/dashboard'
+      fullPath: '/invigilator/dashboard'
+      preLoaderRoute: typeof InvigilatorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invigilator/attendance': {
+      id: '/invigilator/attendance'
+      path: '/invigilator/attendance'
+      fullPath: '/invigilator/attendance'
+      preLoaderRoute: typeof InvigilatorAttendanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/results': {
+      id: '/candidate/results'
+      path: '/candidate/results'
+      fullPath: '/candidate/results'
+      preLoaderRoute: typeof CandidateResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/profile': {
+      id: '/candidate/profile'
+      path: '/candidate/profile'
+      fullPath: '/candidate/profile'
+      preLoaderRoute: typeof CandidateProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/notifications': {
+      id: '/candidate/notifications'
+      path: '/candidate/notifications'
+      fullPath: '/candidate/notifications'
+      preLoaderRoute: typeof CandidateNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/exams': {
+      id: '/candidate/exams'
+      path: '/candidate/exams'
+      fullPath: '/candidate/exams'
+      preLoaderRoute: typeof CandidateExamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/dashboard': {
+      id: '/candidate/dashboard'
+      path: '/candidate/dashboard'
+      fullPath: '/candidate/dashboard'
+      preLoaderRoute: typeof CandidateDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/integrity': {
+      id: '/admin/integrity'
+      path: '/admin/integrity'
+      fullPath: '/admin/integrity'
+      preLoaderRoute: typeof AdminIntegrityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/exams': {
+      id: '/admin/exams'
+      path: '/admin/exams'
+      fullPath: '/admin/exams'
+      preLoaderRoute: typeof AdminExamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/centers': {
+      id: '/admin/centers'
+      path: '/admin/centers'
+      fullPath: '/admin/centers'
+      preLoaderRoute: typeof AdminCentersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/candidates': {
+      id: '/admin/candidates'
+      path: '/admin/candidates'
+      fullPath: '/admin/candidates'
+      preLoaderRoute: typeof AdminCandidatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
+  AdminCandidatesRoute: AdminCandidatesRoute,
+  AdminCentersRoute: AdminCentersRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminExamsRoute: AdminExamsRoute,
+  AdminIntegrityRoute: AdminIntegrityRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  CandidateDashboardRoute: CandidateDashboardRoute,
+  CandidateExamsRoute: CandidateExamsRoute,
+  CandidateNotificationsRoute: CandidateNotificationsRoute,
+  CandidateProfileRoute: CandidateProfileRoute,
+  CandidateResultsRoute: CandidateResultsRoute,
+  InvigilatorAttendanceRoute: InvigilatorAttendanceRoute,
+  InvigilatorDashboardRoute: InvigilatorDashboardRoute,
+  InvigilatorIncidentsRoute: InvigilatorIncidentsRoute,
+  InvigilatorLiveMonitorRoute: InvigilatorLiveMonitorRoute,
+  InvigilatorSeatingRoute: InvigilatorSeatingRoute,
+  SuperadminAdminsRoute: SuperadminAdminsRoute,
+  SuperadminAuditLogRoute: SuperadminAuditLogRoute,
+  SuperadminDashboardRoute: SuperadminDashboardRoute,
+  SuperadminPaperLeakDetectorRoute: SuperadminPaperLeakDetectorRoute,
+  SuperadminSystemRoute: SuperadminSystemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
