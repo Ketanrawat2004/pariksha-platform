@@ -1,0 +1,234 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Shield, Loader2, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/register")({
+  head: () => ({ meta: [{ title: "Register — Pariksha" }] }),
+  component: RegisterPage,
+});
+
+const schema = z.object({
+  fullName: z.string().trim().min(2, "Min 2 characters").max(120),
+  dateOfBirth: z.string().min(1, "Required"),
+  gender: z.string().min(1, "Required"),
+  phone: z.string().trim().regex(/^[0-9]{10}$/, "Enter 10-digit phone"),
+  state: z.string().min(2, "Required").max(80),
+  email: z.string().trim().email("Invalid email").max(255),
+  password: z.string().min(8, "Min 8 chars").max(128).regex(/[A-Z]/, "Need uppercase").regex(/[0-9]/, "Need number").regex(/[^A-Za-z0-9]/, "Need symbol"),
+  confirmPassword: z.string(),
+  aadhaar: z.string().regex(/^[0-9]{12}$/, "Enter 12-digit Aadhaar"),
+}).refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] });
+
+type FormData = z.infer<typeof schema>;
+
+async function sha256(text: string) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function RegisterPage() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const form = useForm<FormData>({ resolver: zodResolver(schema), mode: "onBlur" });
+  const { register, handleSubmit, formState: { errors }, trigger, getValues, watch } = form;
+  const aadhaar = watch("aadhaar") ?? "";
+
+  const next = async () => {
+    const fields: (keyof FormData)[][] = [
+      [],
+      ["fullName", "dateOfBirth", "gender", "phone", "state"],
+      ["email", "password", "confirmPassword"],
+      ["aadhaar"],
+    ];
+    const ok = await trigger(fields[step]);
+    if (ok) setStep(step + 1);
+  };
+
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
+    const aadhaarHash = await sha256(data.aadhaar);
+    const redirectUrl = `${window.location.origin}/verify-email`;
+    const { data: result, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: { full_name: data.fullName },
+      },
+    });
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+    // Update profile with extra fields
+    if (result.user) {
+      await supabase.from("profiles").update({
+        phone: data.phone,
+        date_of_birth: data.dateOfBirth,
+        gender: data.gender,
+        state: data.state,
+        aadhaar_hash: aadhaarHash,
+      }).eq("id", result.user.id);
+    }
+    setLoading(false);
+    setDone(true);
+  };
+
+  if (done) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center px-4 bg-gradient-to-br from-background to-secondary">
+        <Card className="w-full max-w-md p-8 text-center shadow-elegant">
+          <CheckCircle2 className="mx-auto h-16 w-16 text-success mb-4" />
+          <h1 className="text-2xl font-bold">Check your email</h1>
+          <p className="mt-2 text-muted-foreground">We sent a verification link to <span className="font-semibold text-foreground">{getValues("email")}</span>. Click it to activate your account.</p>
+          <Button className="mt-6 w-full" onClick={() => navigate({ to: "/login" })}>Go to login</Button>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-dvh flex items-center justify-center px-4 py-10 bg-gradient-to-br from-background to-secondary">
+      <Card className="w-full max-w-2xl p-8 shadow-elegant">
+        <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-4">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-gradient-hero text-primary-foreground">
+            <Shield className="h-5 w-5" />
+          </span>
+          Pariksha
+        </Link>
+        <div className="mb-6">
+          <div className="flex justify-between text-xs text-muted-foreground mb-2">
+            <span>Step {step} of 4</span>
+            <span>{["Personal", "Account", "Identity", "Review"][step - 1]}</span>
+          </div>
+          <Progress value={(step / 4) * 100} />
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          {step === 1 && (
+            <>
+              <div>
+                <Label htmlFor="fullName">Full name</Label>
+                <Input id="fullName" {...register("fullName")} aria-invalid={!!errors.fullName} />
+                {errors.fullName && <p className="mt-1 text-sm text-destructive">{errors.fullName.message}</p>}
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="dateOfBirth">Date of birth</Label>
+                  <Input id="dateOfBirth" type="date" {...register("dateOfBirth")} aria-invalid={!!errors.dateOfBirth} />
+                  {errors.dateOfBirth && <p className="mt-1 text-sm text-destructive">{errors.dateOfBirth.message}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="gender">Gender</Label>
+                  <select id="gender" {...register("gender")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
+                    <option value="">Select…</option>
+                    <option>Male</option><option>Female</option><option>Other</option>
+                  </select>
+                  {errors.gender && <p className="mt-1 text-sm text-destructive">{errors.gender.message}</p>}
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input id="phone" type="tel" maxLength={10} {...register("phone")} aria-invalid={!!errors.phone} />
+                  {errors.phone && <p className="mt-1 text-sm text-destructive">{errors.phone.message}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="state">State</Label>
+                  <Input id="state" {...register("state")} aria-invalid={!!errors.state} />
+                  {errors.state && <p className="mt-1 text-sm text-destructive">{errors.state.message}</p>}
+                </div>
+              </div>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" {...register("email")} aria-invalid={!!errors.email} />
+                {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" {...register("password")} aria-invalid={!!errors.password} />
+                <p className="mt-1 text-xs text-muted-foreground">8+ chars, 1 uppercase, 1 number, 1 symbol</p>
+                {errors.password && <p className="mt-1 text-sm text-destructive">{errors.password.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword">Confirm password</Label>
+                <Input id="confirmPassword" type="password" {...register("confirmPassword")} aria-invalid={!!errors.confirmPassword} />
+                {errors.confirmPassword && <p className="mt-1 text-sm text-destructive">{errors.confirmPassword.message}</p>}
+              </div>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <div>
+                <Label htmlFor="aadhaar">Aadhaar number</Label>
+                <Input id="aadhaar" inputMode="numeric" maxLength={12} {...register("aadhaar")} aria-invalid={!!errors.aadhaar} />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Hashed on your device with SHA-256 before transmission. Last 4 visible: {aadhaar.length === 12 ? `XXXX-XXXX-${aadhaar.slice(-4)}` : "—"}
+                </p>
+                {errors.aadhaar && <p className="mt-1 text-sm text-destructive">{errors.aadhaar.message}</p>}
+              </div>
+              <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+                Face photo upload will be required on first login. You can complete it from your profile.
+              </div>
+            </>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-2 text-sm">
+              <div className="font-semibold text-base mb-2">Review your details</div>
+              {[
+                ["Name", getValues("fullName")],
+                ["DOB", getValues("dateOfBirth")],
+                ["Gender", getValues("gender")],
+                ["Phone", getValues("phone")],
+                ["State", getValues("state")],
+                ["Email", getValues("email")],
+                ["Aadhaar", `XXXX-XXXX-${(getValues("aadhaar") ?? "").slice(-4)}`],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-b border-border/60 py-1.5">
+                  <span className="text-muted-foreground">{k}</span><span className="font-medium">{v}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-between pt-4 gap-2">
+            <Button type="button" variant="outline" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>Back</Button>
+            {step < 4 ? (
+              <Button type="button" onClick={next}>Continue</Button>
+            ) : (
+              <Button type="submit" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create account
+              </Button>
+            )}
+          </div>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Already have an account? <Link to="/login" className="text-accent hover:underline font-medium">Sign in</Link>
+        </p>
+      </Card>
+    </div>
+  );
+}
