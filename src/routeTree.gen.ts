@@ -15,7 +15,14 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SuperadminDashboardRouteImport } from './routes/superadmin.dashboard'
+import { Route as InvigilatorDashboardRouteImport } from './routes/invigilator.dashboard'
+import { Route as CandidateResultsRouteImport } from './routes/candidate.results'
+import { Route as CandidateProfileRouteImport } from './routes/candidate.profile'
+import { Route as CandidateNotificationsRouteImport } from './routes/candidate.notifications'
+import { Route as CandidateExamsRouteImport } from './routes/candidate.exams'
 import { Route as CandidateDashboardRouteImport } from './routes/candidate.dashboard'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -47,9 +54,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuperadminDashboardRoute = SuperadminDashboardRouteImport.update({
+  id: '/superadmin/dashboard',
+  path: '/superadmin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvigilatorDashboardRoute = InvigilatorDashboardRouteImport.update({
+  id: '/invigilator/dashboard',
+  path: '/invigilator/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateResultsRoute = CandidateResultsRouteImport.update({
+  id: '/candidate/results',
+  path: '/candidate/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateProfileRoute = CandidateProfileRouteImport.update({
+  id: '/candidate/profile',
+  path: '/candidate/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateNotificationsRoute = CandidateNotificationsRouteImport.update({
+  id: '/candidate/notifications',
+  path: '/candidate/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateExamsRoute = CandidateExamsRouteImport.update({
+  id: '/candidate/exams',
+  path: '/candidate/exams',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CandidateDashboardRoute = CandidateDashboardRouteImport.update({
   id: '/candidate/dashboard',
   path: '/candidate/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -60,7 +102,14 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
+  '/candidate/exams': typeof CandidateExamsRoute
+  '/candidate/notifications': typeof CandidateNotificationsRoute
+  '/candidate/profile': typeof CandidateProfileRoute
+  '/candidate/results': typeof CandidateResultsRoute
+  '/invigilator/dashboard': typeof InvigilatorDashboardRoute
+  '/superadmin/dashboard': typeof SuperadminDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +118,14 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
+  '/candidate/exams': typeof CandidateExamsRoute
+  '/candidate/notifications': typeof CandidateNotificationsRoute
+  '/candidate/profile': typeof CandidateProfileRoute
+  '/candidate/results': typeof CandidateResultsRoute
+  '/invigilator/dashboard': typeof InvigilatorDashboardRoute
+  '/superadmin/dashboard': typeof SuperadminDashboardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,7 +135,14 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
+  '/candidate/exams': typeof CandidateExamsRoute
+  '/candidate/notifications': typeof CandidateNotificationsRoute
+  '/candidate/profile': typeof CandidateProfileRoute
+  '/candidate/results': typeof CandidateResultsRoute
+  '/invigilator/dashboard': typeof InvigilatorDashboardRoute
+  '/superadmin/dashboard': typeof SuperadminDashboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,7 +153,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/admin/dashboard'
     | '/candidate/dashboard'
+    | '/candidate/exams'
+    | '/candidate/notifications'
+    | '/candidate/profile'
+    | '/candidate/results'
+    | '/invigilator/dashboard'
+    | '/superadmin/dashboard'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,7 +169,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/admin/dashboard'
     | '/candidate/dashboard'
+    | '/candidate/exams'
+    | '/candidate/notifications'
+    | '/candidate/profile'
+    | '/candidate/results'
+    | '/invigilator/dashboard'
+    | '/superadmin/dashboard'
   id:
     | '__root__'
     | '/'
@@ -108,7 +185,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/admin/dashboard'
     | '/candidate/dashboard'
+    | '/candidate/exams'
+    | '/candidate/notifications'
+    | '/candidate/profile'
+    | '/candidate/results'
+    | '/invigilator/dashboard'
+    | '/superadmin/dashboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,7 +202,14 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
   CandidateDashboardRoute: typeof CandidateDashboardRoute
+  CandidateExamsRoute: typeof CandidateExamsRoute
+  CandidateNotificationsRoute: typeof CandidateNotificationsRoute
+  CandidateProfileRoute: typeof CandidateProfileRoute
+  CandidateResultsRoute: typeof CandidateResultsRoute
+  InvigilatorDashboardRoute: typeof InvigilatorDashboardRoute
+  SuperadminDashboardRoute: typeof SuperadminDashboardRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,11 +256,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/superadmin/dashboard': {
+      id: '/superadmin/dashboard'
+      path: '/superadmin/dashboard'
+      fullPath: '/superadmin/dashboard'
+      preLoaderRoute: typeof SuperadminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invigilator/dashboard': {
+      id: '/invigilator/dashboard'
+      path: '/invigilator/dashboard'
+      fullPath: '/invigilator/dashboard'
+      preLoaderRoute: typeof InvigilatorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/results': {
+      id: '/candidate/results'
+      path: '/candidate/results'
+      fullPath: '/candidate/results'
+      preLoaderRoute: typeof CandidateResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/profile': {
+      id: '/candidate/profile'
+      path: '/candidate/profile'
+      fullPath: '/candidate/profile'
+      preLoaderRoute: typeof CandidateProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/notifications': {
+      id: '/candidate/notifications'
+      path: '/candidate/notifications'
+      fullPath: '/candidate/notifications'
+      preLoaderRoute: typeof CandidateNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/exams': {
+      id: '/candidate/exams'
+      path: '/candidate/exams'
+      fullPath: '/candidate/exams'
+      preLoaderRoute: typeof CandidateExamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/candidate/dashboard': {
       id: '/candidate/dashboard'
       path: '/candidate/dashboard'
       fullPath: '/candidate/dashboard'
       preLoaderRoute: typeof CandidateDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -182,8 +322,25 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
   CandidateDashboardRoute: CandidateDashboardRoute,
+  CandidateExamsRoute: CandidateExamsRoute,
+  CandidateNotificationsRoute: CandidateNotificationsRoute,
+  CandidateProfileRoute: CandidateProfileRoute,
+  CandidateResultsRoute: CandidateResultsRoute,
+  InvigilatorDashboardRoute: InvigilatorDashboardRoute,
+  SuperadminDashboardRoute: SuperadminDashboardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
