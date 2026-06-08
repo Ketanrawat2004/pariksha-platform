@@ -25,6 +25,7 @@ import { Route as InvigilatorLiveMonitorRouteImport } from './routes/invigilator
 import { Route as InvigilatorIncidentsRouteImport } from './routes/invigilator.incidents'
 import { Route as InvigilatorDashboardRouteImport } from './routes/invigilator.dashboard'
 import { Route as InvigilatorAttendanceRouteImport } from './routes/invigilator.attendance'
+import { Route as ExamRegistrationIdRouteImport } from './routes/exam.$registrationId'
 import { Route as CandidateResultsRouteImport } from './routes/candidate.results'
 import { Route as CandidateProfileRouteImport } from './routes/candidate.profile'
 import { Route as CandidateNotificationsRouteImport } from './routes/candidate.notifications'
@@ -118,6 +119,11 @@ const InvigilatorAttendanceRoute = InvigilatorAttendanceRouteImport.update({
   path: '/invigilator/attendance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExamRegistrationIdRoute = ExamRegistrationIdRouteImport.update({
+  id: '/exam/$registrationId',
+  path: '/exam/$registrationId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CandidateResultsRoute = CandidateResultsRouteImport.update({
   id: '/candidate/results',
   path: '/candidate/results',
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/candidate/notifications': typeof CandidateNotificationsRoute
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
+  '/exam/$registrationId': typeof ExamRegistrationIdRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
   '/invigilator/dashboard': typeof InvigilatorDashboardRoute
   '/invigilator/incidents': typeof InvigilatorIncidentsRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/candidate/notifications': typeof CandidateNotificationsRoute
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
+  '/exam/$registrationId': typeof ExamRegistrationIdRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
   '/invigilator/dashboard': typeof InvigilatorDashboardRoute
   '/invigilator/incidents': typeof InvigilatorIncidentsRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/candidate/notifications': typeof CandidateNotificationsRoute
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
+  '/exam/$registrationId': typeof ExamRegistrationIdRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
   '/invigilator/dashboard': typeof InvigilatorDashboardRoute
   '/invigilator/incidents': typeof InvigilatorIncidentsRoute
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/candidate/notifications'
     | '/candidate/profile'
     | '/candidate/results'
+    | '/exam/$registrationId'
     | '/invigilator/attendance'
     | '/invigilator/dashboard'
     | '/invigilator/incidents'
@@ -311,6 +321,7 @@ export interface FileRouteTypes {
     | '/candidate/notifications'
     | '/candidate/profile'
     | '/candidate/results'
+    | '/exam/$registrationId'
     | '/invigilator/attendance'
     | '/invigilator/dashboard'
     | '/invigilator/incidents'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/candidate/notifications'
     | '/candidate/profile'
     | '/candidate/results'
+    | '/exam/$registrationId'
     | '/invigilator/attendance'
     | '/invigilator/dashboard'
     | '/invigilator/incidents'
@@ -370,6 +382,7 @@ export interface RootRouteChildren {
   CandidateNotificationsRoute: typeof CandidateNotificationsRoute
   CandidateProfileRoute: typeof CandidateProfileRoute
   CandidateResultsRoute: typeof CandidateResultsRoute
+  ExamRegistrationIdRoute: typeof ExamRegistrationIdRoute
   InvigilatorAttendanceRoute: typeof InvigilatorAttendanceRoute
   InvigilatorDashboardRoute: typeof InvigilatorDashboardRoute
   InvigilatorIncidentsRoute: typeof InvigilatorIncidentsRoute
@@ -496,6 +509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvigilatorAttendanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/exam/$registrationId': {
+      id: '/exam/$registrationId'
+      path: '/exam/$registrationId'
+      fullPath: '/exam/$registrationId'
+      preLoaderRoute: typeof ExamRegistrationIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/candidate/results': {
       id: '/candidate/results'
       path: '/candidate/results'
@@ -594,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   CandidateNotificationsRoute: CandidateNotificationsRoute,
   CandidateProfileRoute: CandidateProfileRoute,
   CandidateResultsRoute: CandidateResultsRoute,
+  ExamRegistrationIdRoute: ExamRegistrationIdRoute,
   InvigilatorAttendanceRoute: InvigilatorAttendanceRoute,
   InvigilatorDashboardRoute: InvigilatorDashboardRoute,
   InvigilatorIncidentsRoute: InvigilatorIncidentsRoute,
@@ -608,13 +629,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
