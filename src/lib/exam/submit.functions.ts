@@ -63,7 +63,7 @@ export const submitExam = createServerFn({ method: "POST" })
       user_id: userId,
       title: pass ? "Result published — Passed" : "Result published",
       message: `${exam.title}: ${total}/${exam.total_marks} (${percentage}%)`,
-      type: "result",
+      type: "success",
     });
 
     return { resultId: result.id, total, percentage, pass };
