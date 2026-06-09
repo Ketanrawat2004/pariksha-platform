@@ -21,6 +21,17 @@ export const Route = createFileRoute("/exam/$registrationId")({
 
 interface Q { id: string; question_text_encrypted: string; option_a_encrypted: string; option_b_encrypted: string; option_c_encrypted: string; option_d_encrypted: string; correct_answer_encrypted?: string; marks: number; question_order: number; category: string | null; }
 
+const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
+let faceModelsLoaded = false;
+async function loadFaceApi() {
+  const faceapi = await import("face-api.js");
+  if (!faceModelsLoaded) {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    faceModelsLoaded = true;
+  }
+  return faceapi;
+}
+
 const DEMO_REG_ID = "88888888-8888-8888-8888-888888888888";
 
 function buildDemoQuestions(): Q[] {
