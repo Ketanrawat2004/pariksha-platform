@@ -1,4 +1,11 @@
-// Re-export shim: pure, environment-agnostic helpers.
-// Existing code keeps importing from the original paths; this index lets new
-// code use `@/lib/shared` as a single discovery point without breaking routes.
-export { cn } from "@/lib/utils";
+# `src/lib/shared`
+
+Pure, environment-agnostic modules — types, Zod schemas, formatters.
+No `process.env`, no `window`, no browser- or server-only APIs.
+
+Existing helpers keep their original paths so every route stays stable;
+this folder is the discovery point for new shared code.
+
+- `@/lib/utils` — `cn()` class merger
+</content>
+</invoke>
