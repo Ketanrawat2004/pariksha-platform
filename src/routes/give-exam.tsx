@@ -59,43 +59,60 @@ function PublicGiveExam() {
   const [verified, setVerified] = useState<{ regId: string; title: string } | null>(null);
 
   async function verify() {
-    if (!fullName || !dob || !admitNo || !livePhoto) {
-      return toast.error("Fill name, date of birth, admit number and capture a live photo");
+    if (!fullName || !admitNo || !livePhoto) {
+      return toast.error("Fill name, admit number and capture a live photo");
     }
     setBusy(true);
     setConfidence(null);
     try {
-      const { data, error } = await supabase.rpc("verify_admit_anonymous" as any, {
-        _full_name: fullName,
-        _dob: dob,
-        _aadhaar_last4: aadhaar4 || null,
-        _admit_card_number: admitNo.trim(),
-      } as any);
-      if (error) throw error;
-      const row = (data as any[])?.[0];
-      if (!row) throw new Error("No matching registration. Check your name, date of birth, Aadhaar and admit number.");
-      if (!row.photo_url) throw new Error("Registered photo not on file. Contact your institute.");
+      const isDemo = admitNo.trim().toUpperCase() === "DEMO-0000";
+      let photoUrl: string | null = null;
+      let regId = "demo";
+      let title = "Demo Exam";
 
-      toast.message("Loading face-match models (first time can take ~10s)…");
-      const faceapi = await loadModels();
-      const [liveImg, refImg] = await Promise.all([loadImg(livePhoto), loadImg(row.photo_url)]);
-      const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 });
-      const [liveDet, refDet] = await Promise.all([
-        faceapi.detectSingleFace(liveImg, opts).withFaceLandmarks().withFaceDescriptor(),
-        faceapi.detectSingleFace(refImg, opts).withFaceLandmarks().withFaceDescriptor(),
-      ]);
-      if (!liveDet) throw new Error("No face detected in your live photo. Retake in good light.");
-      if (!refDet) throw new Error("No face detected in the registered photo on file.");
-
-      const distance = faceapi.euclideanDistance(liveDet.descriptor, refDet.descriptor);
-      const conf = Math.max(0, Math.min(100, Math.round((1 - distance / 1.0) * 100)));
-      setConfidence(conf);
-      if (distance > 0.6) {
-        throw new Error(`Face does not match registration (${conf}% match). Please retake.`);
+      if (isDemo) {
+        // Open demo path — anyone can enter. Try to match against the photo
+        // captured on the candidate profile page (saved in localStorage).
+        try { photoUrl = localStorage.getItem("pariksha:demo-profile-photo"); } catch {}
+      } else {
+        const { data, error } = await supabase.rpc("verify_admit_anonymous" as any, {
+          _full_name: fullName,
+          _dob: dob,
+          _aadhaar_last4: aadhaar4 || null,
+          _admit_card_number: admitNo.trim(),
+        } as any);
+        if (error) throw error;
+        const row = (data as any[])?.[0];
+        if (!row) throw new Error("No matching registration. Check your name, date of birth, Aadhaar and admit number. Tip: use admit DEMO-0000 to try the demo exam.");
+        photoUrl = row.photo_url;
+        regId = row.registration_id;
+        title = row.exam_title;
       }
-      setVerified({ regId: row.registration_id, title: row.exam_title });
-      toast.success(`Identity verified · ${conf}% match`);
-      setTimeout(() => navigate({ to: "/exam/$registrationId", params: { registrationId: row.registration_id } }), 900);
+
+      if (photoUrl) {
+        toast.message("Loading face-match models (first time can take ~10s)…");
+        const faceapi = await loadModels();
+        const [liveImg, refImg] = await Promise.all([loadImg(livePhoto), loadImg(photoUrl)]);
+        const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 });
+        const [liveDet, refDet] = await Promise.all([
+          faceapi.detectSingleFace(liveImg, opts).withFaceLandmarks().withFaceDescriptor(),
+          faceapi.detectSingleFace(refImg, opts).withFaceLandmarks().withFaceDescriptor(),
+        ]);
+        if (!liveDet) throw new Error("No face detected in your live photo. Retake in good light.");
+        if (!refDet) throw new Error("No face detected in the registered photo on file.");
+        const distance = faceapi.euclideanDistance(liveDet.descriptor, refDet.descriptor);
+        const conf = Math.max(0, Math.min(100, Math.round((1 - distance / 1.0) * 100)));
+        setConfidence(conf);
+        if (distance > 0.6) {
+          throw new Error(`Face does not match registration (${conf}% match). Please retake.`);
+        }
+      } else if (isDemo) {
+        toast.message("No reference photo yet — demo entry granted without face match.");
+      }
+
+      setVerified({ regId, title });
+      toast.success(`Identity verified · launching ${title}`);
+      setTimeout(() => navigate({ to: "/exam/$registrationId", params: { registrationId: regId } }), 900);
     } catch (e: any) {
       toast.error(e?.message ?? "Verification failed");
     } finally {
@@ -139,7 +156,8 @@ function PublicGiveExam() {
               </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="admit">Admit card / Registration number</Label>
-                <Input id="admit" value={admitNo} onChange={(e) => setAdmitNo(e.target.value)} placeholder="PRK-… / KNS-…" disabled={busy || !!verified} />
+                <Input id="admit" value={admitNo} onChange={(e) => setAdmitNo(e.target.value)} placeholder="PRK-… / KNS-… / DEMO-0000" disabled={busy || !!verified} />
+                <p className="text-[11px] text-muted-foreground mt-1">No admit card? Use <button type="button" className="underline" onClick={() => setAdmitNo("DEMO-0000")}>DEMO-0000</button> to try the demo exam.</p>
               </div>
             </div>
 
