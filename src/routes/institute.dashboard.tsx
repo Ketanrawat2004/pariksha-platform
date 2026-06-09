@@ -322,6 +322,24 @@ function InstitutePage() {
                       <Send className="h-4 w-4 mr-1" /> Send to all
                     </Button>
                   )}
+                  {s.status === "published" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={async () => {
+                        try {
+                          const { data, error } = await supabase.rpc("release_paper_admits" as any, { _paper_submission_id: s.id } as any);
+                          if (error) throw error;
+                          const n = (data as any)?.[0]?.released_count ?? 0;
+                          toast.success(n > 0 ? `Released admit cards for ${n} candidate${n === 1 ? "" : "s"}` : "No new candidates to release");
+                        } catch (e: any) {
+                          toast.error(e?.message ?? "Could not release admits");
+                        }
+                      }}
+                    >
+                      <Send className="h-4 w-4 mr-1" /> Release admit cards
+                    </Button>
+                  )}
                   {s.status !== "draft" && s.status !== "edit_requested" && (
                     <Button size="sm" variant="outline" onClick={() => setEditRequestFor(s)}>
                       <AlertCircle className="h-4 w-4 mr-1" /> Request edit
