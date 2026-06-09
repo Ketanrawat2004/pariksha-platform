@@ -105,11 +105,17 @@ function VaultPage() {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearTick = () => {
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+  };
 
   // 60s total → 10s per step. Tick every 100ms with +1% progress.
   useEffect(() => {
+    clearTick();
     if (!playing) return;
-    const tick = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) {
           if (step >= steps.length - 1) {
@@ -122,12 +128,23 @@ function VaultPage() {
         return p + 1;
       });
     }, 100);
-    return () => clearInterval(tick);
+    return clearTick;
   }, [playing, step, steps.length]);
 
-  const reset = () => { setStep(0); setProgress(0); setPlaying(false); };
+  const reset = () => {
+    clearTick();
+    setPlaying(false);
+    setStep(0);
+    setProgress(0);
+  };
   const toggle = () => {
-    if (step >= steps.length - 1 && progress >= 100) reset();
+    if (step >= steps.length - 1 && progress >= 100) {
+      clearTick();
+      setStep(0);
+      setProgress(0);
+      setPlaying(true);
+      return;
+    }
     setPlaying((p) => !p);
   };
 
