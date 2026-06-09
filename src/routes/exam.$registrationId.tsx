@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { ParikshaLogo } from "@/components/pariksha-logo";
-import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, CheckCircle2 } from "lucide-react";
+import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
@@ -18,9 +19,18 @@ export const Route = createFileRoute("/exam/$registrationId")({
   component: ExamPage,
 });
 
-const DEMO = import.meta.env.VITE_DEMO_MODE === "true";
-
 interface Q { id: string; question_text_encrypted: string; option_a_encrypted: string; option_b_encrypted: string; option_c_encrypted: string; option_d_encrypted: string; marks: number; question_order: number; category: string | null; }
+
+const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
+let faceModelsLoaded = false;
+async function loadFaceApi() {
+  const faceapi = await import("face-api.js");
+  if (!faceModelsLoaded) {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    faceModelsLoaded = true;
+  }
+  return faceapi;
+}
 
 function ExamPage() {
   const { registrationId } = Route.useParams();
@@ -28,12 +38,18 @@ function ExamPage() {
   const navigate = useNavigate();
   const submitFn = useServerFn(submitExam);
 
-  // Phases: gate -> face -> exam -> submitting -> done
-  const [phase, setPhase] = useState<"gate" | "face" | "exam" | "submitting">("gate");
+  // Phases: gate -> terms -> exam -> submitting
+  const [phase, setPhase] = useState<"gate" | "terms" | "exam" | "submitting">("gate");
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [confidence, setConfidence] = useState(0);
-  const [fsExits, setFsExits] = useState(0);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [autoSubmitReason, setAutoSubmitReason] = useState<string | null>(null);
+
+  // Camera proctoring
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [camReady, setCamReady] = useState(false);
+  const noFaceStreakRef = useRef(0);
 
   // Load registration + exam + questions
   const { data: regData, isLoading } = useQuery({
@@ -75,15 +91,7 @@ function ExamPage() {
     return () => clearInterval(t);
   }, [phase, exam]);
 
-  // Auto-submit on time-up
-  useEffect(() => {
-    if (phase === "exam" && timeLeft === 0 && exam) {
-      handleFinalSubmit();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, phase]);
-
-  // Anti-cheat
+  // Integrity event logger
   type IntegrityEventType =
     | "tab_switch" | "copy_attempt" | "fullscreen_exit" | "face_mismatch"
     | "multiple_faces" | "no_face" | "network_anomaly" | "rapid_answer" | "suspicious_pattern";
@@ -96,27 +104,67 @@ function ExamPage() {
     await supabase.from("integrity_events").insert({ session_id: sessionId, event_type, severity, details: details as never });
   }, [sessionId]);
 
+  // ---- Final submit (declared early so anti-cheat effects can reference) ----
+  const saveAnswer = useCallback(async (qid: string, selected: string | null, marked: boolean) => {
+    if (!sessionId) return;
+    await supabase.from("answers").upsert({ session_id: sessionId, question_id: qid, selected_option: selected, marked_for_review: marked }, { onConflict: "session_id,question_id" });
+  }, [sessionId]);
+
+  const handleFinalSubmit = useCallback(async (reason?: string) => {
+    if (!sessionId) return;
+    if (reason) setAutoSubmitReason(reason);
+    setPhase("submitting");
+    try {
+      await Promise.all(Object.entries(answers).map(([qid, a]) => saveAnswer(qid, a.selected, a.marked)));
+      const res = await submitFn({ data: { sessionId } });
+      // stop camera
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
+      toast.success(`Submitted — ${res.total} marks${reason ? ` (${reason})` : ""}`);
+      navigate({ to: "/candidate/results" });
+    } catch (e: any) {
+      toast.error(e.message ?? "Submit failed");
+      setPhase("exam");
+    }
+  }, [sessionId, answers, saveAnswer, submitFn, navigate]);
+
+  // Auto-submit on time-up
+  useEffect(() => {
+    if (phase === "exam" && timeLeft === 0 && exam) {
+      void handleFinalSubmit("time up");
+    }
+  }, [timeLeft, phase, exam, handleFinalSubmit]);
+
+  // Auto-save
   useEffect(() => {
     if (phase !== "exam") return;
-    const onVis = () => { if (document.hidden) { logEvent("tab_switch", "medium"); toast.warning("Tab switch detected — logged."); } };
-    const onBlur = () => { logEvent("tab_switch", "medium", { reason: "window_blur" }); };
-    const onCopy = (e: ClipboardEvent) => { e.preventDefault(); logEvent("copy_attempt", "high"); toast.error("Copy disabled during exam"); };
+    const t = setInterval(() => {
+      const entries = Object.entries(answers);
+      if (!entries.length) return;
+      entries.forEach(([qid, a]) => saveAnswer(qid, a.selected, a.marked));
+    }, 30000);
+    return () => clearInterval(t);
+  }, [answers, phase, saveAnswer]);
+
+  // ---- ANTI-CHEAT: hard. ANY fullscreen exit, tab switch, or backgrounding
+  // → warn + immediate auto-submit. ----
+  useEffect(() => {
+    if (phase !== "exam") return;
+    const triggerHardSubmit = (reason: string) => {
+      toast.error(`Exam terminated: ${reason}. Submitting now.`);
+      void logEvent(reason.includes("tab") ? "tab_switch" : "fullscreen_exit", "critical", { reason });
+      void handleFinalSubmit(reason);
+    };
+    const onVis = () => { if (document.hidden) triggerHardSubmit("tab/app switched"); };
+    const onBlur = () => triggerHardSubmit("window lost focus");
+    const onFs = () => { if (!document.fullscreenElement) triggerHardSubmit("fullscreen exited"); };
+    const onCopy = (e: ClipboardEvent) => { e.preventDefault(); void logEvent("copy_attempt", "high"); toast.error("Copy disabled"); };
     const onCtx = (e: MouseEvent) => e.preventDefault();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key))) {
         e.preventDefault();
-        logEvent("suspicious_pattern", "high", { reason: "devtools_attempt" });
-      }
-    };
-    const onFs = () => {
-      if (!document.fullscreenElement) {
-        setFsExits((n) => {
-          const next = n + 1;
-          logEvent("fullscreen_exit", next >= 3 ? "critical" : "high", { count: next });
-          if (next >= 3) { toast.error("Exam auto-submitted (3 fullscreen exits)"); handleFinalSubmit(); }
-          else toast.warning(`Fullscreen exit ${next}/3 — return now`);
-          return next;
-        });
+        void logEvent("suspicious_pattern", "high", { reason: "devtools_attempt" });
       }
     };
     document.addEventListener("visibilitychange", onVis);
@@ -135,28 +183,87 @@ function ExamPage() {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("fullscreenchange", onFs);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, sessionId]);
+  }, [phase, logEvent, handleFinalSubmit]);
 
-  // Auto-save
-  const saveAnswer = useCallback(async (qid: string, selected: string | null, marked: boolean) => {
-    if (!sessionId) return;
-    await supabase.from("answers").upsert({ session_id: sessionId, question_id: qid, selected_option: selected, marked_for_review: marked }, { onConflict: "session_id,question_id" });
-  }, [sessionId]);
+  // ---- CAMERA: open on terms acceptance, keep live through entire exam ----
+  const ensureCamera = useCallback(async () => {
+    if (streamRef.current) return true;
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240, facingMode: "user" }, audio: false });
+      streamRef.current = s;
+      setCamReady(true);
+      return true;
+    } catch {
+      toast.error("Camera access is mandatory to take the exam.");
+      return false;
+    }
+  }, []);
 
+  // attach stream to <video> whenever it mounts
   useEffect(() => {
-    if (phase !== "exam") return;
-    const t = setInterval(() => {
-      const entries = Object.entries(answers);
-      if (!entries.length) return;
-      entries.forEach(([qid, a]) => saveAnswer(qid, a.selected, a.marked));
-      toast.success("Progress auto-saved", { duration: 1500, icon: <Save className="h-4 w-4" /> });
-    }, 30000);
-    return () => clearInterval(t);
-  }, [answers, phase, saveAnswer]);
+    const v = videoRef.current;
+    if (v && streamRef.current && v.srcObject !== streamRef.current) {
+      v.srcObject = streamRef.current;
+      void v.play().catch(() => {});
+    }
+  });
 
-  // Start exam: request fullscreen + create session
-  const startExam = async () => {
+  // AI integrity check every 6s — uses face-api.js TinyFaceDetector
+  useEffect(() => {
+    if (phase !== "exam" || !camReady) return;
+    let cancelled = false;
+    let timer: number | null = null;
+    (async () => {
+      try {
+        const faceapi = await loadFaceApi();
+        const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
+        const tick = async () => {
+          if (cancelled) return;
+          const v = videoRef.current;
+          if (v && v.readyState >= 2) {
+            const dets = await faceapi.detectAllFaces(v, opts);
+            if (dets.length === 0) {
+              noFaceStreakRef.current += 1;
+              if (noFaceStreakRef.current === 2) {
+                toast.warning("Face not visible — stay in frame");
+                void logEvent("no_face", "medium");
+              }
+              if (noFaceStreakRef.current >= 4) {
+                void handleFinalSubmit("candidate left the camera frame");
+                return;
+              }
+            } else if (dets.length > 1) {
+              toast.error("Multiple faces detected — exam will end");
+              void logEvent("multiple_faces", "critical", { count: dets.length });
+              void handleFinalSubmit("multiple faces detected");
+              return;
+            } else {
+              noFaceStreakRef.current = 0;
+            }
+          }
+          timer = window.setTimeout(tick, 6000);
+        };
+        void tick();
+      } catch {
+        /* face-api failed to load — skip AI but keep camera + DOM anti-cheat */
+      }
+    })();
+    return () => { cancelled = true; if (timer) window.clearTimeout(timer); };
+  }, [phase, camReady, logEvent, handleFinalSubmit]);
+
+  // Stop camera on unmount
+  useEffect(() => () => { streamRef.current?.getTracks().forEach((t) => t.stop()); streamRef.current = null; }, []);
+
+  // Start: from gate -> terms (also asks for camera)
+  const goToTerms = async () => {
+    const ok = await ensureCamera();
+    if (!ok) return;
+    setPhase("terms");
+  };
+
+  // Accept terms -> request fullscreen + create session -> exam
+  const acceptAndStart = async () => {
+    if (!termsAccepted) { toast.error("Please accept the terms first."); return; }
     try {
       await document.documentElement.requestFullscreen();
     } catch {
@@ -166,42 +273,10 @@ function ExamPage() {
     const { data: sess, error } = await supabase.from("exam_sessions").insert({ registration_id: registrationId }).select().single();
     if (error || !sess) { toast.error("Could not start session"); return; }
     setSessionId(sess.id);
-    setPhase("face");
+    setPhase("exam");
   };
 
-  // Face verify (demo): animate confidence
-  useEffect(() => {
-    if (phase !== "face") return;
-    setConfidence(60);
-    const start = Date.now();
-    const t = setInterval(() => {
-      const elapsed = (Date.now() - start) / 8000;
-      const pct = Math.min(94, 60 + Math.round(34 * Math.min(1, elapsed)));
-      setConfidence(pct);
-      if (elapsed >= 1) {
-        clearInterval(t);
-        setTimeout(() => setPhase("exam"), 800);
-      }
-    }, 100);
-    return () => clearInterval(t);
-  }, [phase]);
-
-  const handleFinalSubmit = async () => {
-    if (!sessionId) return;
-    setPhase("submitting");
-    try {
-      await Promise.all(Object.entries(answers).map(([qid, a]) => saveAnswer(qid, a.selected, a.marked)));
-      const res = await submitFn({ data: { sessionId } });
-      if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
-      toast.success(`Submitted — ${res.total} marks`);
-      navigate({ to: "/candidate/results" });
-    } catch (e: any) {
-      toast.error(e.message ?? "Submit failed");
-      setPhase("exam");
-    }
-  };
-
-  // GATE: pre-exam
+  // -------- RENDER --------
   if (isLoading || !exam) {
     return <div className="min-h-dvh flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   }
@@ -209,47 +284,74 @@ function ExamPage() {
   if (phase === "gate") {
     return (
       <div className="min-h-dvh flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
-        <Card className="max-w-2xl w-full p-8 shadow-elegant">
-          <div className="flex items-center gap-3 mb-6"><ParikshaLogo className="h-12 w-12" /><div><h1 className="text-2xl font-bold">{exam.title}</h1><p className="text-sm text-muted-foreground">{exam.duration_minutes} min · {exam.total_marks} marks · {questions.length} questions</p></div></div>
-          <div className="space-y-3 text-sm mb-6">
-            <div className="flex items-start gap-2"><Maximize className="h-4 w-4 mt-0.5 text-accent" /><span>Fullscreen mode is mandatory. Exiting more than 2 times will auto-submit your exam.</span></div>
-            <div className="flex items-start gap-2"><ShieldCheck className="h-4 w-4 mt-0.5 text-accent" /><span>Live face verification will run before the exam begins.</span></div>
-            <div className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-accent" /><span>Tab switching, copy/paste, right-click, and devtools are blocked and logged.</span></div>
+        <Card className="max-w-2xl w-full p-6 md:p-8 shadow-elegant">
+          <div className="flex items-center gap-3 mb-6">
+            <ParikshaLogo className="h-12 w-12" />
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold">{exam.title}</h1>
+              <p className="text-sm text-muted-foreground">{exam.duration_minutes} min · {exam.total_marks} marks · {questions.length} questions</p>
+            </div>
           </div>
-          <Button onClick={startExam} size="lg" className="w-full bg-accent hover:bg-accent/90">
-            <Maximize className="mr-2 h-5 w-5" /> Enter Fullscreen & Begin
+          <div className="space-y-3 text-sm mb-6">
+            <div className="flex items-start gap-2"><Camera className="h-4 w-4 mt-0.5 text-accent" /><span>Your camera must stay on for the full duration — AI proctoring is active.</span></div>
+            <div className="flex items-start gap-2"><Maximize className="h-4 w-4 mt-0.5 text-accent" /><span>Fullscreen is mandatory. Leaving fullscreen will <b>immediately auto-submit</b> your exam.</span></div>
+            <div className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-accent" /><span>Switching tabs, opening another app on mobile, or background activity will <b>auto-submit instantly</b>.</span></div>
+          </div>
+          <Button onClick={goToTerms} size="lg" className="w-full bg-accent hover:bg-accent/90">
+            <Camera className="mr-2 h-5 w-5" /> Enable Camera & Continue
           </Button>
         </Card>
       </div>
     );
   }
 
-  if (phase === "face") {
-    const granted = confidence >= 94;
+  if (phase === "terms") {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-foreground p-4">
-        <Card className="max-w-md w-full p-8 text-center">
-          <ParikshaLogo className="h-12 w-12 mx-auto mb-4" />
-          <h2 className="text-xl font-bold">Identity verification</h2>
-          <p className="text-sm text-muted-foreground mb-6">Matching your live face with registration photo…</p>
-          <div className="relative mx-auto h-64 w-64 rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 overflow-hidden mb-4">
-            <Camera className="absolute inset-0 m-auto h-16 w-16 text-muted-foreground" />
-            <div className="absolute inset-6 border-2 border-accent rounded-md animate-pulse" />
+      <div className="min-h-dvh flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
+        <Card className="max-w-3xl w-full p-6 md:p-8 shadow-elegant">
+          <div className="flex items-center gap-3 mb-4">
+            <ShieldCheck className="h-8 w-8 text-accent" />
+            <h2 className="text-xl md:text-2xl font-bold">Terms & Conditions</h2>
           </div>
-          <div className="text-3xl font-bold tabular-nums">{confidence}%</div>
-          <p className="text-xs text-muted-foreground">Match confidence</p>
-          {granted && (
-            <div className="mt-4 rounded-lg bg-success/10 text-success p-3 font-bold flex items-center justify-center gap-2 animate-fade-up">
-              <CheckCircle2 className="h-5 w-5" /> ACCESS GRANTED
+
+          <div className="grid md:grid-cols-[1fr_220px] gap-4 mb-4">
+            <div className="text-sm space-y-2 max-h-[45vh] overflow-y-auto pr-2 leading-relaxed text-muted-foreground">
+              <p><b className="text-foreground">1. Identity & camera:</b> Your webcam will remain on for the entire exam. AI will continuously verify that you are alone and in frame. Multiple faces or leaving the frame ends your exam.</p>
+              <p><b className="text-foreground">2. Fullscreen:</b> The exam runs in fullscreen mode. Exiting fullscreen, minimising the window, switching tabs, opening another app on mobile, or losing focus will instantly auto-submit your exam.</p>
+              <p><b className="text-foreground">3. Fair use:</b> No copy/paste, right-click, devtools, screenshots, screen sharing, or any external help. Communication devices (phone, smartwatch, headphones) must be removed.</p>
+              <p><b className="text-foreground">4. Network:</b> Stay on a stable connection. Your answers auto-save every 30 seconds.</p>
+              <p><b className="text-foreground">5. Submission:</b> When time ends, the exam submits automatically. Result is sent to your registered email along with your answer copy.</p>
+              <p><b className="text-foreground">6. Integrity:</b> All proctoring events are recorded and shared with your institute. Any violation will be reviewed by the institute and may invalidate your result.</p>
             </div>
-          )}
+            <div className="rounded-lg overflow-hidden border border-border bg-foreground/5 aspect-[4/3] relative">
+              <video ref={videoRef} muted playsInline className="w-full h-full object-cover" />
+              <div className="absolute bottom-1 left-1 right-1 text-[10px] text-center bg-background/80 rounded px-1 py-0.5">Camera preview · live</div>
+            </div>
+          </div>
+
+          <label className="flex items-start gap-3 p-3 rounded-lg bg-muted/40 cursor-pointer">
+            <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(!!v)} className="mt-0.5" />
+            <span className="text-sm">I have read and accept all the rules above. I understand that any violation will <b>immediately auto-submit</b> my exam and the result will be shared with my institute.</span>
+          </label>
+
+          <Button onClick={acceptAndStart} size="lg" className="w-full mt-4 bg-accent hover:bg-accent/90" disabled={!termsAccepted}>
+            <Maximize className="mr-2 h-5 w-5" /> Accept · Enter Fullscreen & Start Exam
+          </Button>
         </Card>
       </div>
     );
   }
 
   if (phase === "submitting") {
-    return <div className="min-h-dvh flex items-center justify-center"><div className="text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto" /><p className="mt-4 text-muted-foreground">Evaluating your answers…</p></div></div>;
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-4">
+        <div className="text-center max-w-sm">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          <p className="mt-4 text-muted-foreground">Evaluating your answers…</p>
+          {autoSubmitReason && <p className="mt-2 text-xs text-destructive">Reason: {autoSubmitReason}</p>}
+        </div>
+      </div>
+    );
   }
 
   // EXAM
@@ -279,24 +381,23 @@ function ExamPage() {
 
   return (
     <div className="min-h-dvh flex flex-col bg-secondary/40 select-none">
-      {/* Top bar */}
-      <header className="bg-background border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
-        <div className="flex items-center gap-3">
-          <ParikshaLogo className="h-8 w-8" />
-          <div>
-            <div className="font-bold text-sm">{exam.title}</div>
-            <div className="text-xs text-muted-foreground">{user?.email} · Section: {activeSection}</div>
+      <header className="bg-background border-b border-border px-3 md:px-4 py-2.5 md:py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm gap-2">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+          <ParikshaLogo className="h-7 w-7 md:h-8 md:w-8 shrink-0" />
+          <div className="min-w-0">
+            <div className="font-bold text-xs md:text-sm truncate">{exam.title}</div>
+            <div className="text-[10px] md:text-xs text-muted-foreground truncate">{user?.email ?? "Candidate"} · {activeSection}</div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className={`font-mono text-2xl font-bold tabular-nums ${timerColor}`}>{String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}</div>
-          <Button onClick={() => setConfirmSubmit(true)} variant="destructive">Submit Exam</Button>
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <div className="hidden sm:flex items-center gap-1 text-xs text-success"><Eye className="h-3.5 w-3.5" /> AI proctored</div>
+          <div className={`font-mono text-lg md:text-2xl font-bold tabular-nums ${timerColor}`}>{String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}</div>
+          <Button onClick={() => setConfirmSubmit(true)} variant="destructive" size="sm" className="md:h-10">Submit</Button>
         </div>
       </header>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-[30%_70%] gap-4 p-4 max-w-[1600px] mx-auto w-full">
-        {/* Sidebar */}
-        <aside className="space-y-4">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-[30%_70%] gap-3 md:gap-4 p-3 md:p-4 max-w-[1600px] mx-auto w-full">
+        <aside className="space-y-3 md:space-y-4 order-2 md:order-1">
           {sections.length > 1 && (
             <Card className="p-2">
               <div className="flex gap-1 overflow-x-auto">
@@ -315,7 +416,7 @@ function ExamPage() {
               <div className="rounded bg-muted text-muted-foreground p-2 font-bold">{unanswered}<div className="font-normal">Unanswered</div></div>
               <div className="rounded bg-warning/10 text-warning p-2 font-bold">{marked}<div className="font-normal">Marked</div></div>
             </div>
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-6 sm:grid-cols-5 gap-1.5">
               {sectionQuestions.map((sq, i) => {
                 const a = answers[sq.id];
                 const isCur = i === current;
@@ -331,24 +432,23 @@ function ExamPage() {
           </Card>
         </aside>
 
-        {/* Question */}
-        <main>
+        <main className="order-1 md:order-2">
           {q && (
-            <Card key={q.id} className="p-6 md:p-8 animate-fade-in">
+            <Card key={q.id} className="p-4 md:p-8 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
-                <div className="text-sm text-muted-foreground">Question <span className="font-bold text-foreground">{current + 1}</span> of {sectionQuestions.length}</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Question <span className="font-bold text-foreground">{current + 1}</span> of {sectionQuestions.length}</div>
                 <div className="flex gap-2 text-xs">
                   <span className="rounded bg-success/10 text-success px-2 py-1 font-semibold">+{q.marks}</span>
                   <span className="rounded bg-destructive/10 text-destructive px-2 py-1 font-semibold">−1</span>
                 </div>
               </div>
-              <p className="text-lg leading-relaxed mb-6">{q.question_text_encrypted}</p>
+              <p className="text-base md:text-lg leading-relaxed mb-6">{q.question_text_encrypted}</p>
               <div className="space-y-2">
                 {opts.map(([key, text]) => {
                   const sel = answers[q.id]?.selected === key;
                   return (
                     <button key={key} onClick={() => setAnswer(key)}
-                      className={`w-full text-left rounded-lg border-2 p-4 transition flex items-start gap-3 ${sel ? "border-accent bg-accent/5" : "border-border hover:border-accent/40 hover:bg-muted/50"}`}>
+                      className={`w-full text-left rounded-lg border-2 p-3 md:p-4 transition flex items-start gap-3 ${sel ? "border-accent bg-accent/5" : "border-border hover:border-accent/40 hover:bg-muted/50"}`}>
                       <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-bold text-sm ${sel ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{key}</span>
                       <span className="text-sm pt-0.5">{text}</span>
                     </button>
@@ -357,15 +457,15 @@ function ExamPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2 mt-6 pt-6 border-t border-border">
-                <Button variant="outline" onClick={() => setCurrent((c) => Math.max(0, c - 1))} disabled={current === 0}>
+                <Button variant="outline" size="sm" onClick={() => setCurrent((c) => Math.max(0, c - 1))} disabled={current === 0}>
                   <ChevronLeft className="h-4 w-4 mr-1" /> Previous
                 </Button>
-                <Button variant="outline" onClick={toggleMark}>
-                  <Bookmark className={`h-4 w-4 mr-1 ${answers[q.id]?.marked ? "fill-warning text-warning" : ""}`} /> Mark for Review
+                <Button variant="outline" size="sm" onClick={toggleMark}>
+                  <Bookmark className={`h-4 w-4 mr-1 ${answers[q.id]?.marked ? "fill-warning text-warning" : ""}`} /> Mark
                 </Button>
-                <Button variant="ghost" onClick={() => setAnswer(null)}>Clear Response</Button>
+                <Button variant="ghost" size="sm" onClick={() => setAnswer(null)}>Clear</Button>
                 <div className="ml-auto">
-                  <Button onClick={() => { saveAnswer(q.id, answers[q.id]?.selected ?? null, answers[q.id]?.marked ?? false); setCurrent((c) => Math.min(sectionQuestions.length - 1, c + 1)); toast.success("Saved", { duration: 800 }); }}>
+                  <Button size="sm" onClick={() => { saveAnswer(q.id, answers[q.id]?.selected ?? null, answers[q.id]?.marked ?? false); setCurrent((c) => Math.min(sectionQuestions.length - 1, c + 1)); }}>
                     <Save className="h-4 w-4 mr-1" /> Save & Next <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
@@ -375,17 +475,24 @@ function ExamPage() {
         </main>
       </div>
 
-      {/* aria-live announcer */}
+      {/* Persistent live camera preview (proctor watching) */}
+      <div className="fixed bottom-3 right-3 z-30 w-32 sm:w-40 rounded-lg overflow-hidden border-2 border-accent shadow-elegant bg-foreground/10">
+        <video ref={videoRef} muted playsInline className="w-full aspect-[4/3] object-cover" />
+        <div className="text-[10px] text-center bg-background/90 px-1 py-0.5 flex items-center justify-center gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" /> AI Proctor
+        </div>
+      </div>
+
       <div className="sr-only" role="status" aria-live="polite">{`${answered} of ${total} answered`}</div>
 
       <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Submit exam?</DialogTitle>
-            <DialogDescription>You won't be able to make further changes. Review your summary:</DialogDescription>
+            <DialogDescription>You won't be able to make further changes.</DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-[140px_1fr] gap-4 items-center my-4">
-            <div className="h-[140px] w-[140px] relative">
+          <div className="grid grid-cols-[120px_1fr] gap-4 items-center my-4">
+            <div className="h-[120px] w-[120px] relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -394,8 +501,8 @@ function ExamPage() {
                       { name: "Marked", value: marked, fill: "hsl(var(--warning))" },
                       { name: "Unanswered", value: Math.max(0, unanswered - marked), fill: "hsl(var(--muted))" },
                     ]}
-                    dataKey="value" cx="50%" cy="50%" innerRadius={42} outerRadius={62}
-                    paddingAngle={2} stroke="none" isAnimationActive animationDuration={800}
+                    dataKey="value" cx="50%" cy="50%" innerRadius={36} outerRadius={54}
+                    paddingAngle={2} stroke="none" isAnimationActive animationDuration={600}
                   >
                     {[0,1,2].map((i) => <Cell key={i} />)}
                   </Pie>
@@ -403,20 +510,20 @@ function ExamPage() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <div className="text-2xl font-bold tabular-nums">{Math.round((answered / Math.max(1,total)) * 100)}%</div>
+                <div className="text-xl font-bold tabular-nums">{Math.round((answered / Math.max(1,total)) * 100)}%</div>
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">complete</div>
               </div>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-success" />Answered</span><span className="font-bold tabular-nums">{answered}</span></div>
-              <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-warning" />Marked for review</span><span className="font-bold tabular-nums">{marked}</span></div>
+              <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-warning" />Marked</span><span className="font-bold tabular-nums">{marked}</span></div>
               <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />Unanswered</span><span className="font-bold tabular-nums">{unanswered}</span></div>
-              <div className="flex items-center justify-between gap-2 pt-2 border-t"><span className="text-muted-foreground">Total questions</span><span className="font-bold tabular-nums">{total}</span></div>
+              <div className="flex items-center justify-between gap-2 pt-2 border-t"><span className="text-muted-foreground">Total</span><span className="font-bold tabular-nums">{total}</span></div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmSubmit(false)}>Continue Exam</Button>
-            <Button variant="destructive" onClick={() => { setConfirmSubmit(false); handleFinalSubmit(); }}>Submit Now</Button>
+            <Button variant="outline" onClick={() => setConfirmSubmit(false)}>Continue</Button>
+            <Button variant="destructive" onClick={() => { setConfirmSubmit(false); void handleFinalSubmit(); }}>Submit Now</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
