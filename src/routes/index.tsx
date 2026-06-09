@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ChatbotWidget } from "@/components/chatbot-widget";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -198,6 +199,7 @@ function LandingPage() {
         </section>
       </main>
       <SiteFooter />
+      <ChatbotWidget />
     </div>
   );
 }
