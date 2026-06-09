@@ -156,7 +156,8 @@ function PublicGiveExam() {
               </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="admit">Admit card / Registration number</Label>
-                <Input id="admit" value={admitNo} onChange={(e) => setAdmitNo(e.target.value)} placeholder="PRK-… / KNS-…" disabled={busy || !!verified} />
+                <Input id="admit" value={admitNo} onChange={(e) => setAdmitNo(e.target.value)} placeholder="PRK-… / KNS-… / DEMO-0000" disabled={busy || !!verified} />
+                <p className="text-[11px] text-muted-foreground mt-1">No admit card? Use <button type="button" className="underline" onClick={() => setAdmitNo("DEMO-0000")}>DEMO-0000</button> to try the demo exam.</p>
               </div>
             </div>
 
