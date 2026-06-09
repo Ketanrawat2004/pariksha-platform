@@ -13,6 +13,20 @@ export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // Require an authenticated Supabase user — protects LOVABLE_API_KEY quota.
+        const authHeader = request.headers.get("authorization") ?? "";
+        const token = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7) : "";
+        if (!token) return new Response("Unauthorized", { status: 401 });
+        try {
+          const { createClient } = await import("@supabase/supabase-js");
+          const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL!;
+          const anon = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+          const sb = createClient(url, anon, { global: { headers: { Authorization: `Bearer ${token}` } } });
+          const { data, error } = await sb.auth.getUser();
+          if (error || !data.user) return new Response("Unauthorized", { status: 401 });
+        } catch {
+          return new Response("Unauthorized", { status: 401 });
+        }
         const { messages } = (await request.json()) as { messages?: UIMessage[] };
         if (!Array.isArray(messages)) return new Response("Messages required", { status: 400 });
         const key = process.env.LOVABLE_API_KEY;
