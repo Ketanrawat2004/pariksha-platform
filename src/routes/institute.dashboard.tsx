@@ -432,7 +432,7 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
             const { error } = isNew
               ? await supabase.from("paper_submissions").insert(payload)
               : await supabase.from("paper_submissions").update(payload).eq("id", initial.id);
-            if (error) return toast.error(error.message);
+            if (error) { toast.error(error.message); return; }
             toast.success("Paper locked. Schedule, identity & passkey sealed.");
             setShowLock(false);
             onSaved();
