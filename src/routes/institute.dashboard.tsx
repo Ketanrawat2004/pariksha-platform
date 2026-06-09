@@ -544,6 +544,18 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
         </TooltipProvider>
       </div>
 
+      <LockCeremonyWitnessModal
+        open={showCeremony}
+        onClose={() => { ceremony.cancel(); setShowCeremony(false); }}
+        onStart={ceremony.start}
+        onProceed={() => { setShowCeremony(false); setShowLock(true); }}
+        adminConfirmed={ceremony.adminConfirmed}
+        superadminConfirmed={ceremony.superadminConfirmed}
+        bothConfirmed={ceremony.bothConfirmed}
+        secondsLeft={ceremony.secondsLeft}
+        active={ceremony.active}
+      />
+
       {showLock && (
         <LockDialog
           onClose={() => setShowLock(false)}
@@ -560,6 +572,12 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
               : await supabase.from("paper_submissions").update(payload).eq("id", initial.id);
             if (error) { toast.error(error.message); return; }
             toast.success("Paper locked. Schedule, identity & passkey sealed.");
+            // Generate the TriShield session report (fire-and-forget)
+            const sid = watch.session?.id;
+            if (sid) {
+              const finalPaperHash = await sha256(JSON.stringify({ title, subject, questions, examDate, startTime }));
+              void runGenerateReport({ data: { sessionId: sid, finalPaperHash } }).catch(() => {});
+            }
             setShowLock(false);
             onSaved();
           }}
