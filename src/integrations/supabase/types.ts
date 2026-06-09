@@ -1132,6 +1132,10 @@ export type Database = {
           total_marks: number
         }[]
       }
+      paper_has_full_trishield: {
+        Args: { _paper_submission_id: string }
+        Returns: boolean
+      }
       release_paper_admits: {
         Args: { _paper_submission_id: string }
         Returns: {
