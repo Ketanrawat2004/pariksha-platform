@@ -63,7 +63,7 @@ function ResultsList() {
       <div className="grid gap-4">
         {(data ?? []).map((r) => {
           const exam = r.exams!;
-          const pct = (r.score_obtained / exam.total_marks) * 100;
+          const pct = (r.total_score / exam.total_marks) * 100;
           const passed = pct >= 35;
           return (
             <Card key={r.id} className="p-6 hover:shadow-elegant transition animate-fade-in">
@@ -88,7 +88,7 @@ function ResultsList() {
                     <Stat
                       icon={<Award className="h-4 w-4" />}
                       label="Score"
-                      value={`${r.score_obtained}/${exam.total_marks}`}
+                      value={`${r.total_score}/${exam.total_marks}`}
                     />
                     <Stat
                       icon={<TrendingUp className="h-4 w-4" />}
@@ -118,7 +118,7 @@ function ResultsList() {
                             candidateName:
                               user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
                             examTitle: exam.title,
-                            scoreObtained: r.score_obtained,
+                            scoreObtained: r.total_score,
                             totalMarks: exam.total_marks,
                             percentage: pct,
                             rank: r.rank,
