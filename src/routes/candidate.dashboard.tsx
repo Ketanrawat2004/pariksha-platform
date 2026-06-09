@@ -1,13 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useSignedFacePhoto } from "@/lib/storage/face-photo";
-import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2 } from "lucide-react";
+import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2, PlayCircle, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { startPaperExam } from "@/lib/institute/start-paper-exam.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidate/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Pariksha" }] }),
