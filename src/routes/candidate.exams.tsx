@@ -170,3 +170,54 @@ function ExamsList() {
     </div>
   );
 }
+
+function RegisterForPaperButton({ paperId, onDone }: { paperId: string; onDone: () => void }) {
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [dob, setDob] = useState("");
+  const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    if (!user) return;
+    if (!fullName.trim()) return toast.error("Full name is required");
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("paper_registrations" as any).insert({
+        candidate_id: user.id,
+        paper_submission_id: paperId,
+        full_name: fullName.trim(),
+        date_of_birth: dob || null,
+        phone: phone || null,
+      } as any);
+      if (error) throw error;
+      toast.success("Registered. Institute will release your admit card shortly.");
+      setOpen(false);
+      onDone();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not register");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline" className="w-full"><UserPlus className="h-4 w-4 mr-1.5" /> Register</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Register for this paper</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div><Label htmlFor="rf-name">Full name</Label><Input id="rf-name" value={fullName} onChange={(e) => setFullName(e.target.value)} maxLength={100} /></div>
+          <div><Label htmlFor="rf-dob">Date of birth</Label><Input id="rf-dob" type="date" value={dob} onChange={(e) => setDob(e.target.value)} /></div>
+          <div><Label htmlFor="rf-phone">Phone (optional)</Label><Input id="rf-phone" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} /></div>
+        </div>
+        <DialogFooter>
+          <Button onClick={submit} disabled={busy}>{busy && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />} Submit registration</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
