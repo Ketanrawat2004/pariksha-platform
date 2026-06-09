@@ -101,7 +101,7 @@ export function ProtectedShell({ children, requireRoles }: { children: ReactNode
         </nav>
       </header>
       <main id="main-content" className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-8">
-        {children}
+        <StaffSigninGate>{children}</StaffSigninGate>
       </main>
     </div>
   );
