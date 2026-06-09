@@ -334,7 +334,7 @@ function ExamPage() {
         {/* Question */}
         <main>
           {q && (
-            <Card className="p-6 md:p-8 animate-fade-up">
+            <Card key={q.id} className="p-6 md:p-8 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm text-muted-foreground">Question <span className="font-bold text-foreground">{current + 1}</span> of {sectionQuestions.length}</div>
                 <div className="flex gap-2 text-xs">
