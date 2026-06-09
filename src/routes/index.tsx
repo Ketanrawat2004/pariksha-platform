@@ -219,7 +219,7 @@ function LandingPage() {
                     </div>
                   </Card>
                 ))}
-                <Button asChild className="mt-1"><Link to="/login">Enter Exam Mode <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/candidate/dashboard"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
               </div>
             </div>
           </div>
