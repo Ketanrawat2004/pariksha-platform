@@ -427,9 +427,10 @@ function ExamPage() {
   const answered = Object.values(answers).filter((a) => a.selected).length;
   const marked = Object.values(answers).filter((a) => a.marked).length;
   const unanswered = total - answered;
-  const mins = Math.floor(timeLeft / 60);
-  const secs = timeLeft % 60;
-  const timerColor = timeLeft < 300 ? "text-destructive animate-pulse" : timeLeft < 600 ? "text-warning" : "text-foreground";
+  const tl = timeLeft ?? 0;
+  const mins = Math.floor(tl / 60);
+  const secs = tl % 60;
+  const timerColor = tl < 300 ? "text-destructive animate-pulse" : tl < 600 ? "text-warning" : "text-foreground";
 
   const setAnswer = (selected: string | null) => {
     if (!q) return;
