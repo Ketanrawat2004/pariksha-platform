@@ -559,6 +559,7 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
         />
       )}
     </Card>
+    </>
   );
 }
 
