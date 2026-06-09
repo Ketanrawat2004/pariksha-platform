@@ -8,11 +8,12 @@ async function getSupabase() {
 
 async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   const sb = await getSupabase();
-  const userId = session.metadata?.userId;
+  const userId = session.metadata?.userId || null;
   const examId = session.metadata?.examId || null;
+  const paperSubmissionId = session.metadata?.paperSubmissionId || null;
   const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
 
-  // Update payment row
+  // Mark payment paid and pull the candidate details we stashed at checkout time.
   const { data: payment } = await sb
     .from("payments")
     .update({
@@ -22,12 +23,39 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
     })
     .eq("stripe_session_id", session.id)
     .eq("environment", env)
-    .select("id")
+    .select("id, candidate_full_name, candidate_dob, candidate_phone")
     .maybeSingle();
 
-  // Create registration if we have a candidate + exam
+  // Institute paper purchase → create/flip the paper_registrations row.
+  if (userId && paperSubmissionId) {
+    const { data: existing } = await sb
+      .from("paper_registrations")
+      .select("id")
+      .eq("candidate_id", userId)
+      .eq("paper_submission_id", paperSubmissionId)
+      .maybeSingle();
+    if (!existing) {
+      await sb.from("paper_registrations").insert({
+        candidate_id: userId,
+        paper_submission_id: paperSubmissionId,
+        full_name: payment?.candidate_full_name ?? "",
+        date_of_birth: payment?.candidate_dob ?? null,
+        phone: payment?.candidate_phone ?? null,
+        paid: true,
+        cancelled: false,
+        payment_id: payment?.id ?? null,
+      });
+    } else {
+      await sb
+        .from("paper_registrations")
+        .update({ paid: true, cancelled: false, payment_id: payment?.id ?? null })
+        .eq("id", existing.id);
+    }
+    return;
+  }
+
+  // Legacy: direct exam purchase (admin-published exams table).
   if (userId && examId) {
-    // Avoid duplicates
     const { data: existing } = await sb
       .from("registrations")
       .select("id")
@@ -70,6 +98,7 @@ async function handleRefunded(charge: any, env: StripeEnv) {
     .maybeSingle();
   if (payment?.id) {
     await sb.from("registrations").update({ status: "cancelled" }).eq("payment_id", payment.id);
+    await sb.from("paper_registrations").update({ cancelled: true }).eq("payment_id", payment.id);
   }
 }
 

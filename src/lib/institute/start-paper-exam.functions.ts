@@ -19,11 +19,13 @@ export const startPaperExam = createServerFn({ method: "POST" })
 
     const { data: preg, error: pErr } = await supabaseAdmin
       .from("paper_registrations")
-      .select("id, candidate_id, paper_submission_id, admit_released, admit_card_number")
+      .select("id, candidate_id, paper_submission_id, admit_released, admit_card_number, paid, cancelled")
       .eq("id", data.paperRegistrationId)
       .single();
     if (pErr || !preg) return { ok: false, reason: "Registration not found" };
     if (preg.candidate_id !== userId) return { ok: false, reason: "Forbidden" };
+    if (preg.cancelled) return { ok: false, reason: "This registration was cancelled (payment refunded)." };
+    if (!preg.paid) return { ok: false, reason: "Payment not confirmed yet. Please wait a moment and try again." };
     if (!preg.admit_released) return { ok: false, reason: "Your admit card has not been released yet." };
 
     const { data: sub, error: sErr } = await supabaseAdmin

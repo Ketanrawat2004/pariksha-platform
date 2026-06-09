@@ -5,14 +5,35 @@ import { createCheckoutSession } from "@/utils/payments.functions";
 interface Props {
   priceId: string;
   examId?: string;
+  paperSubmissionId?: string;
+  candidateFullName?: string;
+  candidateDob?: string;
+  candidatePhone?: string;
   returnUrl?: string;
 }
 
-export function StripeEmbeddedCheckoutForm({ priceId, examId, returnUrl }: Props) {
+export function StripeEmbeddedCheckoutForm({
+  priceId,
+  examId,
+  paperSubmissionId,
+  candidateFullName,
+  candidateDob,
+  candidatePhone,
+  returnUrl,
+}: Props) {
   const fetchClientSecret = async (): Promise<string> => {
     const url = returnUrl || `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`;
     const result = await createCheckoutSession({
-      data: { priceId, examId, returnUrl: url, environment: getStripeEnvironment() },
+      data: {
+        priceId,
+        examId,
+        paperSubmissionId,
+        candidateFullName,
+        candidateDob,
+        candidatePhone,
+        returnUrl: url,
+        environment: getStripeEnvironment(),
+      },
     });
     if ("error" in result) throw new Error(result.error);
     if (!result.clientSecret) throw new Error("Stripe did not return a client secret");
