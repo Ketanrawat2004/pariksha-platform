@@ -25,6 +25,7 @@ import { Route as InvigilatorLiveMonitorRouteImport } from './routes/invigilator
 import { Route as InvigilatorIncidentsRouteImport } from './routes/invigilator.incidents'
 import { Route as InvigilatorDashboardRouteImport } from './routes/invigilator.dashboard'
 import { Route as InvigilatorAttendanceRouteImport } from './routes/invigilator.attendance'
+import { Route as InstituteDashboardRouteImport } from './routes/institute.dashboard'
 import { Route as ExamRegistrationIdRouteImport } from './routes/exam.$registrationId'
 import { Route as CandidateResultsRouteImport } from './routes/candidate.results'
 import { Route as CandidateProfileRouteImport } from './routes/candidate.profile'
@@ -119,6 +120,11 @@ const InvigilatorAttendanceRoute = InvigilatorAttendanceRouteImport.update({
   path: '/invigilator/attendance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InstituteDashboardRoute = InstituteDashboardRouteImport.update({
+  id: '/institute/dashboard',
+  path: '/institute/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExamRegistrationIdRoute = ExamRegistrationIdRouteImport.update({
   id: '/exam/$registrationId',
   path: '/exam/$registrationId',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
   '/exam/$registrationId': typeof ExamRegistrationIdRoute
+  '/institute/dashboard': typeof InstituteDashboardRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
   '/invigilator/dashboard': typeof InvigilatorDashboardRoute
   '/invigilator/incidents': typeof InvigilatorIncidentsRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
   '/exam/$registrationId': typeof ExamRegistrationIdRoute
+  '/institute/dashboard': typeof InstituteDashboardRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
   '/invigilator/dashboard': typeof InvigilatorDashboardRoute
   '/invigilator/incidents': typeof InvigilatorIncidentsRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
   '/exam/$registrationId': typeof ExamRegistrationIdRoute
+  '/institute/dashboard': typeof InstituteDashboardRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
   '/invigilator/dashboard': typeof InvigilatorDashboardRoute
   '/invigilator/incidents': typeof InvigilatorIncidentsRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/candidate/profile'
     | '/candidate/results'
     | '/exam/$registrationId'
+    | '/institute/dashboard'
     | '/invigilator/attendance'
     | '/invigilator/dashboard'
     | '/invigilator/incidents'
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
     | '/candidate/profile'
     | '/candidate/results'
     | '/exam/$registrationId'
+    | '/institute/dashboard'
     | '/invigilator/attendance'
     | '/invigilator/dashboard'
     | '/invigilator/incidents'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/candidate/profile'
     | '/candidate/results'
     | '/exam/$registrationId'
+    | '/institute/dashboard'
     | '/invigilator/attendance'
     | '/invigilator/dashboard'
     | '/invigilator/incidents'
@@ -383,6 +395,7 @@ export interface RootRouteChildren {
   CandidateProfileRoute: typeof CandidateProfileRoute
   CandidateResultsRoute: typeof CandidateResultsRoute
   ExamRegistrationIdRoute: typeof ExamRegistrationIdRoute
+  InstituteDashboardRoute: typeof InstituteDashboardRoute
   InvigilatorAttendanceRoute: typeof InvigilatorAttendanceRoute
   InvigilatorDashboardRoute: typeof InvigilatorDashboardRoute
   InvigilatorIncidentsRoute: typeof InvigilatorIncidentsRoute
@@ -509,6 +522,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvigilatorAttendanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/institute/dashboard': {
+      id: '/institute/dashboard'
+      path: '/institute/dashboard'
+      fullPath: '/institute/dashboard'
+      preLoaderRoute: typeof InstituteDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/exam/$registrationId': {
       id: '/exam/$registrationId'
       path: '/exam/$registrationId'
@@ -615,6 +635,7 @@ const rootRouteChildren: RootRouteChildren = {
   CandidateProfileRoute: CandidateProfileRoute,
   CandidateResultsRoute: CandidateResultsRoute,
   ExamRegistrationIdRoute: ExamRegistrationIdRoute,
+  InstituteDashboardRoute: InstituteDashboardRoute,
   InvigilatorAttendanceRoute: InvigilatorAttendanceRoute,
   InvigilatorDashboardRoute: InvigilatorDashboardRoute,
   InvigilatorIncidentsRoute: InvigilatorIncidentsRoute,

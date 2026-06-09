@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 
-export type AppRole = "superadmin" | "admin" | "invigilator" | "candidate";
+export type AppRole = "superadmin" | "admin" | "invigilator" | "candidate" | "institute";
 
 export interface AuthContextValue {
   session: Session | null;
@@ -25,5 +25,6 @@ export function defaultLandingFor(roles: AppRole[]): string {
   if (roles.includes("superadmin")) return "/superadmin/dashboard";
   if (roles.includes("admin")) return "/admin/dashboard";
   if (roles.includes("invigilator")) return "/invigilator/dashboard";
+  if (roles.includes("institute")) return "/institute/dashboard";
   return "/candidate/dashboard";
 }

@@ -589,7 +589,12 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "superadmin" | "admin" | "invigilator" | "candidate"
+      app_role:
+        | "superadmin"
+        | "admin"
+        | "invigilator"
+        | "candidate"
+        | "institute"
       event_severity: "low" | "medium" | "high" | "critical"
       exam_status: "draft" | "scheduled" | "live" | "completed" | "cancelled"
       integrity_event_type:
@@ -731,7 +736,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["superadmin", "admin", "invigilator", "candidate"],
+      app_role: [
+        "superadmin",
+        "admin",
+        "invigilator",
+        "candidate",
+        "institute",
+      ],
       event_severity: ["low", "medium", "high", "critical"],
       exam_status: ["draft", "scheduled", "live", "completed", "cancelled"],
       integrity_event_type: [
