@@ -10,8 +10,10 @@ import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useSignedFacePhoto } from "@/lib/storage/face-photo";
-import { Loader2, Save, UserCircle2, ShieldCheck } from "lucide-react";
+import { Loader2, Save, UserCircle2, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { deleteMyAccount } from "@/utils/payments.functions";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/candidate/profile")({
   head: () => ({ meta: [{ title: "Profile — Pariksha" }] }),
@@ -167,6 +169,34 @@ function ProfileEditor() {
           </Button>
         </Card>
       </div>
+
+      <DangerZone />
     </div>
+  );
+}
+
+function DangerZone() {
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  async function onDelete() {
+    if (!confirm("Permanently delete your account? This cannot be undone.")) return;
+    setBusy(true);
+    try {
+      const r = await deleteMyAccount();
+      if ("error" in r) { toast.error(r.error); return; }
+      await supabase.auth.signOut();
+      toast.success("Account deleted");
+      navigate({ to: "/" });
+    } finally { setBusy(false); }
+  }
+  return (
+    <Card className="p-6 border-destructive/40">
+      <h2 className="font-bold text-lg text-destructive">Delete account</h2>
+      <p className="text-sm text-muted-foreground mt-1">Permanently remove your profile, registrations, and history.</p>
+      <Button variant="destructive" onClick={onDelete} disabled={busy} className="mt-3">
+        {busy ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
+        Delete my account
+      </Button>
+    </Card>
   );
 }
