@@ -42,30 +42,9 @@ function Dashboard() {
     enabled: !!user,
   });
 
-  // Auto-register the candidate to the most recent live/upcoming exam so they
-  // can take an exam immediately — no friction.
-  useEffect(() => {
-    if (!user || !regs) return;
-    if (regs.length > 0) return;
-    let cancelled = false;
-    (async () => {
-      const { data: exam } = await supabase
-        .from("exams")
-        .select("id")
-        .in("status", ["live", "scheduled"])
-        .order("exam_date", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (cancelled || !exam) return;
-      await supabase.from("registrations").insert({
-        candidate_id: user.id,
-        exam_id: exam.id,
-        status: "approved",
-      });
-      qc.invalidateQueries({ queryKey: ["my-registrations", user.id] });
-    })();
-    return () => { cancelled = true; };
-  }, [user, regs, qc]);
+  // NOTE: candidates are NOT auto-registered for live exams. They must register
+  // (and pay) via the institute paper flow; admit cards are issued only when
+  // the institute explicitly releases them.
 
   const { data: results } = useQuery({
     queryKey: ["my-results", user?.id, regs?.length],
