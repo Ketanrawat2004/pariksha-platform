@@ -98,13 +98,13 @@ function ExamPage() {
   useEffect(() => {
     if (phase !== "exam") return;
     const onVis = () => { if (document.hidden) { logEvent("tab_switch", "medium"); toast.warning("Tab switch detected — logged."); } };
-    const onBlur = () => { logEvent("window_blur", "medium"); };
+    const onBlur = () => { logEvent("tab_switch", "medium", { reason: "window_blur" }); };
     const onCopy = (e: ClipboardEvent) => { e.preventDefault(); logEvent("copy_attempt", "high"); toast.error("Copy disabled during exam"); };
     const onCtx = (e: MouseEvent) => e.preventDefault();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key))) {
         e.preventDefault();
-        logEvent("devtools_attempt", "high");
+        logEvent("suspicious_pattern", "high", { reason: "devtools_attempt" });
       }
     };
     const onFs = () => {
