@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { createCheckoutSession } from "@/utils/payments.functions";
@@ -22,7 +22,10 @@ export function StripeEmbeddedCheckoutForm({
   candidatePhone,
   returnUrl,
 }: Props) {
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
   const fetchClientSecret = useCallback(async (): Promise<string> => {
+    setCheckoutError(null);
     const url = returnUrl || `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`;
     const result = await createCheckoutSession({
       data: {
@@ -36,8 +39,15 @@ export function StripeEmbeddedCheckoutForm({
         environment: getStripeEnvironment(),
       },
     });
-    if ("error" in result) throw new Error(result.error);
-    if (!result.clientSecret) throw new Error("Stripe did not return a client secret");
+    if ("error" in result) {
+      setCheckoutError(result.error);
+      throw new Error(result.error);
+    }
+    if (!result.clientSecret) {
+      const message = "Stripe did not return a client secret";
+      setCheckoutError(message);
+      throw new Error(message);
+    }
     return result.clientSecret;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -47,6 +57,11 @@ export function StripeEmbeddedCheckoutForm({
 
   return (
     <div id="checkout" className="min-h-[500px]">
+      {checkoutError && (
+        <div className="mb-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {checkoutError}
+        </div>
+      )}
       <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
