@@ -294,9 +294,24 @@ function InstitutePage() {
                     </Button>
                   )}
                   {s.status !== "draft" && s.status !== "edit_requested" && (
-                    <Button size="sm" variant="outline" onClick={() => setEditRequestFor(s)}>
-                      <AlertCircle className="h-4 w-4 mr-1" /> Request edit
-                    </Button>
+                    allPartiesFor(s.id) ? (
+                      <Button size="sm" variant="outline" onClick={() => setEditRequestFor(s)}>
+                        <AlertCircle className="h-4 w-4 mr-1" /> Request edit
+                      </Button>
+                    ) : (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <Button size="sm" variant="outline" disabled>
+                              <AlertCircle className="h-4 w-4 mr-1" /> Request edit
+                            </Button>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Institute, admin and superadmin must all be live on TriShield before requesting an edit.
+                        </TooltipContent>
+                      </Tooltip>
+                    )
                   )}
                   <Button size="sm" variant="ghost" onClick={() => remove(s.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
