@@ -83,9 +83,16 @@ function ExamPage() {
   }, [timeLeft, phase]);
 
   // Anti-cheat
-  const logEvent = useCallback(async (event_type: string, severity: "low" | "medium" | "high" | "critical", details: object = {}) => {
+  type IntegrityEventType =
+    | "tab_switch" | "copy_attempt" | "fullscreen_exit" | "face_mismatch"
+    | "multiple_faces" | "no_face" | "network_anomaly" | "rapid_answer" | "suspicious_pattern";
+  const logEvent = useCallback(async (
+    event_type: IntegrityEventType,
+    severity: "low" | "medium" | "high" | "critical",
+    details: Record<string, unknown> = {},
+  ) => {
     if (!sessionId) return;
-    await supabase.from("integrity_events").insert({ session_id: sessionId, event_type, severity, details });
+    await supabase.from("integrity_events").insert({ session_id: sessionId, event_type, severity, details: details as never });
   }, [sessionId]);
 
   useEffect(() => {
