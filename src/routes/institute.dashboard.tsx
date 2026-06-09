@@ -30,6 +30,8 @@ import { LockCeremonyWitnessModal } from "@/components/trishield/lock-ceremony-w
 import { generateSessionReport } from "@/lib/trishield/reports.functions";
 import { publishPaperAsExam } from "@/lib/institute/publish-paper.functions";
 import { useServerFn } from "@tanstack/react-start";
+import { ActivityReportButton } from "@/components/activity-report-button";
+import { logActivity } from "@/lib/activity-log";
 
 export const Route = createFileRoute("/institute/dashboard")({
   head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
