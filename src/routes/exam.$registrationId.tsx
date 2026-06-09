@@ -11,6 +11,7 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 export const Route = createFileRoute("/exam/$registrationId")({
   head: () => ({ meta: [{ title: "Exam in Progress — Pariksha" }] }),
@@ -146,7 +147,10 @@ function ExamPage() {
   useEffect(() => {
     if (phase !== "exam") return;
     const t = setInterval(() => {
-      Object.entries(answers).forEach(([qid, a]) => saveAnswer(qid, a.selected, a.marked));
+      const entries = Object.entries(answers);
+      if (!entries.length) return;
+      entries.forEach(([qid, a]) => saveAnswer(qid, a.selected, a.marked));
+      toast.success("Progress auto-saved", { duration: 1500, icon: <Save className="h-4 w-4" /> });
     }, 30000);
     return () => clearInterval(t);
   }, [answers, phase, saveAnswer]);
@@ -330,7 +334,7 @@ function ExamPage() {
         {/* Question */}
         <main>
           {q && (
-            <Card className="p-6 md:p-8 animate-fade-up">
+            <Card key={q.id} className="p-6 md:p-8 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm text-muted-foreground">Question <span className="font-bold text-foreground">{current + 1}</span> of {sectionQuestions.length}</div>
                 <div className="flex gap-2 text-xs">
@@ -380,10 +384,35 @@ function ExamPage() {
             <DialogTitle>Submit exam?</DialogTitle>
             <DialogDescription>You won't be able to make further changes. Review your summary:</DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-3 gap-3 text-center my-4">
-            <div className="rounded-lg bg-success/10 p-4"><div className="text-2xl font-bold text-success">{answered}</div><div className="text-xs text-muted-foreground">Answered</div></div>
-            <div className="rounded-lg bg-muted p-4"><div className="text-2xl font-bold">{unanswered}</div><div className="text-xs text-muted-foreground">Unanswered</div></div>
-            <div className="rounded-lg bg-warning/10 p-4"><div className="text-2xl font-bold text-warning">{marked}</div><div className="text-xs text-muted-foreground">Marked</div></div>
+          <div className="grid grid-cols-[140px_1fr] gap-4 items-center my-4">
+            <div className="h-[140px] w-[140px] relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: "Answered", value: answered, fill: "hsl(var(--success))" },
+                      { name: "Marked", value: marked, fill: "hsl(var(--warning))" },
+                      { name: "Unanswered", value: Math.max(0, unanswered - marked), fill: "hsl(var(--muted))" },
+                    ]}
+                    dataKey="value" cx="50%" cy="50%" innerRadius={42} outerRadius={62}
+                    paddingAngle={2} stroke="none" isAnimationActive animationDuration={800}
+                  >
+                    {[0,1,2].map((i) => <Cell key={i} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <div className="text-2xl font-bold tabular-nums">{Math.round((answered / Math.max(1,total)) * 100)}%</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">complete</div>
+              </div>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-success" />Answered</span><span className="font-bold tabular-nums">{answered}</span></div>
+              <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-warning" />Marked for review</span><span className="font-bold tabular-nums">{marked}</span></div>
+              <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />Unanswered</span><span className="font-bold tabular-nums">{unanswered}</span></div>
+              <div className="flex items-center justify-between gap-2 pt-2 border-t"><span className="text-muted-foreground">Total questions</span><span className="font-bold tabular-nums">{total}</span></div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmSubmit(false)}>Continue Exam</Button>
