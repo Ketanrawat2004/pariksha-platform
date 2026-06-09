@@ -913,6 +913,23 @@ export type Database = {
           total_marks: number
         }[]
       }
+      verify_admit_card: {
+        Args: { _admit_card_number: string }
+        Returns: {
+          exam_date: string
+          exam_title: string
+          valid: boolean
+        }[]
+      }
+      verify_certificate: {
+        Args: { _certificate_id: string }
+        Returns: {
+          exam_date: string
+          exam_title: string
+          pass_fail: boolean
+          percentage: number
+        }[]
+      }
     }
     Enums: {
       app_role:
