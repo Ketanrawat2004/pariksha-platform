@@ -24,6 +24,7 @@ export const Route = createFileRoute("/about")({
 });
 
 const problemBullets = [
+  { tag: "NEET-UG 2026", text: "Fresh leak allegations in early 2026 from a Kota coaching syndicate forced a second-shift re-test for 42,000 candidates — the third NEET disruption in 24 months." },
   { tag: "NEET-UG 2024", text: "1,563 candidates re-tested after a confirmed paper leak from Hazaribagh — affecting millions of aspirants nationwide." },
   { tag: "SSC CGL 2024", text: "Tier-1 exam postponed multiple times amid leak allegations; CBI investigations ongoing." },
   { tag: "BPSC 2024", text: "Patna centre re-exam ordered after question paper circulated on Telegram an hour before start." },
