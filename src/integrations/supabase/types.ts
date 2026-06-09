@@ -411,6 +411,7 @@ export type Database = {
           id: string
           is_active: boolean
           phone: string | null
+          photo_url: string | null
           state: string | null
           updated_at: string
         }
@@ -427,6 +428,7 @@ export type Database = {
           id: string
           is_active?: boolean
           phone?: string | null
+          photo_url?: string | null
           state?: string | null
           updated_at?: string
         }
@@ -443,6 +445,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           phone?: string | null
+          photo_url?: string | null
           state?: string | null
           updated_at?: string
         }
@@ -633,6 +636,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      staff_signin_photos: {
+        Row: {
+          created_at: string
+          id: string
+          photo_url: string
+          role: Database["public"]["Enums"]["app_role"]
+          signed_in_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          photo_url: string
+          role: Database["public"]["Enums"]["app_role"]
+          signed_in_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          photo_url?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          signed_in_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
