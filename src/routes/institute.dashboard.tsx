@@ -116,6 +116,25 @@ function InstitutePage() {
     enabled: !!user,
   });
 
+  // Live TriShield session map: paper_submission_id -> all_parties_present (used to gate "Request edit").
+  // Server-side trigger also blocks the update, but we hide the button so users don't see a failure path.
+  const { data: liveSessions } = useQuery({
+    queryKey: ["trishield-live-by-paper"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trishield_watch_sessions" as any)
+        .select("paper_submission_id, all_parties_present, status")
+        .eq("status", "active");
+      const map = new Map<string, boolean>();
+      ((data ?? []) as any[]).forEach((s) => {
+        if (s.paper_submission_id) map.set(s.paper_submission_id, Boolean(s.all_parties_present));
+      });
+      return map;
+    },
+    refetchInterval: 5_000,
+  });
+  const allPartiesFor = (id: string) => liveSessions?.get(id) === true;
+
   const counts = {
     total: subs?.length ?? 0,
     draft: subs?.filter((s: any) => s.status === "draft").length ?? 0,
