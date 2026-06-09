@@ -48,8 +48,8 @@ export function StaffWatchDrawer({ party, sessionId, onClose }: { party: "admin"
       if (error) throw error;
       await supabase.from("audit_log" as any).insert({
         action: "SUPERADMIN_HALT",
-        entity_type: "trishield_watch_session",
-        entity_id: sessionId,
+        resource: "trishield_watch_session",
+        resource_id: sessionId,
         details: { dual_shield_event: true } as any,
       } as any);
       toast.success("Session halted");

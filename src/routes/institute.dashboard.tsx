@@ -19,6 +19,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { FaceCapture } from "@/components/face-capture";
+import { useTriShieldWatch } from "@/lib/trishield/use-trishield-watch";
+import { useEditActivity } from "@/lib/trishield/use-edit-activity";
+import { CameraRequiredBlock } from "@/components/trishield/camera-required-block";
+import { TriShieldWatchBar } from "@/components/trishield/trishield-watch-bar";
+import { LiveWatchPreview } from "@/components/trishield/live-watch-preview";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/institute/dashboard")({
   head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
