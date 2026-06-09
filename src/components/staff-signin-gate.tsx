@@ -33,7 +33,7 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
     setBusy(true);
     try {
       const role = roles.find((r) => STAFF_ROLES.includes(r))!;
-      const path = `signins/${user.id}/${Date.now()}.jpg`;
+      const path = `${user.id}/signins/${Date.now()}.jpg`;
       const blob = dataUrlToBlob(photo);
       const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: false });
       if (upErr) throw upErr;

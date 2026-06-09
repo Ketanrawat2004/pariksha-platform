@@ -127,7 +127,7 @@ function InstitutePage() {
     let editPhotoUrl: string | null = null;
     try {
       const { dataUrlToBlob } = await import("@/components/face-capture");
-      const path = `edit-requests/${user!.id}/${Date.now()}.jpg`;
+      const path = `${user!.id}/edit-requests/${Date.now()}.jpg`;
       const blob = dataUrlToBlob(editPhoto);
       const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: false });
       if (!upErr) editPhotoUrl = supabase.storage.from("face-photos").getPublicUrl(path).data.publicUrl;
