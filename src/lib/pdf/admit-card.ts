@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
+import logoAsset from "@/assets/pariksha-logo.png.asset.json";
 
 export interface AdmitCardData {
   candidateName: string;
@@ -34,16 +35,20 @@ export async function downloadAdmitCard(d: AdmitCardData) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = 210;
 
-  // Header bar
+  // Header bar with logo
   doc.setFillColor(15, 23, 42);
   doc.rect(0, 0, W, 28, "F");
+  const logoData = await fetchImageAsDataUrl(logoAsset.url);
+  if (logoData) {
+    try { doc.addImage(logoData, "PNG", 12, 4, 20, 20); } catch {}
+  }
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.text("PARIKSHA", 14, 14);
+  doc.text("PARIKSHA", 36, 14);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("National Examination Platform — Admit Card", 14, 21);
+  doc.text("National Examination Platform — Admit Card", 36, 21);
 
   // Title
   doc.setTextColor(15, 23, 42);

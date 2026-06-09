@@ -236,6 +236,20 @@ export function useTriShieldWatch(opts: InitOptions) {
     };
   }, [session?.id, stream, granted]);
 
+  // Stop tracks when the user signs out (auth state -> SIGNED_OUT)
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        stream?.getTracks().forEach((t) => t.stop());
+        setStream(null);
+        setGranted(false);
+        if (intervalRef.current) window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [stream]);
+
   // Clean up on unmount: stop tracks + mark session ended (institute only)
   useEffect(() => {
     return () => {
