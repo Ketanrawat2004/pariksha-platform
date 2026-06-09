@@ -34,6 +34,7 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
       .eq("candidate_id", userId)
       .eq("paper_submission_id", paperSubmissionId)
       .maybeSingle();
+    const admit = `PRK-${Math.random().toString(36).slice(2, 12).toUpperCase()}`;
     if (!existing) {
       await sb.from("paper_registrations").insert({
         candidate_id: userId,
@@ -44,12 +45,14 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
         paid: true,
         cancelled: false,
         payment_id: payment?.id ?? null,
+        admit_released: true,
+        admit_card_number: admit,
       });
     } else {
-      await sb
-        .from("paper_registrations")
-        .update({ paid: true, cancelled: false, payment_id: payment?.id ?? null })
-        .eq("id", existing.id);
+      const upd: any = { paid: true, cancelled: false, payment_id: payment?.id ?? null, admit_released: true };
+      const { data: cur } = await sb.from("paper_registrations").select("admit_card_number").eq("id", existing.id).maybeSingle();
+      if (!cur?.admit_card_number) upd.admit_card_number = admit;
+      await sb.from("paper_registrations").update(upd).eq("id", existing.id);
     }
     return;
   }
