@@ -23,7 +23,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <Button size="sm" asChild className="bg-accent hover:bg-accent/90 shadow-elegant">
-            <Link to="/exam-entry">Give Exam</Link>
+            <Link to="/give-exam">Give Exam</Link>
           </Button>
           {user ? (
             <>
