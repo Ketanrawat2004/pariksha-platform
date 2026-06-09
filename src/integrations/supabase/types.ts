@@ -313,6 +313,90 @@ export type Database = {
         }
         Relationships: []
       }
+      paper_submissions: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          edit_request_note: string | null
+          exam_date: string
+          id: string
+          institute_id: string
+          passing_marks: number
+          passkey_hash: string | null
+          published_exam_id: string | null
+          questions: Json
+          start_time: string
+          status: Database["public"]["Enums"]["paper_submission_status"]
+          subject: string
+          submitter_photo_url: string | null
+          teacher_name: string | null
+          title: string
+          total_marks: number
+          updated_at: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          edit_request_note?: string | null
+          exam_date: string
+          id?: string
+          institute_id: string
+          passing_marks?: number
+          passkey_hash?: string | null
+          published_exam_id?: string | null
+          questions?: Json
+          start_time: string
+          status?: Database["public"]["Enums"]["paper_submission_status"]
+          subject: string
+          submitter_photo_url?: string | null
+          teacher_name?: string | null
+          title: string
+          total_marks?: number
+          updated_at?: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          edit_request_note?: string | null
+          exam_date?: string
+          id?: string
+          institute_id?: string
+          passing_marks?: number
+          passkey_hash?: string | null
+          published_exam_id?: string | null
+          questions?: Json
+          start_time?: string
+          status?: Database["public"]["Enums"]["paper_submission_status"]
+          subject?: string
+          submitter_photo_url?: string | null
+          teacher_name?: string | null
+          title?: string
+          total_marks?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_submissions_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paper_submissions_published_exam_id_fkey"
+            columns: ["published_exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           aadhaar_hash: string | null
@@ -608,6 +692,14 @@ export type Database = {
         | "rapid_answer"
         | "suspicious_pattern"
       notification_type: "info" | "warning" | "alert" | "success"
+      paper_submission_status:
+        | "draft"
+        | "pending"
+        | "locked"
+        | "approved"
+        | "published"
+        | "edit_requested"
+        | "rejected"
       registration_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
@@ -757,6 +849,15 @@ export const Constants = {
         "suspicious_pattern",
       ],
       notification_type: ["info", "warning", "alert", "success"],
+      paper_submission_status: [
+        "draft",
+        "pending",
+        "locked",
+        "approved",
+        "published",
+        "edit_requested",
+        "rejected",
+      ],
       registration_status: ["pending", "approved", "rejected"],
     },
   },
