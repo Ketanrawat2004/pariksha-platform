@@ -123,6 +123,12 @@ export function useTriShieldWatch(opts: InitOptions) {
               .single();
             if (!cancelled && data) setSession(data as any);
           } else {
+            // Generate a 6-char join code via RPC so admins/superadmins can pair this session
+            let joinCode: string | null = null;
+            try {
+              const { data: codeData } = await supabase.rpc("generate_trishield_join_code" as any);
+              if (typeof codeData === "string") joinCode = codeData;
+            } catch { /* fall through, server will allow null */ }
             const { data, error } = await supabase
               .from("trishield_watch_sessions" as any)
               .insert({
@@ -132,6 +138,7 @@ export function useTriShieldWatch(opts: InitOptions) {
                 initiated_by: user.id,
                 institute_camera_active: true,
                 institute_device_fingerprint: fingerprint as any,
+                join_code: joinCode,
               } as any)
               .select()
               .single();
