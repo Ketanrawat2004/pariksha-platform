@@ -399,6 +399,18 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   const [questions, setQuestions] = useState<Question[]>(isNew ? (tpl?.questions ?? []) : (initial.questions ?? []));
   const [showLock, setShowLock] = useState(false);
 
+  // TriShield LiveWatch — institute side
+  const { roles } = useAuth();
+  const isInstitute = roles.includes("institute");
+  const watch = useTriShieldWatch({
+    party: "institute",
+    enabled: isInstitute,
+    paperSubmissionId: isNew ? null : initial.id,
+    sessionType: !isNew && (initial.status === "locked" || initial.status === "edit_requested") ? "paper_edit" : "paper_lock",
+  });
+  const editActivity = useEditActivity(watch.session?.id);
+  const allPartiesPresent = !!watch.session?.all_parties_present;
+
   function addQ() {
     setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
   }
@@ -424,7 +436,11 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   }
 
   return (
-    <Card className="p-6 space-y-5">
+    <>
+      {isInstitute && watch.denied && <CameraRequiredBlock onRetry={watch.requestCamera} />}
+      {isInstitute && watch.granted && <TriShieldWatchBar session={watch.session} />}
+      {isInstitute && watch.granted && <LiveWatchPreview videoRef={watch.videoRef} canvasRef={watch.canvasRef} />}
+      <Card className="p-6 space-y-5">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
           <Label>Paper title</Label>
@@ -470,7 +486,15 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
             <Card key={q.id} className="p-4 bg-muted/30">
               <div className="flex items-start gap-2">
                 <span className="font-mono text-xs text-muted-foreground mt-2">Q{i + 1}.</span>
-                <Textarea value={q.text} onChange={(e) => updateQ(i, { text: e.target.value })} rows={2} className="flex-1" placeholder="Question text" />
+                <Textarea
+                  value={q.text}
+                  onChange={(e) => updateQ(i, { text: e.target.value })}
+                  onFocus={() => editActivity.emit("typing_started", i)}
+                  onBlur={() => editActivity.emit("typing_stopped", i)}
+                  rows={2}
+                  className="flex-1"
+                  placeholder="Question text"
+                />
                 <Button size="icon" variant="ghost" onClick={() => removeQ(i)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
               </div>
               <div className="grid sm:grid-cols-2 gap-2 mt-3">
@@ -492,10 +516,25 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
 
       <div className="flex flex-wrap gap-2 justify-end pt-4 border-t border-border">
         <Button variant="ghost" onClick={onCancel}>Cancel</Button>
-        <Button variant="outline" onClick={saveDraft}>Save draft</Button>
-        <Button onClick={() => setShowLock(true)} disabled={!title || !subject || !examDate || questions.length === 0}>
-          <Lock className="h-4 w-4 mr-1.5" /> Lock & Authenticate
-        </Button>
+        <Button variant="outline" onClick={() => { editActivity.emit("draft_saved"); void saveDraft(); }}>Save draft</Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  onClick={() => setShowLock(true)}
+                  disabled={!title || !subject || !examDate || questions.length === 0 || (isInstitute && !allPartiesPresent)}
+                  className={isInstitute && allPartiesPresent ? "ring-2 ring-success shadow-[0_0_20px_-4px] shadow-success/50 transition" : ""}
+                >
+                  <Lock className="h-4 w-4 mr-1.5" /> Lock & Authenticate
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {isInstitute && !allPartiesPresent && (
+              <TooltipContent>Waiting for Admin and SuperAdmin to join LiveWatch</TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {showLock && (
