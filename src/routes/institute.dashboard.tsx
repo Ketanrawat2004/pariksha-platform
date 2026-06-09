@@ -206,9 +206,12 @@ function InstitutePage() {
             Create papers, lock the schedule with teacher authentication, and publish exams to candidates.
           </p>
         </div>
-        <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant">
-          <Plus className="mr-2 h-4 w-4" /> New Paper
-        </Button>
+        <div className="flex items-center gap-2">
+          <ActivityReportButton role="institute" />
+          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant">
+            <Plus className="mr-2 h-4 w-4" /> New Paper
+          </Button>
+        </div>
       </header>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
