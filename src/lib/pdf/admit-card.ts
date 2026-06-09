@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
+import logoAsset from "@/assets/pariksha-logo.png.asset.json";
 
 export interface AdmitCardData {
   candidateName: string;
