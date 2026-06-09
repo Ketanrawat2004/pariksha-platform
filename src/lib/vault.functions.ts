@@ -37,7 +37,7 @@ export const getVaultStats = createServerFn({ method: "GET" }).handler(async () 
     .limit(5);
   const exam =
     exams?.find((e) => e.status === "live") ??
-    exams?.find((e) => e.status === "scheduled" || e.status === "published") ??
+    exams?.find((e) => e.status === "draft") ??
     exams?.[0] ??
     null;
 
