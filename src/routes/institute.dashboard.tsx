@@ -25,6 +25,10 @@ import { CameraRequiredBlock } from "@/components/trishield/camera-required-bloc
 import { TriShieldWatchBar } from "@/components/trishield/trishield-watch-bar";
 import { LiveWatchPreview } from "@/components/trishield/live-watch-preview";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLockCeremonyInitiator } from "@/lib/trishield/use-lock-ceremony";
+import { LockCeremonyWitnessModal } from "@/components/trishield/lock-ceremony-witness-modal";
+import { generateSessionReport } from "@/lib/trishield/reports.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/institute/dashboard")({
   head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
@@ -398,6 +402,7 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   const [teacherName, setTeacherName] = useState(isNew ? "" : (initial.teacher_name ?? ""));
   const [questions, setQuestions] = useState<Question[]>(isNew ? (tpl?.questions ?? []) : (initial.questions ?? []));
   const [showLock, setShowLock] = useState(false);
+  const [showCeremony, setShowCeremony] = useState(false);
 
   // TriShield LiveWatch — institute side
   const { roles } = useAuth();
@@ -410,6 +415,8 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   });
   const editActivity = useEditActivity(watch.session?.id);
   const allPartiesPresent = !!watch.session?.all_parties_present;
+  const ceremony = useLockCeremonyInitiator(watch.session?.id);
+  const runGenerateReport = useServerFn(generateSessionReport);
 
   function addQ() {
     setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
@@ -522,7 +529,7 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
             <TooltipTrigger asChild>
               <span>
                 <Button
-                  onClick={() => setShowLock(true)}
+                  onClick={() => setShowCeremony(true)}
                   disabled={!title || !subject || !examDate || questions.length === 0 || (isInstitute && !allPartiesPresent)}
                   className={isInstitute && allPartiesPresent ? "ring-2 ring-success shadow-[0_0_20px_-4px] shadow-success/50 transition" : ""}
                 >
@@ -536,6 +543,18 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
           </Tooltip>
         </TooltipProvider>
       </div>
+
+      <LockCeremonyWitnessModal
+        open={showCeremony}
+        onClose={() => { ceremony.cancel(); setShowCeremony(false); }}
+        onStart={ceremony.start}
+        onProceed={() => { setShowCeremony(false); setShowLock(true); }}
+        adminConfirmed={ceremony.adminConfirmed}
+        superadminConfirmed={ceremony.superadminConfirmed}
+        bothConfirmed={ceremony.bothConfirmed}
+        secondsLeft={ceremony.secondsLeft}
+        active={ceremony.active}
+      />
 
       {showLock && (
         <LockDialog
@@ -553,6 +572,12 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
               : await supabase.from("paper_submissions").update(payload).eq("id", initial.id);
             if (error) { toast.error(error.message); return; }
             toast.success("Paper locked. Schedule, identity & passkey sealed.");
+            // Generate the TriShield session report (fire-and-forget)
+            const sid = watch.session?.id;
+            if (sid) {
+              const finalPaperHash = await sha256(JSON.stringify({ title, subject, questions, examDate, startTime }));
+              void runGenerateReport({ data: { sessionId: sid, finalPaperHash } }).catch(() => {});
+            }
             setShowLock(false);
             onSaved();
           }}
