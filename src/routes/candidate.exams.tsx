@@ -137,6 +137,7 @@ function PaperCard({
       await downloadAdmitCard({
         candidateName: candidateName ?? userEmail ?? "Candidate",
         admitCardNumber: myReg.admit_card_number,
+        seatNumber: null,
         examTitle: paper.title,
         examDate: paper.exam_date,
         startTime: (paper.start_time ?? "").slice(0, 5),
