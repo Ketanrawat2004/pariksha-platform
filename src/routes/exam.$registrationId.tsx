@@ -40,7 +40,7 @@ function ExamPage() {
     queryKey: ["exam-reg", registrationId],
     queryFn: async () => {
       const { data: reg } = await supabase.from("registrations").select("*, exams(*)").eq("id", registrationId).single();
-      const { data: qs } = await supabase.from("questions").select("*").eq("exam_id", reg!.exam_id).order("question_order");
+      const { data: qs } = await supabase.from("questions").select("id, exam_id, question_text_encrypted, option_a_encrypted, option_b_encrypted, option_c_encrypted, option_d_encrypted, marks, question_order, category").eq("exam_id", reg!.exam_id).order("question_order");
       return { reg, qs: (qs ?? []) as Q[] };
     },
   });

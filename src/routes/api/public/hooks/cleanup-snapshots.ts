@@ -7,7 +7,14 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/hooks/cleanup-snapshots")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        // Require the Supabase anon key in the `apikey` header — the canonical
+        // pattern for /api/public/* endpoints invoked by pg_cron + pg_net.
+        const apikey = request.headers.get("apikey") ?? "";
+        const expected = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+        if (!expected || apikey !== expected) {
+          return new Response("Unauthorized", { status: 401 });
+        }
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
         let deleted = 0;
