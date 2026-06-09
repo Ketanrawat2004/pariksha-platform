@@ -20,6 +20,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ExamEntryRouteImport } from './routes/exam-entry'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SuperadminTrishieldReportsRouteImport } from './routes/superadmin.trishield-reports'
 import { Route as SuperadminSystemRouteImport } from './routes/superadmin.system'
 import { Route as SuperadminPaperLeakDetectorRouteImport } from './routes/superadmin.paper-leak-detector'
 import { Route as SuperadminDashboardRouteImport } from './routes/superadmin.dashboard'
@@ -101,6 +102,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuperadminTrishieldReportsRoute =
+  SuperadminTrishieldReportsRouteImport.update({
+    id: '/superadmin/trishield-reports',
+    path: '/superadmin/trishield-reports',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SuperadminSystemRoute = SuperadminSystemRouteImport.update({
   id: '/superadmin/system',
   path: '/superadmin/system',
@@ -265,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/dashboard': typeof SuperadminDashboardRoute
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
+  '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRoutesByTo {
@@ -303,6 +311,7 @@ export interface FileRoutesByTo {
   '/superadmin/dashboard': typeof SuperadminDashboardRoute
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
+  '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRoutesById {
@@ -342,6 +351,7 @@ export interface FileRoutesById {
   '/superadmin/dashboard': typeof SuperadminDashboardRoute
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
+  '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRouteTypes {
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/superadmin/dashboard'
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
+    | '/superadmin/trishield-reports'
     | '/api/public/hooks/cleanup-snapshots'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -420,6 +431,7 @@ export interface FileRouteTypes {
     | '/superadmin/dashboard'
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
+    | '/superadmin/trishield-reports'
     | '/api/public/hooks/cleanup-snapshots'
   id:
     | '__root__'
@@ -458,6 +470,7 @@ export interface FileRouteTypes {
     | '/superadmin/dashboard'
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
+    | '/superadmin/trishield-reports'
     | '/api/public/hooks/cleanup-snapshots'
   fileRoutesById: FileRoutesById
 }
@@ -497,6 +510,7 @@ export interface RootRouteChildren {
   SuperadminDashboardRoute: typeof SuperadminDashboardRoute
   SuperadminPaperLeakDetectorRoute: typeof SuperadminPaperLeakDetectorRoute
   SuperadminSystemRoute: typeof SuperadminSystemRoute
+  SuperadminTrishieldReportsRoute: typeof SuperadminTrishieldReportsRoute
   ApiPublicHooksCleanupSnapshotsRoute: typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 
@@ -577,6 +591,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin/trishield-reports': {
+      id: '/superadmin/trishield-reports'
+      path: '/superadmin/trishield-reports'
+      fullPath: '/superadmin/trishield-reports'
+      preLoaderRoute: typeof SuperadminTrishieldReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/superadmin/system': {
@@ -793,6 +814,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminDashboardRoute: SuperadminDashboardRoute,
   SuperadminPaperLeakDetectorRoute: SuperadminPaperLeakDetectorRoute,
   SuperadminSystemRoute: SuperadminSystemRoute,
+  SuperadminTrishieldReportsRoute: SuperadminTrishieldReportsRoute,
   ApiPublicHooksCleanupSnapshotsRoute: ApiPublicHooksCleanupSnapshotsRoute,
 }
 export const routeTree = rootRouteImport
