@@ -97,7 +97,7 @@ function Dashboard() {
     queryKey: ["my-results", user?.id, regs?.length],
     queryFn: async () => {
       if (!regs?.length) return [];
-      const { data } = await supabase.from("results").select("*, exams(title)").in("registration_id", regs.map((r) => r.id));
+      const { data } = await supabase.from("results").select("*, exams(title, exam_date, total_marks)").in("registration_id", regs.map((r) => r.id));
       return data ?? [];
     },
     enabled: !!regs,
@@ -212,7 +212,7 @@ function Dashboard() {
                               totalMarks: r.exams?.total_marks ?? 100,
                               percentage: pct,
                               rank: r.rank,
-                              examDate: new Date().toISOString().slice(0, 10),
+                              examDate: r.exams?.exam_date ?? new Date().toISOString().slice(0, 10),
                               certificateId: r.id.slice(0, 8).toUpperCase(),
                             });
                             toast.success("Certificate downloaded");
