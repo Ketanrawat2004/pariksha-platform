@@ -76,8 +76,6 @@ function Dashboard() {
   });
 
   const upcoming = (regs ?? []).filter((r) => r.exams && new Date(r.exams.exam_date) >= new Date()).length;
-  const liveReg = (regs ?? []).find((r) => r.exams?.status === "live" || r.exams?.exam_date === new Date().toISOString().slice(0, 10))
-    ?? (regs ?? [])[0];
 
   return (
     <div className="space-y-8">
