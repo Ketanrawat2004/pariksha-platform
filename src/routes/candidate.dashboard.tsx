@@ -1,13 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useSignedFacePhoto } from "@/lib/storage/face-photo";
-import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2 } from "lucide-react";
+import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2, PlayCircle, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { startPaperExam } from "@/lib/institute/start-paper-exam.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidate/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Pariksha" }] }),
@@ -16,6 +20,48 @@ export const Route = createFileRoute("/candidate/dashboard")({
 
 function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const runStart = useServerFn(startPaperExam);
+  const [starting, setStarting] = useState(false);
+
+  // Eligible paper registration = paid, admit released, not cancelled.
+  // The home "Give Exam" button picks the most recent one and launches it;
+  // falls back to demo if none.
+  const { data: nextEligible } = useQuery({
+    queryKey: ["next-eligible-paper", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("paper_registrations" as any)
+        .select("id, paper_submission_id, paid, admit_released, cancelled, registered_at")
+        .eq("candidate_id", user!.id)
+        .eq("paid", true)
+        .eq("admit_released", true)
+        .eq("cancelled", false)
+        .order("registered_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data as { id: string } | null;
+    },
+    enabled: !!user,
+  });
+
+  async function handleGiveExam() {
+    if (!nextEligible?.id) {
+      navigate({ to: "/exam/$registrationId", params: { registrationId: "88888888-8888-8888-8888-888888888888" } });
+      return;
+    }
+    setStarting(true);
+    try {
+      const res = await runStart({ data: { paperRegistrationId: nextEligible.id } });
+      if (!res.ok) { toast.error(res.reason); return; }
+      navigate({ to: "/exam/$registrationId", params: { registrationId: res.registrationId } });
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not start exam");
+    } finally {
+      setStarting(false);
+    }
+  }
+
 
 
 
@@ -74,10 +120,9 @@ function Dashboard() {
             <p className="text-muted-foreground mt-1">Your exams, results, and integrity status — all here.</p>
           </div>
         </div>
-        <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
-          <Link to="/exam/$registrationId" params={{ registrationId: "88888888-8888-8888-8888-888888888888" }}>
-            <BookOpen className="mr-2 h-4 w-4" /> Try Demo Exam
-          </Link>
+        <Button onClick={handleGiveExam} disabled={starting} size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
+          {starting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
+          {nextEligible ? "Give Exam" : "Try Demo Exam"}
         </Button>
       </div>
 

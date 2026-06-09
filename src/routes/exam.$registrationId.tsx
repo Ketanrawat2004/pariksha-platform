@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,8 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+// Recharts is heavy (~300KB). Lazy so it never blocks initial exam paint.
+const SubmitChart = lazy(() => import("@/components/exam/submit-chart"));
 
 export const Route = createFileRoute("/exam/$registrationId")({
   head: () => ({ meta: [{ title: "Exam in Progress — Pariksha" }] }),
@@ -561,28 +562,9 @@ function ExamPage() {
             <DialogDescription>You won't be able to make further changes.</DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-[120px_1fr] gap-4 items-center my-4">
-            <div className="h-[120px] w-[120px] relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: "Answered", value: answered, fill: "hsl(var(--success))" },
-                      { name: "Marked", value: marked, fill: "hsl(var(--warning))" },
-                      { name: "Unanswered", value: Math.max(0, unanswered - marked), fill: "hsl(var(--muted))" },
-                    ]}
-                    dataKey="value" cx="50%" cy="50%" innerRadius={36} outerRadius={54}
-                    paddingAngle={2} stroke="none" isAnimationActive animationDuration={600}
-                  >
-                    {[0,1,2].map((i) => <Cell key={i} />)}
-                  </Pie>
-                  <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 12 }} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <div className="text-xl font-bold tabular-nums">{Math.round((answered / Math.max(1,total)) * 100)}%</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">complete</div>
-              </div>
-            </div>
+            <Suspense fallback={<div className="h-[120px] w-[120px] rounded-full bg-muted animate-pulse" />}>
+              <SubmitChart answered={answered} marked={marked} unanswered={unanswered} total={total} />
+            </Suspense>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-success" />Answered</span><span className="font-bold tabular-nums">{answered}</span></div>
               <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-warning" />Marked</span><span className="font-bold tabular-nums">{marked}</span></div>
