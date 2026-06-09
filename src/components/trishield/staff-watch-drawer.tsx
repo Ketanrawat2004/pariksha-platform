@@ -83,6 +83,28 @@ export function StaffWatchDrawer({ party, sessionId, onClose }: { party: "admin"
           <div className="p-4 space-y-4">
             <TriShieldWatchBar session={session} sticky={false} />
 
+            {witness.requested && (
+              <div className="rounded-lg border-2 border-accent bg-accent/10 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <ShieldCheck className="h-4 w-4 text-accent" />
+                  Lock-ceremony witness requested
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Institute is about to lock this paper. Confirm you are watching the ceremony live.
+                </p>
+                {witness.confirmed ? (
+                  <div className="flex items-center gap-1.5 text-success text-sm font-medium">
+                    <CheckCircle2 className="h-4 w-4" /> Witness confirmed
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={witness.confirm}>Confirm witness</Button>
+                    <Button size="sm" variant="ghost" onClick={witness.dismiss}>Dismiss</Button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <Panel label="Your feed">
               <video ref={videoRef} className="w-full aspect-video object-cover bg-slate-900" muted playsInline />
               <canvas ref={canvasRef} className="hidden" />
