@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Calendar, Clock, MapPin, Award, PlayCircle, Download } from "lucide-react";
+import { Calendar, Clock, MapPin, Award, PlayCircle, Download, UserPlus, CheckCircle2, Loader2 } from "lucide-react";
 import { downloadAdmitCard } from "@/lib/pdf/admit-card";
 import { toast } from "sonner";
 
