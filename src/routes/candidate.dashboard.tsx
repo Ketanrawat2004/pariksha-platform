@@ -199,11 +199,11 @@ function Dashboard() {
                       {r.rank ? ` · Rank #${r.rank}` : ""}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button asChild variant="ghost" size="sm">
                       <Link to="/candidate/results"><FileText className="mr-1 h-4 w-4" />Details</Link>
                     </Button>
-                    {passed && (
+                    {passed ? (
                       <Button
                         size="sm"
                         onClick={async () => {
@@ -218,6 +218,7 @@ function Dashboard() {
                               examDate: r.exams?.exam_date ?? new Date().toISOString().slice(0, 10),
                               certificateId: r.id.slice(0, 8).toUpperCase(),
                             });
+                            void logActivity("certificate_download", { result_id: r.id });
                             toast.success("Certificate downloaded");
                           } catch {
                             toast.error("Could not generate certificate");
@@ -225,6 +226,30 @@ function Dashboard() {
                         }}
                       >
                         <Download className="mr-1 h-4 w-4" />Certificate
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={async () => {
+                          try {
+                            await downloadScoreReport({
+                              candidateName: profile?.full_name ?? user?.email ?? "Candidate",
+                              examTitle: r.exams?.title ?? "Examination",
+                              scoreObtained: r.total_score,
+                              totalMarks: r.exams?.total_marks ?? 100,
+                              percentage: pct,
+                              examDate: r.exams?.exam_date ?? new Date().toISOString().slice(0, 10),
+                              resultId: r.id,
+                            });
+                            void logActivity("score_report_download", { result_id: r.id });
+                            toast.success("Score report downloaded");
+                          } catch {
+                            toast.error("Could not generate score report");
+                          }
+                        }}
+                      >
+                        <Download className="mr-1 h-4 w-4" />Score report
                       </Button>
                     )}
                   </div>
@@ -235,6 +260,16 @@ function Dashboard() {
         ) : (
           <p className="text-muted-foreground text-sm">No results yet. Complete an exam to see your result and download your certificate here.</p>
         )}
+      </Card>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h2 className="font-bold text-lg">Activity log</h2>
+            <p className="text-xs text-muted-foreground">Sign-ins, exam attempts and downloads — exported as a stamped PDF.</p>
+          </div>
+          <ActivityReportButton role="candidate" />
+        </div>
       </Card>
 
     </div>
