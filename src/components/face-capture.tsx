@@ -12,33 +12,47 @@ interface FaceCaptureProps {
 export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [photo, setPhoto] = useState<string | null>(initial ?? null);
-  const [streaming, setStreaming] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [starting, setStarting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => () => stopStream(), []);
 
-  function stopStream() {
+  // Attach stream when both <video> element and stream are ready
+  useEffect(() => {
     const v = videoRef.current;
-    const s = v?.srcObject as MediaStream | null;
-    s?.getTracks().forEach((t) => t.stop());
-    if (v) v.srcObject = null;
-    setStreaming(false);
+    if (v && stream && v.srcObject !== stream) {
+      v.srcObject = stream;
+      v.play().catch(() => { /* autoplay may need another tick */ });
+    }
+  }, [stream]);
+
+  function stopStream() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    if (videoRef.current) videoRef.current.srcObject = null;
+    setStream(null);
   }
 
   async function start() {
     setErr(null);
     setStarting(true);
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 360, facingMode: "user" } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = s;
-        await videoRef.current.play();
-        setStreaming(true);
-      }
+      // Call getUserMedia synchronously inside the click gesture — no awaits before it
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { width: 480, height: 360, facingMode: "user" },
+        audio: false,
+      });
+      streamRef.current = s;
+      setStream(s); // triggers effect that attaches to <video>
     } catch (e: any) {
-      setErr(e?.message ?? "Camera permission denied");
+      const name = e?.name ?? "";
+      if (name === "NotAllowedError") setErr("Permission denied. Allow camera access in your browser settings.");
+      else if (name === "NotFoundError" || name === "DevicesNotFoundError") setErr("No camera detected on this device.");
+      else if (name === "NotReadableError" || name === "TrackStartError") setErr("Camera is busy in another app. Close other tabs/apps and retry.");
+      else setErr(e?.message ?? "Could not access camera");
     } finally {
       setStarting(false);
     }
@@ -48,11 +62,13 @@ export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps)
     const v = videoRef.current;
     const c = canvasRef.current;
     if (!v || !c) return;
-    c.width = v.videoWidth;
-    c.height = v.videoHeight;
+    const w = v.videoWidth || 480;
+    const h = v.videoHeight || 360;
+    c.width = w;
+    c.height = h;
     const ctx = c.getContext("2d");
     if (!ctx) return;
-    ctx.drawImage(v, 0, 0);
+    ctx.drawImage(v, 0, 0, w, h);
     const url = c.toDataURL("image/jpeg", 0.85);
     setPhoto(url);
     onCapture(url);
@@ -64,6 +80,8 @@ export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps)
     onCapture("");
     start();
   }
+
+  const streaming = !!stream;
 
   return (
     <div className={className}>
