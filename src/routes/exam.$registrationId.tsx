@@ -84,7 +84,9 @@ function ExamPage() {
       }
       const { data: reg } = await supabase.from("registrations").select("*, exams(*)").eq("id", registrationId).single();
       const { data: qs } = await supabase.from("questions").select("id, exam_id, question_text_encrypted, option_a_encrypted, option_b_encrypted, option_c_encrypted, option_d_encrypted, marks, question_order, category").eq("exam_id", reg!.exam_id).order("question_order");
-      return { reg, qs: (qs ?? []) as Q[] };
+      const realQs = (qs ?? []) as Q[];
+      // Fallback: if the exam has no questions (open/demo exams), serve random demo questions
+      return { reg, qs: realQs.length ? realQs : buildDemoQuestions() };
     },
   });
 
