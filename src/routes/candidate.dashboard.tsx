@@ -100,6 +100,9 @@ function Dashboard() {
             <BookOpen className="mr-2 h-4 w-4" /> Try Demo Exam
           </Link>
         </Button>
+      </div>
+
+
 
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
