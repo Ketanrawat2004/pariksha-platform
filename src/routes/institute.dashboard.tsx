@@ -299,17 +299,18 @@ function InstitutePage() {
       </Tabs>
 
       <Dialog open={!!editRequestFor} onOpenChange={(o) => !o && setEditRequestFor(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Request edit — under super-admin supervision</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            A notification will be sent to <strong>admin</strong> and <strong>super admin</strong>. The paper stays locked until approved.
+            Capture your photo and explain the change. A notification will be sent to <strong>admin</strong> and <strong>super admin</strong>. The paper stays locked until approved.
           </p>
+          <FaceCapture onCapture={setEditPhoto} />
           <Textarea value={editNote} onChange={(e) => setEditNote(e.target.value)} placeholder="What needs to change and why?" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRequestFor(null)}>Cancel</Button>
-            <Button onClick={requestEdit} disabled={!editNote.trim()}>Send request</Button>
+            <Button onClick={requestEdit} disabled={!editNote.trim() || !editPhoto}>Send request</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
