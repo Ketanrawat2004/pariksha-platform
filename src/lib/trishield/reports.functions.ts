@@ -9,8 +9,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export const generateSessionReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { sessionId: string; finalPaperHash?: string | null }) => data)
-  .handler(async ({ data, context }) => {
-    const { supabase } = context;
+  .handler(async ({ data }) => {
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
     const { data: sess, error } = await supabase
       .from("trishield_watch_sessions")
       .select("*")
