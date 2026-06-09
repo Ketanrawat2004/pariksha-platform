@@ -22,6 +22,7 @@ export interface WatchSessionRow {
   status: "active" | "completed" | "halted" | "timed_out";
   session_started_at: string;
   session_ended_at: string | null;
+  join_code?: string | null;
 }
 
 function buildFingerprint() {
