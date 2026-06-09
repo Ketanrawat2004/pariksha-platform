@@ -5,7 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Calendar, Clock, MapPin, Award, PlayCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, Award, PlayCircle, Download } from "lucide-react";
+import { downloadAdmitCard } from "@/lib/pdf/admit-card";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidate/exams")({
   head: () => ({ meta: [{ title: "Exams — Pariksha" }] }),
@@ -62,7 +64,7 @@ function ExamsList() {
                   </div>
                   <div className="mt-2 text-xs text-muted-foreground">Admit Card: <span className="font-mono">{r.admit_card_number}</span> · Seat: <span className="font-semibold text-foreground">{r.seat_number ?? "—"}</span></div>
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                   {isToday ? (
                     <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
                       <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
@@ -74,6 +76,30 @@ function ExamsList() {
                       Opens on exam day
                     </Button>
                   )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label={`Download admit card for ${exam.title}`}
+                    onClick={async () => {
+                      try {
+                        await downloadAdmitCard({
+                          candidateName: user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
+                          admitCardNumber: r.admit_card_number,
+                          seatNumber: r.seat_number,
+                          examTitle: exam.title,
+                          examDate: exam.exam_date,
+                          startTime: exam.start_time?.slice(0, 5) ?? "",
+                          durationMinutes: exam.duration_minutes,
+                          centerName: r.centers?.name,
+                        });
+                        toast.success("Admit card downloaded");
+                      } catch {
+                        toast.error("Could not generate admit card");
+                      }
+                    }}
+                  >
+                    <Download className="mr-2 h-4 w-4" /> Admit Card
+                  </Button>
                 </div>
               </div>
             </Card>
