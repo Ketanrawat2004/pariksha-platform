@@ -46,6 +46,7 @@ import { Route as AdminExamsRouteImport } from './routes/admin.exams'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCentersRouteImport } from './routes/admin.centers'
 import { Route as AdminCandidatesRouteImport } from './routes/admin.candidates'
+import { Route as ApiPublicGiveExamVerifyRouteImport } from './routes/api/public/give-exam-verify'
 import { Route as ApiPublicHooksCleanupSnapshotsRouteImport } from './routes/api/public/hooks/cleanup-snapshots'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -235,6 +236,11 @@ const AdminCandidatesRoute = AdminCandidatesRouteImport.update({
   path: '/admin/candidates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGiveExamVerifyRoute = ApiPublicGiveExamVerifyRouteImport.update({
+  id: '/api/public/give-exam-verify',
+  path: '/api/public/give-exam-verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksCleanupSnapshotsRoute =
   ApiPublicHooksCleanupSnapshotsRouteImport.update({
     id: '/api/public/hooks/cleanup-snapshots',
@@ -280,6 +286,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
+  '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRoutesByTo {
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
+  '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRoutesById {
@@ -361,6 +369,7 @@ export interface FileRoutesById {
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
+  '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRouteTypes {
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
     | '/superadmin/trishield-reports'
+    | '/api/public/give-exam-verify'
     | '/api/public/hooks/cleanup-snapshots'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -443,6 +453,7 @@ export interface FileRouteTypes {
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
     | '/superadmin/trishield-reports'
+    | '/api/public/give-exam-verify'
     | '/api/public/hooks/cleanup-snapshots'
   id:
     | '__root__'
@@ -483,6 +494,7 @@ export interface FileRouteTypes {
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
     | '/superadmin/trishield-reports'
+    | '/api/public/give-exam-verify'
     | '/api/public/hooks/cleanup-snapshots'
   fileRoutesById: FileRoutesById
 }
@@ -524,6 +536,7 @@ export interface RootRouteChildren {
   SuperadminPaperLeakDetectorRoute: typeof SuperadminPaperLeakDetectorRoute
   SuperadminSystemRoute: typeof SuperadminSystemRoute
   SuperadminTrishieldReportsRoute: typeof SuperadminTrishieldReportsRoute
+  ApiPublicGiveExamVerifyRoute: typeof ApiPublicGiveExamVerifyRoute
   ApiPublicHooksCleanupSnapshotsRoute: typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 
@@ -788,6 +801,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCandidatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/give-exam-verify': {
+      id: '/api/public/give-exam-verify'
+      path: '/api/public/give-exam-verify'
+      fullPath: '/api/public/give-exam-verify'
+      preLoaderRoute: typeof ApiPublicGiveExamVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/cleanup-snapshots': {
       id: '/api/public/hooks/cleanup-snapshots'
       path: '/api/public/hooks/cleanup-snapshots'
@@ -836,6 +856,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminPaperLeakDetectorRoute: SuperadminPaperLeakDetectorRoute,
   SuperadminSystemRoute: SuperadminSystemRoute,
   SuperadminTrishieldReportsRoute: SuperadminTrishieldReportsRoute,
+  ApiPublicGiveExamVerifyRoute: ApiPublicGiveExamVerifyRoute,
   ApiPublicHooksCleanupSnapshotsRoute: ApiPublicHooksCleanupSnapshotsRoute,
 }
 export const routeTree = rootRouteImport

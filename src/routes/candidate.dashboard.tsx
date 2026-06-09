@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useSignedFacePhoto } from "@/lib/storage/face-photo";
 import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
@@ -26,6 +27,7 @@ function Dashboard() {
     },
     enabled: !!user,
   });
+  const signedPhoto = useSignedFacePhoto(profile?.photo_url);
 
   const { data: regs } = useQuery({
     queryKey: ["my-registrations", user?.id],
@@ -81,8 +83,8 @@ function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
         <div className="flex items-center gap-4">
-          {profile?.photo_url ? (
-            <img src={profile.photo_url} alt={profile.full_name ?? "You"} className="h-16 w-16 rounded-full object-cover border-2 border-accent shadow-elegant" />
+          {signedPhoto ? (
+            <img src={signedPhoto} alt={profile?.full_name ?? "You"} className="h-16 w-16 rounded-full object-cover border-2 border-accent shadow-elegant" />
           ) : (
             <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
               <UserCircle2 className="h-8 w-8 text-muted-foreground" />

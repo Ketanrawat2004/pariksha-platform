@@ -222,7 +222,7 @@ function LandingPage() {
                     </div>
                   </Card>
                 ))}
-                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/exam-entry"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
+                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/give-exam"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
               </div>
             </div>
           </div>
