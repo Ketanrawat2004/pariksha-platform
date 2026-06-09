@@ -402,6 +402,7 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   const [teacherName, setTeacherName] = useState(isNew ? "" : (initial.teacher_name ?? ""));
   const [questions, setQuestions] = useState<Question[]>(isNew ? (tpl?.questions ?? []) : (initial.questions ?? []));
   const [showLock, setShowLock] = useState(false);
+  const [showCeremony, setShowCeremony] = useState(false);
 
   // TriShield LiveWatch — institute side
   const { roles } = useAuth();
@@ -414,6 +415,8 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   });
   const editActivity = useEditActivity(watch.session?.id);
   const allPartiesPresent = !!watch.session?.all_parties_present;
+  const ceremony = useLockCeremonyInitiator(watch.session?.id);
+  const runGenerateReport = useServerFn(generateSessionReport);
 
   function addQ() {
     setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
