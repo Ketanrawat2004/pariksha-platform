@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TrishieldVaultRouteImport } from './routes/trishield-vault'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapRouteImport } from './routes/sitemap'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
@@ -50,6 +52,16 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const TrishieldVaultRoute = TrishieldVaultRouteImport.update({
   id: '/trishield-vault',
   path: '/trishield-vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapRoute = SitemapRouteImport.update({
+  id: '/sitemap',
+  path: '/sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -211,6 +223,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap': typeof SitemapRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -245,6 +259,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap': typeof SitemapRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -280,6 +296,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap': typeof SitemapRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -316,6 +334,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/sitemap'
+    | '/sitemap.xml'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -350,6 +370,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/sitemap'
+    | '/sitemap.xml'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -384,6 +406,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/sitemap'
+    | '/sitemap.xml'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -419,6 +443,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapRoute: typeof SitemapRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrishieldVaultRoute: typeof TrishieldVaultRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   AdminCandidatesRoute: typeof AdminCandidatesRoute
@@ -461,6 +487,20 @@ declare module '@tanstack/react-router' {
       path: '/trishield-vault'
       fullPath: '/trishield-vault'
       preLoaderRoute: typeof TrishieldVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap': {
+      id: '/sitemap'
+      path: '/sitemap'
+      fullPath: '/sitemap'
+      preLoaderRoute: typeof SitemapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -683,6 +723,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapRoute: SitemapRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrishieldVaultRoute: TrishieldVaultRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   AdminCandidatesRoute: AdminCandidatesRoute,

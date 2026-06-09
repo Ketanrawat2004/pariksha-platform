@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /superadmin/
+Disallow: /invigilator/
+Disallow: /institute/
+Disallow: /candidate/
+Disallow: /exam/
+Disallow: /api/
