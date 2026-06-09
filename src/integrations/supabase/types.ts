@@ -545,6 +545,24 @@ export type Database = {
           },
         ]
       }
+      processed_webhook_events: {
+        Row: {
+          event_id: string
+          received_at: string
+          source: string
+        }
+        Insert: {
+          event_id: string
+          received_at?: string
+          source: string
+        }
+        Update: {
+          event_id?: string
+          received_at?: string
+          source?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aadhaar_hash: string | null
@@ -659,6 +677,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limits: {
+        Row: {
+          count: number
+          key: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          key: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          key?: string
+          window_start?: string
+        }
+        Relationships: []
       }
       registrations: {
         Row: {
@@ -1047,8 +1083,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: { _key: string; _max: number; _window_seconds: number }
+        Returns: boolean
+      }
       current_user_has_any_role: {
         Args: { _roles: Database["public"]["Enums"]["app_role"][] }
+        Returns: boolean
+      }
+      exam_has_complete_questions: {
+        Args: { _exam_id: string }
         Returns: boolean
       }
       find_trishield_session_by_code: {
