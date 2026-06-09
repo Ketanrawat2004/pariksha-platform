@@ -26,9 +26,9 @@ function ResultsList() {
     queryFn: async () => {
       const { data } = await supabase
         .from("results")
-        .select("*, exams(title, exam_date, total_marks)")
-        .eq("candidate_id", user!.id)
-        .order("created_at", { ascending: false });
+        .select("*, exams(title, exam_date, total_marks), registrations!inner(candidate_id)")
+        .eq("registrations.candidate_id", user!.id)
+        .order("generated_at", { ascending: false });
       return data ?? [];
     },
     enabled: !!user,
