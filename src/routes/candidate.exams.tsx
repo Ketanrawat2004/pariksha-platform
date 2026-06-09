@@ -121,6 +121,7 @@ function PaperCard({
     setStarting(true);
     try {
       const res = await runStart({ data: { paperRegistrationId: myReg.id } });
+      if (!res.ok) { toast.error(res.reason); return; }
       navigate({ to: "/exam/$registrationId", params: { registrationId: res.registrationId } });
     } catch (e: any) {
       toast.error(e?.message ?? "Could not start exam");
