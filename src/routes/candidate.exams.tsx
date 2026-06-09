@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Calendar, Clock, MapPin, Award, PlayCircle, Download, UserPlus, CheckCircle2, Loader2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Award, PlayCircle, Download, UserPlus, CheckCircle2, Loader2, CreditCard } from "lucide-react";
 import { downloadAdmitCard } from "@/lib/pdf/admit-card";
 import { toast } from "sonner";
+import { StripeEmbeddedCheckoutForm } from "@/components/StripeEmbeddedCheckout";
 
 export const Route = createFileRoute("/candidate/exams")({
   head: () => ({ meta: [{ title: "Exams — Pariksha" }] }),
@@ -46,6 +47,15 @@ function ExamsList() {
     },
   });
 
+  const { data: openExams } = useQuery({
+    queryKey: ["open-exams"],
+    queryFn: async () => {
+      const { data } = await supabase.from("exams").select("id, title, description, exam_date, start_time, duration_minutes, total_marks").gte("exam_date", new Date().toISOString().slice(0, 10)).order("exam_date").limit(20);
+      return data ?? [];
+    },
+  });
+  const registeredExamIds = new Set((regs ?? []).map((r: any) => r.exam_id));
+
   const { data: myPaperRegs } = useQuery({
     queryKey: ["my-paper-regs", user?.id],
     queryFn: async () => {
@@ -62,10 +72,28 @@ function ExamsList() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">My exams</h1>
-        <p className="text-muted-foreground mt-1">Registered exams — click "Give Exam" to start any time. No delay.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold">My exams</h1>
+          <p className="text-muted-foreground mt-1">Registered exams — click "Give Exam" to start any time. No delay.</p>
+        </div>
+        <Button asChild variant="outline" size="sm"><Link to="/candidate/billing"><CreditCard className="h-4 w-4 mr-1.5" /> Billing</Link></Button>
       </div>
+
+      {openExams && openExams.filter((e: any) => !registeredExamIds.has(e.id)).length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold">Open exams · ₹500 to register</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {openExams.filter((e: any) => !registeredExamIds.has(e.id)).map((e: any) => (
+              <Card key={e.id} className="p-4">
+                <div className="font-semibold">{e.title}</div>
+                <div className="text-xs text-muted-foreground mt-1">{e.exam_date} · {e.start_time?.slice(0, 5)} · {e.duration_minutes} min · {e.total_marks} marks</div>
+                <PayAndRegisterButton examId={e.id} examTitle={e.title} />
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       {available && available.length > 0 && (
         <section className="space-y-3">
