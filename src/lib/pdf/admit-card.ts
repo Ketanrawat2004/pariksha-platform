@@ -11,6 +11,23 @@ export interface AdmitCardData {
   durationMinutes: number;
   centerName?: string;
   centerAddress?: string;
+  photoUrl?: string | null;
+}
+
+async function fetchImageAsDataUrl(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { mode: "cors" });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return await new Promise((resolve) => {
+      const r = new FileReader();
+      r.onloadend = () => resolve(typeof r.result === "string" ? r.result : null);
+      r.onerror = () => resolve(null);
+      r.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function downloadAdmitCard(d: AdmitCardData) {
@@ -34,6 +51,24 @@ export async function downloadAdmitCard(d: AdmitCardData) {
   doc.setFontSize(16);
   doc.text(d.examTitle, 14, 42);
 
+  // Candidate photo (top-right area, above QR)
+  if (d.photoUrl) {
+    const photoData = await fetchImageAsDataUrl(d.photoUrl);
+    if (photoData) {
+      try {
+        doc.addImage(photoData, "JPEG", 150, 50, 35, 42);
+        doc.setDrawColor(15, 23, 42);
+        doc.setLineWidth(0.4);
+        doc.rect(150, 50, 35, 42);
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text("Verified photo", 156, 96);
+      } catch {
+        // ignore image errors
+      }
+    }
+  }
+
   // QR
   const qrPayload = JSON.stringify({
     admitCard: d.admitCardNumber,
@@ -42,10 +77,10 @@ export async function downloadAdmitCard(d: AdmitCardData) {
     date: d.examDate,
   });
   const qrDataUrl = await QRCode.toDataURL(qrPayload, { width: 256, margin: 1 });
-  doc.addImage(qrDataUrl, "PNG", 150, 50, 45, 45);
+  doc.addImage(qrDataUrl, "PNG", 150, 100, 35, 35);
   doc.setFontSize(8);
   doc.setTextColor(100);
-  doc.text("Scan at entry", 162, 99);
+  doc.text("Scan at entry", 156, 139);
 
   // Details
   doc.setTextColor(15, 23, 42);
@@ -72,10 +107,10 @@ export async function downloadAdmitCard(d: AdmitCardData) {
 
   // Instructions
   doc.setDrawColor(220);
-  doc.line(14, 120, W - 14, 120);
+  doc.line(14, 150, W - 14, 150);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("Instructions", 14, 130);
+  doc.text("Instructions", 14, 160);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(60);
@@ -86,7 +121,7 @@ export async function downloadAdmitCard(d: AdmitCardData) {
     "4. Verify QR scan at entry — biometric & face match will follow.",
     "5. Late entry is not allowed after the first 30 minutes.",
   ];
-  instructions.forEach((line, i) => doc.text(line, 14, 138 + i * 6));
+  instructions.forEach((line, i) => doc.text(line, 14, 168 + i * 6));
 
   // Footer
   doc.setFillColor(245, 246, 250);
