@@ -46,6 +46,18 @@ function ExamsList() {
     },
   });
 
+  const { data: myPaperRegs } = useQuery({
+    queryKey: ["my-paper-regs", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("paper_registrations" as any)
+        .select("id, paper_submission_id, admit_card_number, admit_released, full_name")
+        .eq("candidate_id", user!.id);
+      return (data as any[]) ?? [];
+    },
+    enabled: !!user,
+  });
+
   const today = new Date().toISOString().slice(0, 10);
 
   return (
