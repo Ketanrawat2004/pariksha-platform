@@ -175,7 +175,7 @@ function ExamPage() {
     }
   }, [sessionId, isDemo, answers, questions, saveAnswer, submitFn, navigate]);
 
-  // Auto-submit on time-up
+  // Auto-submit on time-up (only after timer initialized — null means not started yet)
   useEffect(() => {
     if (phase === "exam" && timeLeft === 0 && exam) {
       void handleFinalSubmit("time up");
