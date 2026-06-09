@@ -45,8 +45,9 @@ export const submitExam = createServerFn({ method: "POST" })
     // Mark session submitted
     await supabase.from("exam_sessions").update({ is_submitted: true, ended_at: new Date().toISOString() }).eq("id", data.sessionId);
 
-    // Insert result (upsert by registration_id unique)
-    const { data: result, error: rErr } = await supabase.from("results").upsert({
+    // Insert result via service role (candidates may not write results directly)
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: result, error: rErr } = await supabaseAdmin.from("results").upsert({
       registration_id: session.registration_id,
       exam_id: exam.id,
       total_score: total,
