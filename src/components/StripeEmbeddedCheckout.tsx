@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { createCheckoutSession } from "@/utils/payments.functions";
@@ -21,7 +22,7 @@ export function StripeEmbeddedCheckoutForm({
   candidatePhone,
   returnUrl,
 }: Props) {
-  const fetchClientSecret = async (): Promise<string> => {
+  const fetchClientSecret = useCallback(async (): Promise<string> => {
     const url = returnUrl || `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`;
     const result = await createCheckoutSession({
       data: {
@@ -38,11 +39,15 @@ export function StripeEmbeddedCheckoutForm({
     if ("error" in result) throw new Error(result.error);
     if (!result.clientSecret) throw new Error("Stripe did not return a client secret");
     return result.clientSecret;
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret]);
+  const stripePromise = useMemo(() => getStripe(), []);
 
   return (
     <div id="checkout" className="min-h-[500px]">
-      <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+      <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
     </div>
