@@ -95,7 +95,12 @@ function Dashboard() {
             <p className="text-muted-foreground mt-1">Your exams, results, and integrity status — all here.</p>
           </div>
         </div>
-      </div>
+        <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
+          <Link to="/exam/$registrationId" params={{ registrationId: "88888888-8888-8888-8888-888888888888" }}>
+            <BookOpen className="mr-2 h-4 w-4" /> Try Demo Exam
+          </Link>
+        </Button>
+
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
