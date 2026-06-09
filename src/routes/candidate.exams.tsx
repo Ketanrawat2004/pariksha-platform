@@ -251,3 +251,20 @@ function RegisterForPaperButton({ paperId, onDone }: { paperId: string; onDone: 
     </Dialog>
   );
 }
+
+function PayAndRegisterButton({ examId, examTitle }: { examId: string; examTitle: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="w-full mt-3 bg-accent hover:bg-accent/90">
+          <CreditCard className="h-4 w-4 mr-1.5" /> Register & Pay ₹500
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader><DialogTitle>Register for {examTitle}</DialogTitle></DialogHeader>
+        <StripeEmbeddedCheckoutForm priceId="exam_registration_500" examId={examId} />
+      </DialogContent>
+    </Dialog>
+  );
+}
