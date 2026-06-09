@@ -175,7 +175,7 @@ function PaperCard({
             <div className="flex gap-2">
               <Button size="sm" className="flex-1 bg-accent hover:bg-accent/90" disabled={!canGiveExam || starting} onClick={giveExam}>
                 {starting ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <PlayCircle className="h-4 w-4 mr-1.5" />}
-                {canGiveExam ? "Give Exam" : <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Starts {startsAt.toLocaleString()}</span>}
+                Give Exam
               </Button>
               <Button size="sm" variant="outline" onClick={getAdmit}><Download className="h-4 w-4 mr-1.5" /> Admit</Button>
             </div>
