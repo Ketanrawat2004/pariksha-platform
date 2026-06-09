@@ -98,17 +98,11 @@ function ExamsList() {
                   <div className="mt-2 text-xs text-muted-foreground">Admit Card: <span className="font-mono">{r.admit_card_number}</span> · Seat: <span className="font-semibold text-foreground">{r.seat_number ?? "—"}</span></div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {isToday ? (
-                    <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
-                      <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
-                        <PlayCircle className="mr-2 h-5 w-5" /> Enter Exam
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button size="lg" disabled variant="outline">
-                      Opens on exam day
-                    </Button>
-                  )}
+                  <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
+                    <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
+                      <PlayCircle className="mr-2 h-5 w-5" /> Give Exam
+                    </Link>
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
