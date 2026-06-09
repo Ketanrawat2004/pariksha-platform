@@ -1,39 +1,71 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
+import { rateLimit, tooManyRequests } from "@/lib/backend/rate-limit";
+
+const InputSchema = z.object({
+  full_name: z.string().trim().min(2).max(120),
+  admit_card_number: z.string().trim().min(4).max(64),
+  dob: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional()
+    .nullable(),
+  aadhaar_last4: z
+    .string()
+    .regex(/^\d{4}$/)
+    .optional()
+    .nullable(),
+});
 
 /**
  * Public verification endpoint for the anonymous "Give Exam" flow.
- * Verifies admit details server-side and returns a short-lived signed URL
- * for the candidate's reference photo (face-photos bucket is private).
+ * Hard-rate-limited per IP. All input is Zod-validated.
  */
 export const Route = createFileRoute("/api/public/give-exam-verify")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        let body: any;
-        try { body = await request.json(); } catch { return new Response("Bad request", { status: 400 }); }
-        const fullName = String(body?.full_name ?? "").trim();
-        const admit = String(body?.admit_card_number ?? "").trim();
-        const dob = body?.dob ? String(body.dob) : null;
-        const aad4 = body?.aadhaar_last4 ? String(body.aadhaar_last4) : null;
-        if (!fullName || !admit) return new Response("Missing fields", { status: 400 });
+        if (!(await rateLimit({ request, key: "give-exam-verify", max: 5, windowSeconds: 60 }))) {
+          return tooManyRequests();
+        }
+
+        let raw: unknown;
+        try {
+          raw = await request.json();
+        } catch {
+          return new Response("Bad request", { status: 400 });
+        }
+        const parsed = InputSchema.safeParse(raw);
+        if (!parsed.success) {
+          return new Response("Invalid input", { status: 400 });
+        }
+        const { full_name, admit_card_number, dob, aadhaar_last4 } = parsed.data;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin.rpc("verify_admit_anonymous" as any, {
-          _full_name: fullName,
-          _dob: dob,
-          _aadhaar_last4: aad4,
-          _admit_card_number: admit,
+          _full_name: full_name,
+          _dob: dob ?? null,
+          _aadhaar_last4: aadhaar_last4 ?? null,
+          _admit_card_number: admit_card_number,
         } as any);
-        if (error) return new Response(error.message, { status: 400 });
+        if (error) {
+          console.error("verify_admit_anonymous error", error.message);
+          return new Response("Verification failed", { status: 400 });
+        }
         const row = (data as any[])?.[0];
-        if (!row) return Response.json({ ok: false, message: "No matching registration" }, { status: 404 });
+        if (!row) {
+          return Response.json({ ok: false, message: "No matching registration" }, { status: 404 });
+        }
 
-        // Sign the reference photo for ~10 minutes so the browser can fetch it
         let signedPhotoUrl: string | null = null;
-        const m: RegExpMatchArray | null = row.photo_url ? String(row.photo_url).match(/\/face-photos\/(.+?)(?:\?|$)/) : null;
+        const m: RegExpMatchArray | null = row.photo_url
+          ? String(row.photo_url).match(/\/face-photos\/(.+?)(?:\?|$)/)
+          : null;
         if (m) {
           const path = decodeURIComponent(m[1]);
-          const { data: s } = await supabaseAdmin.storage.from("face-photos").createSignedUrl(path, 600);
+          const { data: s } = await supabaseAdmin.storage
+            .from("face-photos")
+            .createSignedUrl(path, 600);
           signedPhotoUrl = s?.signedUrl ?? null;
         }
 
