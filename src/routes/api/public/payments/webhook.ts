@@ -100,7 +100,7 @@ async function handleRefunded(charge: any, env: StripeEnv) {
     .select("id")
     .maybeSingle();
   if (payment?.id) {
-    await sb.from("registrations").update({ status: "cancelled" }).eq("payment_id", payment.id);
+    await sb.from("registrations").update({ status: "rejected" }).eq("payment_id", payment.id);
     await sb.from("paper_registrations").update({ cancelled: true }).eq("payment_id", payment.id);
   }
 }
