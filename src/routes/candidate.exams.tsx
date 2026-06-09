@@ -109,8 +109,3 @@ function ExamsList() {
     </div>
   );
 }
-        })}
-      </div>
-    </div>
-  );
-}
