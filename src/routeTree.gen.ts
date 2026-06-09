@@ -44,6 +44,7 @@ import { Route as AdminExamsRouteImport } from './routes/admin.exams'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCentersRouteImport } from './routes/admin.centers'
 import { Route as AdminCandidatesRouteImport } from './routes/admin.candidates'
+import { Route as ApiPublicHooksCleanupSnapshotsRouteImport } from './routes/api/public/hooks/cleanup-snapshots'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -221,6 +222,12 @@ const AdminCandidatesRoute = AdminCandidatesRouteImport.update({
   path: '/admin/candidates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksCleanupSnapshotsRoute =
+  ApiPublicHooksCleanupSnapshotsRouteImport.update({
+    id: '/api/public/hooks/cleanup-snapshots',
+    path: '/api/public/hooks/cleanup-snapshots',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -258,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/dashboard': typeof SuperadminDashboardRoute
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
+  '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -295,6 +303,7 @@ export interface FileRoutesByTo {
   '/superadmin/dashboard': typeof SuperadminDashboardRoute
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
+  '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -333,6 +342,7 @@ export interface FileRoutesById {
   '/superadmin/dashboard': typeof SuperadminDashboardRoute
   '/superadmin/paper-leak-detector': typeof SuperadminPaperLeakDetectorRoute
   '/superadmin/system': typeof SuperadminSystemRoute
+  '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/superadmin/dashboard'
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
+    | '/api/public/hooks/cleanup-snapshots'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -409,6 +420,7 @@ export interface FileRouteTypes {
     | '/superadmin/dashboard'
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
+    | '/api/public/hooks/cleanup-snapshots'
   id:
     | '__root__'
     | '/'
@@ -446,6 +458,7 @@ export interface FileRouteTypes {
     | '/superadmin/dashboard'
     | '/superadmin/paper-leak-detector'
     | '/superadmin/system'
+    | '/api/public/hooks/cleanup-snapshots'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -484,6 +497,7 @@ export interface RootRouteChildren {
   SuperadminDashboardRoute: typeof SuperadminDashboardRoute
   SuperadminPaperLeakDetectorRoute: typeof SuperadminPaperLeakDetectorRoute
   SuperadminSystemRoute: typeof SuperadminSystemRoute
+  ApiPublicHooksCleanupSnapshotsRoute: typeof ApiPublicHooksCleanupSnapshotsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -733,6 +747,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCandidatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/cleanup-snapshots': {
+      id: '/api/public/hooks/cleanup-snapshots'
+      path: '/api/public/hooks/cleanup-snapshots'
+      fullPath: '/api/public/hooks/cleanup-snapshots'
+      preLoaderRoute: typeof ApiPublicHooksCleanupSnapshotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -772,6 +793,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminDashboardRoute: SuperadminDashboardRoute,
   SuperadminPaperLeakDetectorRoute: SuperadminPaperLeakDetectorRoute,
   SuperadminSystemRoute: SuperadminSystemRoute,
+  ApiPublicHooksCleanupSnapshotsRoute: ApiPublicHooksCleanupSnapshotsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
