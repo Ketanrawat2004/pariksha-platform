@@ -20,6 +20,48 @@ export const Route = createFileRoute("/candidate/dashboard")({
 
 function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const runStart = useServerFn(startPaperExam);
+  const [starting, setStarting] = useState(false);
+
+  // Eligible paper registration = paid, admit released, not cancelled.
+  // The home "Give Exam" button picks the most recent one and launches it;
+  // falls back to demo if none.
+  const { data: nextEligible } = useQuery({
+    queryKey: ["next-eligible-paper", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("paper_registrations" as any)
+        .select("id, paper_submission_id, paid, admit_released, cancelled, registered_at")
+        .eq("candidate_id", user!.id)
+        .eq("paid", true)
+        .eq("admit_released", true)
+        .eq("cancelled", false)
+        .order("registered_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data as { id: string } | null;
+    },
+    enabled: !!user,
+  });
+
+  async function handleGiveExam() {
+    if (!nextEligible?.id) {
+      navigate({ to: "/exam/$registrationId", params: { registrationId: "88888888-8888-8888-8888-888888888888" } });
+      return;
+    }
+    setStarting(true);
+    try {
+      const res = await runStart({ data: { paperRegistrationId: nextEligible.id } });
+      if (!res.ok) { toast.error(res.reason); return; }
+      navigate({ to: "/exam/$registrationId", params: { registrationId: res.registrationId } });
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not start exam");
+    } finally {
+      setStarting(false);
+    }
+  }
+
 
 
 
