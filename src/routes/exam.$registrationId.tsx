@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,8 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+// Recharts is heavy (~300KB). Lazy so it never blocks initial exam paint.
+const SubmitChart = lazy(() => import("@/components/exam/submit-chart"));
 
 export const Route = createFileRoute("/exam/$registrationId")({
   head: () => ({ meta: [{ title: "Exam in Progress — Pariksha" }] }),
