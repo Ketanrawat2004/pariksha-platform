@@ -20,7 +20,7 @@ async function resolveOrCreateCustomer(
       if ((options.userId && customer.metadata?.userId !== options.userId) || (options.name && customer.name !== options.name)) {
         await stripe.customers.update(customer.id, {
           ...(options.name && { name: options.name }),
-          metadata: { ...customer.metadata, userId: options.userId },
+          ...(options.userId && { metadata: { ...customer.metadata, userId: options.userId } }),
         });
       }
       return customer.id;
