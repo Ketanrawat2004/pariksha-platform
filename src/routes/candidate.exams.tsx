@@ -187,40 +187,19 @@ function PaperCard({
 }
 
 function PayAndRegisterForPaper({ paperId, paperTitle, onDone }: { paperId: string; paperTitle: string; onDone: () => void }) {
-  const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [paid, setPaid] = useState(false);
+  const [step, setStep] = useState<"details" | "pay">("details");
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
   const [phone, setPhone] = useState("");
-  const [busy, setBusy] = useState(false);
 
-  async function submit() {
-    if (!user) return;
-    if (!paid) return toast.error("Please complete payment first.");
+  function proceedToPay() {
     if (!fullName.trim()) return toast.error("Full name is required");
-    setBusy(true);
-    try {
-      const { error } = await supabase.from("paper_registrations" as any).insert({
-        candidate_id: user.id,
-        paper_submission_id: paperId,
-        full_name: fullName.trim(),
-        date_of_birth: dob || null,
-        phone: phone || null,
-      } as any);
-      if (error) throw error;
-      toast.success("Registered. Institute will release your admit card shortly.");
-      setOpen(false);
-      onDone();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Could not register");
-    } finally {
-      setBusy(false);
-    }
+    setStep("pay");
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setPaid(false); } }}>
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setStep("details"); }}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="w-full">
           <UserPlus className="h-4 w-4 mr-1.5" /> Register & Pay ₹500
@@ -229,30 +208,38 @@ function PayAndRegisterForPaper({ paperId, paperTitle, onDone }: { paperId: stri
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Register for {paperTitle}</DialogTitle>
-          <DialogDescription>Payment is required for every exam (no fee for the demo).</DialogDescription>
+          <DialogDescription>
+            Enter your details, then complete payment. Your registration is created automatically once Stripe confirms the payment.
+          </DialogDescription>
         </DialogHeader>
-        {!paid ? (
+        {step === "details" ? (
           <>
-            <div className="rounded-md border border-orange-300 bg-orange-100 px-3 py-2 text-xs text-orange-800">
-              <strong>Test mode:</strong> Use card <span className="font-mono">4242 4242 4242 4242</span>, any future expiry, any CVC. No real money is charged.
-            </div>
-            <StripeEmbeddedCheckoutForm priceId="exam_registration_500" examId={paperId} />
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setPaid(true)}>I've completed payment — continue</Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            <div className="rounded-md bg-success/10 text-success px-3 py-2 text-xs flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Payment recorded. Now enter your details.
-            </div>
             <div className="space-y-3">
               <div><Label htmlFor="rf-name">Full name</Label><Input id="rf-name" value={fullName} onChange={(e) => setFullName(e.target.value)} maxLength={100} /></div>
               <div><Label htmlFor="rf-dob">Date of birth</Label><Input id="rf-dob" type="date" value={dob} onChange={(e) => setDob(e.target.value)} /></div>
               <div><Label htmlFor="rf-phone">Phone (optional)</Label><Input id="rf-phone" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} /></div>
             </div>
             <DialogFooter>
-              <Button onClick={submit} disabled={busy}>{busy && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />} Submit registration</Button>
+              <Button onClick={proceedToPay}>Continue to payment</Button>
+            </DialogFooter>
+          </>
+        ) : (
+          <>
+            <div className="rounded-md border border-orange-300 bg-orange-100 px-3 py-2 text-xs text-orange-800">
+              <strong>Test mode:</strong> Use card <span className="font-mono">4242 4242 4242 4242</span>, any future expiry, any CVC. No real money is charged.
+            </div>
+            <StripeEmbeddedCheckoutForm
+              priceId="exam_registration_500"
+              paperSubmissionId={paperId}
+              candidateFullName={fullName.trim()}
+              candidateDob={dob || undefined}
+              candidatePhone={phone || undefined}
+            />
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button variant="ghost" onClick={() => setStep("details")}>Back</Button>
+              <Button variant="outline" onClick={() => { setOpen(false); onDone(); }}>
+                I'll check status from "My exams"
+              </Button>
             </DialogFooter>
           </>
         )}
