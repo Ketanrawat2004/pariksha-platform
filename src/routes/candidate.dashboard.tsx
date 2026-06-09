@@ -16,7 +16,8 @@ export const Route = createFileRoute("/candidate/dashboard")({
 
 function Dashboard() {
   const { user } = useAuth();
-  const qc = useQueryClient();
+
+
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
