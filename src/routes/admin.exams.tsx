@@ -69,7 +69,7 @@ function ExamsPage() {
                   <span className="font-semibold">{e.title}</span>
                   <Badge variant="outline" className="text-xs">{e.subject}</Badge>
                   <Badge
-                    variant={e.status === "active" ? "default" : e.status === "completed" ? "secondary" : "outline"}
+                    variant={e.status === "live" || e.status === "scheduled" ? "default" : e.status === "completed" ? "secondary" : "outline"}
                     className="text-xs uppercase"
                   >
                     {e.status}
