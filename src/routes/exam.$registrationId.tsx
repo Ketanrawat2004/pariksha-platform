@@ -19,17 +19,26 @@ export const Route = createFileRoute("/exam/$registrationId")({
   component: ExamPage,
 });
 
-interface Q { id: string; question_text_encrypted: string; option_a_encrypted: string; option_b_encrypted: string; option_c_encrypted: string; option_d_encrypted: string; marks: number; question_order: number; category: string | null; }
+interface Q { id: string; question_text_encrypted: string; option_a_encrypted: string; option_b_encrypted: string; option_c_encrypted: string; option_d_encrypted: string; correct_answer_encrypted?: string; marks: number; question_order: number; category: string | null; }
 
-const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
-let faceModelsLoaded = false;
-async function loadFaceApi() {
-  const faceapi = await import("face-api.js");
-  if (!faceModelsLoaded) {
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    faceModelsLoaded = true;
-  }
-  return faceapi;
+const DEMO_REG_ID = "88888888-8888-8888-8888-888888888888";
+
+function buildDemoQuestions(): Q[] {
+  const bank: Array<Omit<Q, "id" | "question_order">> = [
+    { question_text_encrypted: "Which planet is known as the Red Planet?", option_a_encrypted: "Venus", option_b_encrypted: "Mars", option_c_encrypted: "Jupiter", option_d_encrypted: "Saturn", correct_answer_encrypted: "B", marks: 2, category: "General Knowledge" },
+    { question_text_encrypted: "What is the capital of Australia?", option_a_encrypted: "Sydney", option_b_encrypted: "Melbourne", option_c_encrypted: "Canberra", option_d_encrypted: "Perth", correct_answer_encrypted: "C", marks: 2, category: "General Knowledge" },
+    { question_text_encrypted: "Who wrote the play 'Hamlet'?", option_a_encrypted: "Charles Dickens", option_b_encrypted: "Mark Twain", option_c_encrypted: "William Shakespeare", option_d_encrypted: "Leo Tolstoy", correct_answer_encrypted: "C", marks: 2, category: "General Knowledge" },
+    { question_text_encrypted: "12 × 11 = ?", option_a_encrypted: "121", option_b_encrypted: "132", option_c_encrypted: "144", option_d_encrypted: "133", correct_answer_encrypted: "B", marks: 2, category: "Quantitative" },
+    { question_text_encrypted: "Solve: 15% of 200", option_a_encrypted: "25", option_b_encrypted: "30", option_c_encrypted: "35", option_d_encrypted: "40", correct_answer_encrypted: "B", marks: 2, category: "Quantitative" },
+    { question_text_encrypted: "Square root of 169 is", option_a_encrypted: "11", option_b_encrypted: "12", option_c_encrypted: "13", option_d_encrypted: "14", correct_answer_encrypted: "C", marks: 2, category: "Quantitative" },
+    { question_text_encrypted: "Choose the synonym of 'Diligent'", option_a_encrypted: "Lazy", option_b_encrypted: "Hardworking", option_c_encrypted: "Quick", option_d_encrypted: "Slow", correct_answer_encrypted: "B", marks: 2, category: "English" },
+    { question_text_encrypted: "Antonym of 'Ancient' is", option_a_encrypted: "Old", option_b_encrypted: "Modern", option_c_encrypted: "Historic", option_d_encrypted: "Worn", correct_answer_encrypted: "B", marks: 2, category: "English" },
+    { question_text_encrypted: "Which gas do plants absorb for photosynthesis?", option_a_encrypted: "Oxygen", option_b_encrypted: "Nitrogen", option_c_encrypted: "Carbon Dioxide", option_d_encrypted: "Helium", correct_answer_encrypted: "C", marks: 2, category: "Science" },
+    { question_text_encrypted: "Water boils at how many °C at sea level?", option_a_encrypted: "90", option_b_encrypted: "100", option_c_encrypted: "110", option_d_encrypted: "120", correct_answer_encrypted: "B", marks: 2, category: "Science" },
+  ];
+  // shuffle
+  const shuffled = [...bank].sort(() => Math.random() - 0.5);
+  return shuffled.map((q, i) => ({ ...q, id: `demo-q-${i}`, question_order: i }));
 }
 
 function ExamPage() {
@@ -37,6 +46,7 @@ function ExamPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const submitFn = useServerFn(submitExam);
+  const isDemo = registrationId === DEMO_REG_ID;
 
   // Phases: gate -> terms -> exam -> submitting
   const [phase, setPhase] = useState<"gate" | "terms" | "exam" | "submitting">("gate");
@@ -51,10 +61,16 @@ function ExamPage() {
   const [camReady, setCamReady] = useState(false);
   const noFaceStreakRef = useRef(0);
 
-  // Load registration + exam + questions
+  // Load registration + exam + questions (or generate demo)
   const { data: regData, isLoading } = useQuery({
     queryKey: ["exam-reg", registrationId],
     queryFn: async () => {
+      if (isDemo) {
+        return {
+          reg: { id: DEMO_REG_ID, exam_id: "demo", exams: { id: "demo", title: "Pariksha Demo Exam", duration_minutes: 10, total_marks: 20, passing_marks: 8 } } as any,
+          qs: buildDemoQuestions(),
+        };
+      }
       const { data: reg } = await supabase.from("registrations").select("*, exams(*)").eq("id", registrationId).single();
       const { data: qs } = await supabase.from("questions").select("id, exam_id, question_text_encrypted, option_a_encrypted, option_b_encrypted, option_c_encrypted, option_d_encrypted, marks, question_order, category").eq("exam_id", reg!.exam_id).order("question_order");
       return { reg, qs: (qs ?? []) as Q[] };
@@ -63,6 +79,7 @@ function ExamPage() {
 
   const questions = regData?.qs ?? [];
   const exam = regData?.reg?.exams;
+
 
   // Answers state
   const [answers, setAnswers] = useState<Record<string, { selected: string | null; marked: boolean }>>({});
