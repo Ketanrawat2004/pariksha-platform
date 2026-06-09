@@ -98,7 +98,7 @@ function PublicGiveExam() {
                     </p>
                     <div className="flex gap-2">
                       <Button asChild size="lg" className="flex-1">
-                        <Link to="/login" search={{ redirect: "/exam-entry" } as any}><LogIn className="h-4 w-4 mr-2" />Sign in</Link>
+                        <Link to="/login"><LogIn className="h-4 w-4 mr-2" />Sign in</Link>
                       </Button>
                       <Button asChild size="lg" variant="outline" className="flex-1">
                         <Link to="/register">Register</Link>
