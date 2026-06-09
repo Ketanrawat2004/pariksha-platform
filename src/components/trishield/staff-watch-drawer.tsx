@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTriShieldWatch } from "@/lib/trishield/use-trishield-watch";
+import { useLockCeremonyWitness } from "@/lib/trishield/use-lock-ceremony";
 import { CameraRequiredBlock } from "./camera-required-block";
 import { TriShieldWatchBar } from "./trishield-watch-bar";
-import { ShieldOff, X } from "lucide-react";
+import { ShieldOff, X, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ActivityEvent {
