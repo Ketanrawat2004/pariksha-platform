@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Crown, ShieldCheck, Eye, GraduationCap } from "lucide-react";
+import { Loader2, Crown, ShieldCheck, Eye, GraduationCap, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,7 @@ const DEMO = [
   { role: "admin" as AppRole, email: "admin@pariksha.in", label: "Admin", icon: ShieldCheck, color: "from-primary/15 to-primary/5 text-primary" },
   { role: "invigilator" as AppRole, email: "invig@pariksha.in", label: "Invigilator", icon: Eye, color: "from-warning/15 to-warning/5 text-warning" },
   { role: "candidate" as AppRole, email: "candidate@pariksha.in", label: "Candidate", icon: GraduationCap, color: "from-accent/15 to-accent/5 text-accent" },
+  { role: "institute" as AppRole, email: "institute@pariksha.in", label: "Institute", icon: Building2, color: "from-success/15 to-success/5 text-success" },
 ];
 
 function LoginPage() {

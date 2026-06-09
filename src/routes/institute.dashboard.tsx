@@ -36,7 +36,7 @@ function InstituteDashboard() {
   ];
 
   return (
-    <ProtectedShell allowedRoles={["institute", "admin", "superadmin"]}>
+    <ProtectedShell requireRoles={["institute", "admin", "superadmin"]}>
       <div className="container mx-auto py-8 px-4 animate-fade-up">
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Institute Dashboard</h1>

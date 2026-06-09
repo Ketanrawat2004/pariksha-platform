@@ -36,6 +36,9 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/superadmin/paper-leak-detector", label: "Leak Detector" },
     { to: "/superadmin/system", label: "System" },
   ],
+  institute: [
+    { to: "/institute/dashboard", label: "Dashboard" },
+  ],
 };
 
 export function ProtectedShell({ children, requireRoles }: { children: ReactNode; requireRoles: AppRole[] }) {
