@@ -18,6 +18,7 @@ import {
   CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library,
 } from "lucide-react";
 import { toast } from "sonner";
+import { FaceCapture } from "@/components/face-capture";
 
 export const Route = createFileRoute("/institute/dashboard")({
   head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
