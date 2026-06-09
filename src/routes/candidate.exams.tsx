@@ -43,7 +43,7 @@ function ExamsList() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">My exams</h1>
-        <p className="text-muted-foreground mt-1">Registered exams. The Enter Exam button activates on exam day.</p>
+        <p className="text-muted-foreground mt-1">Registered exams — click "Give Exam" to start any time. No delay.</p>
       </div>
 
       {available && available.length > 0 && (
