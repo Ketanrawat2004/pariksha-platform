@@ -49,10 +49,10 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
         admit_card_number: admit,
       });
     } else {
-      await sb
-        .from("paper_registrations")
-        .update({ paid: true, cancelled: false, payment_id: payment?.id ?? null, admit_released: true, admit_card_number: admit })
-        .eq("id", existing.id);
+      const upd: any = { paid: true, cancelled: false, payment_id: payment?.id ?? null, admit_released: true };
+      const { data: cur } = await sb.from("paper_registrations").select("admit_card_number").eq("id", existing.id).maybeSingle();
+      if (!cur?.admit_card_number) upd.admit_card_number = admit;
+      await sb.from("paper_registrations").update(upd).eq("id", existing.id);
     }
     return;
   }
