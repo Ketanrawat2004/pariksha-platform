@@ -88,7 +88,10 @@ export const publishPaperAsExam = createServerFn({ method: "POST" })
       if (qErr) throw new Error(qErr.message);
     }
 
-    // Auto-register all candidates
+    // NOTE: We no longer auto-register every candidate. Candidates must register
+    // (and pay) themselves via the institute paper flow, and admit cards are
+    // issued only when the institute releases them.
+    // Notify all candidates that a new paper is available.
     const { data: cands } = await supabaseAdmin
       .from("user_roles")
       .select("user_id")
@@ -96,19 +99,11 @@ export const publishPaperAsExam = createServerFn({ method: "POST" })
     let candidateCount = 0;
     if (cands?.length) {
       candidateCount = cands.length;
-      await supabaseAdmin.from("registrations").insert(
-        cands.map((c: any) => ({
-          candidate_id: c.user_id,
-          exam_id: exam.id,
-          center_id: center!.id,
-          status: "approved",
-        })) as any,
-      );
       await supabaseAdmin.from("notifications").insert(
         cands.map((c: any) => ({
           user_id: c.user_id,
           title: "New exam available: " + sub.title,
-          message: `📅 ${examDate} · ⏰ ${startTime.slice(0, 5)} · 📍 ${center!.name}, ${center!.district}, ${center!.state}. Download your admit card, then click "Give Exam".`,
+          message: `📅 ${examDate} · ⏰ ${startTime.slice(0, 5)} · 📍 ${center!.name}, ${center!.district}, ${center!.state}. Register on the Exams page; your admit card will be issued by the institute.`,
           type: "info",
         })) as any,
       );

@@ -112,12 +112,13 @@ function ExamPage() {
   const sectionQuestions = useMemo(() => questions.filter((q) => (q.category ?? "General") === activeSection), [questions, activeSection]);
   const q = sectionQuestions[current];
 
-  // Timer
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+  // Timer (use null sentinel so the auto-submit effect doesn't fire before
+  // the initial duration is applied — otherwise demo/exam submits instantly)
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   useEffect(() => {
     if (phase !== "exam" || !exam) return;
     setTimeLeft(exam.duration_minutes * 60);
-    const t = setInterval(() => setTimeLeft((p) => Math.max(0, p - 1)), 1000);
+    const t = setInterval(() => setTimeLeft((p) => (p == null ? p : Math.max(0, p - 1))), 1000);
     return () => clearInterval(t);
   }, [phase, exam]);
 
@@ -174,7 +175,7 @@ function ExamPage() {
     }
   }, [sessionId, isDemo, answers, questions, saveAnswer, submitFn, navigate]);
 
-  // Auto-submit on time-up
+  // Auto-submit on time-up (only after timer initialized — null means not started yet)
   useEffect(() => {
     if (phase === "exam" && timeLeft === 0 && exam) {
       void handleFinalSubmit("time up");
@@ -426,9 +427,10 @@ function ExamPage() {
   const answered = Object.values(answers).filter((a) => a.selected).length;
   const marked = Object.values(answers).filter((a) => a.marked).length;
   const unanswered = total - answered;
-  const mins = Math.floor(timeLeft / 60);
-  const secs = timeLeft % 60;
-  const timerColor = timeLeft < 300 ? "text-destructive animate-pulse" : timeLeft < 600 ? "text-warning" : "text-foreground";
+  const tl = timeLeft ?? 0;
+  const mins = Math.floor(tl / 60);
+  const secs = tl % 60;
+  const timerColor = tl < 300 ? "text-destructive animate-pulse" : tl < 600 ? "text-warning" : "text-foreground";
 
   const setAnswer = (selected: string | null) => {
     if (!q) return;
