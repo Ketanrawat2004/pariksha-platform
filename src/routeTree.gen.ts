@@ -34,6 +34,7 @@ import { Route as CandidateProfileRouteImport } from './routes/candidate.profile
 import { Route as CandidateNotificationsRouteImport } from './routes/candidate.notifications'
 import { Route as CandidateExamsRouteImport } from './routes/candidate.exams'
 import { Route as CandidateDashboardRouteImport } from './routes/candidate.dashboard'
+import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminIntegrityRouteImport } from './routes/admin.integrity'
 import { Route as AdminExamsRouteImport } from './routes/admin.exams'
@@ -167,6 +168,11 @@ const CandidateDashboardRoute = CandidateDashboardRouteImport.update({
   path: '/candidate/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin/reports',
   path: '/admin/reports',
@@ -213,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/admin/exams': typeof AdminExamsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/api/chat': typeof ApiChatRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
   '/candidate/exams': typeof CandidateExamsRoute
   '/candidate/notifications': typeof CandidateNotificationsRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/admin/exams': typeof AdminExamsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/api/chat': typeof ApiChatRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
   '/candidate/exams': typeof CandidateExamsRoute
   '/candidate/notifications': typeof CandidateNotificationsRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/admin/exams': typeof AdminExamsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/api/chat': typeof ApiChatRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
   '/candidate/exams': typeof CandidateExamsRoute
   '/candidate/notifications': typeof CandidateNotificationsRoute
@@ -315,6 +324,7 @@ export interface FileRouteTypes {
     | '/admin/exams'
     | '/admin/integrity'
     | '/admin/reports'
+    | '/api/chat'
     | '/candidate/dashboard'
     | '/candidate/exams'
     | '/candidate/notifications'
@@ -348,6 +358,7 @@ export interface FileRouteTypes {
     | '/admin/exams'
     | '/admin/integrity'
     | '/admin/reports'
+    | '/api/chat'
     | '/candidate/dashboard'
     | '/candidate/exams'
     | '/candidate/notifications'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/admin/exams'
     | '/admin/integrity'
     | '/admin/reports'
+    | '/api/chat'
     | '/candidate/dashboard'
     | '/candidate/exams'
     | '/candidate/notifications'
@@ -415,6 +427,7 @@ export interface RootRouteChildren {
   AdminExamsRoute: typeof AdminExamsRoute
   AdminIntegrityRoute: typeof AdminIntegrityRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  ApiChatRoute: typeof ApiChatRoute
   CandidateDashboardRoute: typeof CandidateDashboardRoute
   CandidateExamsRoute: typeof CandidateExamsRoute
   CandidateNotificationsRoute: typeof CandidateNotificationsRoute
@@ -611,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CandidateDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/reports': {
       id: '/admin/reports'
       path: '/admin/reports'
@@ -671,6 +691,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminExamsRoute: AdminExamsRoute,
   AdminIntegrityRoute: AdminIntegrityRoute,
   AdminReportsRoute: AdminReportsRoute,
+  ApiChatRoute: ApiChatRoute,
   CandidateDashboardRoute: CandidateDashboardRoute,
   CandidateExamsRoute: CandidateExamsRoute,
   CandidateNotificationsRoute: CandidateNotificationsRoute,
@@ -692,3 +713,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
