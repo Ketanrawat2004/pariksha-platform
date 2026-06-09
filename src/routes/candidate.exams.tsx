@@ -71,19 +71,31 @@ function ExamsList() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold">Available from institutes</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {available.map((p) => (
-              <Card key={p.id} className="p-4 border-accent/30">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-semibold truncate">{p.title}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {p.subject} · {p.exam_date} · {p.start_time?.slice(0, 5)} · {p.duration_minutes} min · {p.total_marks} marks
+            {available.map((p) => {
+              const myReg = myPaperRegs?.find((r) => r.paper_submission_id === p.id);
+              return (
+                <Card key={p.id} className="p-4 border-accent/30">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-semibold truncate">{p.title}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {p.subject} · {p.exam_date} · {p.start_time?.slice(0, 5)} · {p.duration_minutes} min · {p.total_marks} marks
+                      </div>
                     </div>
+                    {!myReg && <span className="rounded-full bg-accent/15 text-accent text-[10px] font-bold px-2 py-0.5 shrink-0">NEW</span>}
                   </div>
-                  <span className="rounded-full bg-accent/15 text-accent text-[10px] font-bold px-2 py-0.5 shrink-0">NEW</span>
-                </div>
-              </Card>
-            ))}
+                  <div className="mt-3">
+                    {!myReg ? (
+                      <RegisterForPaperButton paperId={p.id} onDone={() => qc.invalidateQueries({ queryKey: ["my-paper-regs", user?.id] })} />
+                    ) : myReg.admit_released ? (
+                      <div className="text-xs text-success flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> Admit released · <span className="font-mono">{myReg.admit_card_number}</span></div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground">Registered — waiting for institute to release admit card.</div>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </section>
       )}
