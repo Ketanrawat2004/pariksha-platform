@@ -266,7 +266,7 @@ function ExamPage() {
     }
   });
 
-  // AI integrity check every 6s — uses face-api.js TinyFaceDetector
+  // AI integrity check every 6s — face-api.js for face presence + COCO-SSD for suspicious objects
   useEffect(() => {
     if (phase !== "exam" || !camReady) return;
     let cancelled = false;
@@ -275,6 +275,10 @@ function ExamPage() {
       try {
         const faceapi = await loadFaceApi();
         const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
+        // Pre-warm object detector in the background; don't block face checks if it fails to load
+        const objDetectPromise = import("@/lib/exam/object-detector")
+          .then((m) => m.detectSuspiciousObject)
+          .catch(() => null);
         const tick = async () => {
           if (cancelled) return;
           const v = videoRef.current;
@@ -298,6 +302,24 @@ function ExamPage() {
             } else {
               noFaceStreakRef.current = 0;
             }
+
+            // Suspicious-object check (phone / book / laptop / etc.)
+            try {
+              const detectFn = await objDetectPromise;
+              if (detectFn) {
+                const obj = await detectFn(v);
+                if (obj) {
+                  toast.error(`Prohibited item detected (${obj.label}) — exam will end`);
+                  void logEvent("suspicious_pattern", "critical", {
+                    reason: "object_in_frame",
+                    label: obj.label,
+                    score: obj.score,
+                  });
+                  void handleFinalSubmit(`prohibited item: ${obj.label}`);
+                  return;
+                }
+              }
+            } catch { /* object detector unavailable — keep face checks running */ }
           }
           timer = window.setTimeout(tick, 6000);
         };
