@@ -898,6 +898,21 @@ export type Database = {
         Args: { _party: string; _session_id: string }
         Returns: undefined
       }
+      list_published_paper_summaries: {
+        Args: never
+        Returns: {
+          duration_minutes: number
+          exam_date: string
+          id: string
+          passing_marks: number
+          published_exam_id: string
+          start_time: string
+          subject: string
+          teacher_name: string
+          title: string
+          total_marks: number
+        }[]
+      }
     }
     Enums: {
       app_role:

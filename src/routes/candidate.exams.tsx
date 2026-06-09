@@ -36,12 +36,8 @@ function ExamsList() {
   const { data: available } = useQuery({
     queryKey: ["available-paper-submissions"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("paper_submissions")
-        .select("id, title, subject, exam_date, start_time, duration_minutes, total_marks")
-        .eq("status", "published")
-        .order("exam_date", { ascending: true });
-      return data ?? [];
+      const { data } = await supabase.rpc("list_published_paper_summaries" as any);
+      return (data as any[]) ?? [];
     },
   });
 
