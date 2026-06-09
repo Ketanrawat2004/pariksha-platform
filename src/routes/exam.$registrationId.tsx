@@ -128,15 +128,15 @@ function ExamPage() {
     severity: "low" | "medium" | "high" | "critical",
     details: Record<string, unknown> = {},
   ) => {
-    if (!sessionId) return;
+    if (!sessionId || isDemo) return;
     await supabase.from("integrity_events").insert({ session_id: sessionId, event_type, severity, details: details as never });
-  }, [sessionId]);
+  }, [sessionId, isDemo]);
 
   // ---- Final submit (declared early so anti-cheat effects can reference) ----
   const saveAnswer = useCallback(async (qid: string, selected: string | null, marked: boolean) => {
-    if (!sessionId) return;
+    if (!sessionId || isDemo) return;
     await supabase.from("answers").upsert({ session_id: sessionId, question_id: qid, selected_option: selected, marked_for_review: marked }, { onConflict: "session_id,question_id" });
-  }, [sessionId]);
+  }, [sessionId, isDemo]);
 
   const handleFinalSubmit = useCallback(async (reason?: string) => {
     if (!sessionId && !isDemo) return;
