@@ -5,7 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Calendar, Clock, MapPin, Award, PlayCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, Award, PlayCircle, Download } from "lucide-react";
+import { downloadAdmitCard } from "@/lib/pdf/admit-card";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidate/exams")({
   head: () => ({ meta: [{ title: "Exams — Pariksha" }] }),
