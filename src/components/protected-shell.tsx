@@ -1,9 +1,10 @@
 import { ReactNode, useEffect } from "react";
 import { useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useAuth, type AppRole } from "@/lib/auth/auth-context";
-import { Shield, LogOut, Loader2, Bell } from "lucide-react";
+import { LogOut, Loader2, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StaffSigninGate } from "@/components/staff-signin-gate";
+import { ParikshaLogo } from "@/components/pariksha-logo";
 
 interface NavItem { to: string; label: string }
 
@@ -73,7 +74,7 @@ export function ProtectedShell({ children, requireRoles }: { children: ReactNode
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 font-bold">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-gradient-hero text-primary-foreground"><Shield className="h-4 w-4" /></span>
+            <ParikshaLogo className="h-9 w-9" />
             <span>Pariksha</span>
             <span className="hidden sm:inline-block ml-2 text-xs uppercase tracking-wider rounded-full bg-accent/10 text-accent px-2 py-0.5 font-semibold">{primaryRole}</span>
           </Link>
