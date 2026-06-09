@@ -116,6 +116,16 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
         const env: StripeEnv = rawEnv;
         try {
           const event = await verifyWebhook(request, env);
+
+          // Idempotency — Stripe retries; never double-process the same event.
+          const sb = await getSupabase();
+          const { error: dupErr } = await sb
+            .from("processed_webhook_events")
+            .insert({ event_id: (event as any).id ?? `${env}:${Date.now()}`, source: `stripe:${env}` });
+          if (dupErr && (dupErr as any).code === "23505") {
+            return Response.json({ received: true, duplicate: true });
+          }
+
           switch (event.type) {
             case "checkout.session.completed":
               await handleCheckoutCompleted(event.data.object, env);
