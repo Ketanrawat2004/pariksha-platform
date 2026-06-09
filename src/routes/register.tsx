@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Shield, Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
+import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,10 +106,8 @@ function RegisterPage() {
     <div className="min-h-dvh flex items-center justify-center px-4 py-10 bg-gradient-to-br from-background to-secondary">
       <Card className="w-full max-w-2xl p-8 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-4">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-gradient-hero text-primary-foreground">
-            <Shield className="h-5 w-5" />
-          </span>
-          Pariksha
+          <ParikshaLogo className="h-10 w-10" />
+          <span>Pariksha</span>
         </Link>
         <div className="mb-6">
           <div className="flex justify-between text-xs text-muted-foreground mb-2">

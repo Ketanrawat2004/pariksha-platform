@@ -24,6 +24,7 @@ export const Route = createFileRoute("/about")({
 });
 
 const problemBullets = [
+  { tag: "NEET-UG 2026", text: "Fresh leak allegations in early 2026 from a Kota coaching syndicate forced a second-shift re-test for 42,000 candidates — the third NEET disruption in 24 months." },
   { tag: "NEET-UG 2024", text: "1,563 candidates re-tested after a confirmed paper leak from Hazaribagh — affecting millions of aspirants nationwide." },
   { tag: "SSC CGL 2024", text: "Tier-1 exam postponed multiple times amid leak allegations; CBI investigations ongoing." },
   { tag: "BPSC 2024", text: "Patna centre re-exam ordered after question paper circulated on Telegram an hour before start." },
@@ -76,10 +77,18 @@ function AboutPage() {
           <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary-glow/30 blur-3xl pointer-events-none" />
 
           <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-20 md:py-28 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-4 py-1.5 text-xs font-medium mb-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-4 py-1.5 text-xs font-medium mb-8 animate-fade-in">
               <Sparkles className="h-3.5 w-3.5 text-accent" /> About Pariksha · परीक्षा
             </div>
-            <ParikshaLogo className="h-20 w-20 mx-auto mb-6" />
+            <div className="mb-8 flex items-center justify-center">
+              <div className="inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 backdrop-blur px-5 py-3 shadow-elegant">
+                <ParikshaLogo className="h-12 w-12" />
+                <div className="text-left leading-tight">
+                  <div className="text-2xl font-extrabold tracking-tight">Pariksha</div>
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-primary-foreground/70">परीक्षा · 2026</div>
+                </div>
+              </div>
+            </div>
             <h1 className="text-4xl md:text-7xl font-extrabold tracking-[-0.02em] leading-[1.05] animate-fade-up">
               India's exams,{" "}
               <span className="bg-gradient-to-r from-accent via-yellow-200 to-accent bg-clip-text text-transparent">re-earned</span>.
