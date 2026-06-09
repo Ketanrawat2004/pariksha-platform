@@ -87,6 +87,7 @@ function InstitutePage() {
   const [editing, setEditing] = useState<any | null>(null);
   const [editRequestFor, setEditRequestFor] = useState<any | null>(null);
   const [editNote, setEditNote] = useState("");
+  const [editPhoto, setEditPhoto] = useState("");
 
   const { data: subs, isLoading } = useQuery({
     queryKey: ["paper-submissions", user?.id],
