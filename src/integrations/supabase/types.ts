@@ -447,6 +447,69 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          environment: string
+          exam_id: string | null
+          id: string
+          registration_id: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          environment?: string
+          exam_id?: string | null
+          id?: string
+          registration_id?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          environment?: string
+          exam_id?: string | null
+          id?: string
+          registration_id?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           aadhaar_hash: string | null
@@ -569,6 +632,8 @@ export type Database = {
           center_id: string | null
           exam_id: string
           id: string
+          paid: boolean
+          payment_id: string | null
           registered_at: string
           seat_number: string | null
           status: Database["public"]["Enums"]["registration_status"]
@@ -579,6 +644,8 @@ export type Database = {
           center_id?: string | null
           exam_id: string
           id?: string
+          paid?: boolean
+          payment_id?: string | null
           registered_at?: string
           seat_number?: string | null
           status?: Database["public"]["Enums"]["registration_status"]
@@ -589,6 +656,8 @@ export type Database = {
           center_id?: string | null
           exam_id?: string
           id?: string
+          paid?: boolean
+          payment_id?: string | null
           registered_at?: string
           seat_number?: string | null
           status?: Database["public"]["Enums"]["registration_status"]
@@ -613,6 +682,13 @@ export type Database = {
             columns: ["exam_id"]
             isOneToOne: false
             referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
             referencedColumns: ["id"]
           },
         ]
