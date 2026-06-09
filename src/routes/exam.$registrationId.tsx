@@ -139,13 +139,28 @@ function ExamPage() {
   }, [sessionId]);
 
   const handleFinalSubmit = useCallback(async (reason?: string) => {
-    if (!sessionId) return;
+    if (!sessionId && !isDemo) return;
     if (reason) setAutoSubmitReason(reason);
     setPhase("submitting");
     try {
+      if (isDemo) {
+        // Local scoring for demo
+        let total = 0;
+        let totalMarks = 0;
+        for (const dq of questions) {
+          totalMarks += dq.marks;
+          const sel = answers[dq.id]?.selected;
+          if (sel && dq.correct_answer_encrypted && sel === dq.correct_answer_encrypted) total += dq.marks;
+        }
+        streamRef.current?.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+        if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
+        toast.success(`Demo complete — ${total}/${totalMarks} marks${reason ? ` (${reason})` : ""}`);
+        navigate({ to: "/" });
+        return;
+      }
       await Promise.all(Object.entries(answers).map(([qid, a]) => saveAnswer(qid, a.selected, a.marked)));
-      const res = await submitFn({ data: { sessionId } });
-      // stop camera
+      const res = await submitFn({ data: { sessionId: sessionId! } });
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
       if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
@@ -155,7 +170,7 @@ function ExamPage() {
       toast.error(e.message ?? "Submit failed");
       setPhase("exam");
     }
-  }, [sessionId, answers, saveAnswer, submitFn, navigate]);
+  }, [sessionId, isDemo, answers, questions, saveAnswer, submitFn, navigate]);
 
   // Auto-submit on time-up
   useEffect(() => {
