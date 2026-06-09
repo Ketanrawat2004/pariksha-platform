@@ -44,6 +44,10 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
   .inputValidator((data: {
     priceId: string;
     examId?: string;
+    paperSubmissionId?: string;
+    candidateFullName?: string;
+    candidateDob?: string;
+    candidatePhone?: string;
     returnUrl: string;
     environment: StripeEnv;
   }) => {
@@ -73,22 +77,29 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         return_url: data.returnUrl,
         customer: customerId,
         payment_intent_data: { description: productDescription },
-        metadata: { userId, examId: data.examId ?? "" },
+        metadata: {
+          userId,
+          examId: data.examId ?? "",
+          paperSubmissionId: data.paperSubmissionId ?? "",
+        },
       });
 
-      // Record a pending payment row so we can correlate before the webhook fires.
       const amount = stripePrice.unit_amount ?? 0;
       const currency = stripePrice.currency ?? "inr";
       await context.supabase.from("payments").insert({
         user_id: userId,
         exam_id: data.examId ?? null,
+        paper_submission_id: data.paperSubmissionId ?? null,
+        candidate_full_name: data.candidateFullName ?? null,
+        candidate_dob: data.candidateDob || null,
+        candidate_phone: data.candidatePhone ?? null,
         stripe_session_id: session.id,
         stripe_customer_id: customerId,
         amount_cents: amount,
         currency,
         status: "pending",
         environment: data.environment,
-      });
+      } as any);
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
