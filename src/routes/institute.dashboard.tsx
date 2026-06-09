@@ -28,6 +28,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useLockCeremonyInitiator } from "@/lib/trishield/use-lock-ceremony";
 import { LockCeremonyWitnessModal } from "@/components/trishield/lock-ceremony-witness-modal";
 import { generateSessionReport } from "@/lib/trishield/reports.functions";
+import { publishPaperAsExam } from "@/lib/institute/publish-paper.functions";
+import { useServerFn } from "@tanstack/react-start";
 import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/institute/dashboard")({
