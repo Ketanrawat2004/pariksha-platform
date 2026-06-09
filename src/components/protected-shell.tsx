@@ -3,6 +3,7 @@ import { useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useAuth, type AppRole } from "@/lib/auth/auth-context";
 import { Shield, LogOut, Loader2, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StaffSigninGate } from "@/components/staff-signin-gate";
 
 interface NavItem { to: string; label: string }
 
