@@ -855,13 +855,6 @@ export type Database = {
             referencedRelation: "paper_submissions"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "trishield_watch_sessions_paper_submission_id_fkey"
-            columns: ["paper_submission_id"]
-            isOneToOne: false
-            referencedRelation: "published_paper_summaries"
-            referencedColumns: ["id"]
-          },
         ]
       }
       user_roles: {
@@ -887,53 +880,7 @@ export type Database = {
       }
     }
     Views: {
-      published_paper_summaries: {
-        Row: {
-          duration_minutes: number | null
-          exam_date: string | null
-          id: string | null
-          passing_marks: number | null
-          published_exam_id: string | null
-          start_time: string | null
-          subject: string | null
-          teacher_name: string | null
-          title: string | null
-          total_marks: number | null
-        }
-        Insert: {
-          duration_minutes?: number | null
-          exam_date?: string | null
-          id?: string | null
-          passing_marks?: number | null
-          published_exam_id?: string | null
-          start_time?: string | null
-          subject?: string | null
-          teacher_name?: string | null
-          title?: string | null
-          total_marks?: number | null
-        }
-        Update: {
-          duration_minutes?: number | null
-          exam_date?: string | null
-          id?: string | null
-          passing_marks?: number | null
-          published_exam_id?: string | null
-          start_time?: string | null
-          subject?: string | null
-          teacher_name?: string | null
-          title?: string | null
-          total_marks?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paper_submissions_published_exam_id_fkey"
-            columns: ["published_exam_id"]
-            isOneToOne: false
-            referencedRelation: "exams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       current_user_has_any_role: {
@@ -950,6 +897,21 @@ export type Database = {
       increment_watch_snapshot: {
         Args: { _party: string; _session_id: string }
         Returns: undefined
+      }
+      list_published_paper_summaries: {
+        Args: never
+        Returns: {
+          duration_minutes: number
+          exam_date: string
+          id: string
+          passing_marks: number
+          published_exam_id: string
+          start_time: string
+          subject: string
+          teacher_name: string
+          title: string
+          total_marks: number
+        }[]
       }
     }
     Enums: {
