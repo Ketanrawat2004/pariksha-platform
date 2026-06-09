@@ -23,6 +23,7 @@ export function StaffWatchDrawer({ party, sessionId, onClose }: { party: "admin"
   });
   const [activity, setActivity] = useState<ActivityEvent[]>([]);
   const [halting, setHalting] = useState(false);
+  const witness = useLockCeremonyWitness(sessionId, party);
 
   // Superadmin: subscribe to paper-edit activity broadcast
   useEffect(() => {
