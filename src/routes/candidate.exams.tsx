@@ -165,8 +165,12 @@ function PaperCard({
       <div className="mt-3 space-y-2">
         {!myReg ? (
           <PayAndRegisterForPaper paperId={paper.id} paperTitle={paper.title} onDone={onRegistered} />
+        ) : myReg.cancelled ? (
+          <div className="text-xs text-destructive">Registration cancelled (payment refunded).</div>
+        ) : !myReg.paid ? (
+          <div className="text-xs text-muted-foreground flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Confirming payment…</div>
         ) : !myReg.admit_released ? (
-          <div className="text-xs text-muted-foreground">Registered — waiting for institute to release admit card.</div>
+          <div className="text-xs text-muted-foreground">Paid — waiting for institute to release admit card.</div>
         ) : (
           <>
             <div className="text-xs text-success flex items-center gap-1.5">
