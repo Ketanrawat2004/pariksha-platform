@@ -25,6 +25,10 @@ import { CameraRequiredBlock } from "@/components/trishield/camera-required-bloc
 import { TriShieldWatchBar } from "@/components/trishield/trishield-watch-bar";
 import { LiveWatchPreview } from "@/components/trishield/live-watch-preview";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLockCeremonyInitiator } from "@/lib/trishield/use-lock-ceremony";
+import { LockCeremonyWitnessModal } from "@/components/trishield/lock-ceremony-witness-modal";
+import { generateSessionReport } from "@/lib/trishield/reports.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/institute/dashboard")({
   head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
