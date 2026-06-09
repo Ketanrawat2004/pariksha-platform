@@ -68,25 +68,44 @@ export const publishPaperAsExam = createServerFn({ method: "POST" })
       .single();
     if (eErr) throw new Error(eErr.message);
 
-    // Insert questions
-    const qs = (sub.questions ?? []) as any[];
-    if (qs.length) {
-      const { error: qErr } = await supabaseAdmin.from("questions").insert(
-        qs.map((q, idx) => ({
-          exam_id: exam.id,
-          question_text_encrypted: q.text ?? "",
-          option_a_encrypted: q.options?.[0] ?? "",
-          option_b_encrypted: q.options?.[1] ?? "",
-          option_c_encrypted: q.options?.[2] ?? "",
-          option_d_encrypted: q.options?.[3] ?? "",
-          correct_answer_encrypted: ["A", "B", "C", "D"][q.correct ?? 0],
-          marks: q.marks ?? 4,
-          question_order: idx + 1,
-          category: sub.subject ?? "General",
-        })) as any,
-      );
-      if (qErr) throw new Error(qErr.message);
+    // Insert questions — SEEDING GUARD: drop any row that is missing the
+    // question text or any of the four options, and refuse to publish a paper
+    // with zero valid questions. The DB also enforces this via the
+    // prevent_empty_question trigger, but failing fast here gives the
+    // institute a clear error instead of a generic 500.
+    const rawQs = (sub.questions ?? []) as any[];
+    const cleaned = rawQs
+      .map((q) => ({
+        text: String(q.text ?? "").trim(),
+        a: String(q.options?.[0] ?? "").trim(),
+        b: String(q.options?.[1] ?? "").trim(),
+        c: String(q.options?.[2] ?? "").trim(),
+        d: String(q.options?.[3] ?? "").trim(),
+        correct: ["A", "B", "C", "D"][q.correct ?? 0] ?? "A",
+        marks: Number(q.marks ?? 4),
+      }))
+      .filter((q) => q.text && q.a && q.b && q.c && q.d);
+    if (cleaned.length === 0) {
+      throw new Error("Cannot publish: this paper has no complete questions. Each question needs text and all four options.");
     }
+    if (cleaned.length !== rawQs.length) {
+      console.warn(`publishPaperAsExam: dropped ${rawQs.length - cleaned.length} empty question rows for paper ${sub.id}`);
+    }
+    const { error: qErr } = await supabaseAdmin.from("questions").insert(
+      cleaned.map((q, idx) => ({
+        exam_id: exam.id,
+        question_text_encrypted: q.text,
+        option_a_encrypted: q.a,
+        option_b_encrypted: q.b,
+        option_c_encrypted: q.c,
+        option_d_encrypted: q.d,
+        correct_answer_encrypted: q.correct,
+        marks: q.marks,
+        question_order: idx + 1,
+        category: sub.subject ?? "General",
+      })) as any,
+    );
+    if (qErr) throw new Error(qErr.message);
 
     // NOTE: We no longer auto-register every candidate. Candidates must register
     // (and pay) themselves via the institute paper flow, and admit cards are

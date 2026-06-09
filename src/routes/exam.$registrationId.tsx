@@ -466,14 +466,14 @@ function ExamPage() {
         </div>
       </header>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-[30%_70%] gap-3 md:gap-4 p-3 md:p-4 max-w-[1600px] mx-auto w-full">
-        <aside className="space-y-3 md:space-y-4 order-2 md:order-1">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-3 lg:gap-4 p-3 lg:p-4 max-w-[1600px] mx-auto w-full">
+        <aside className="space-y-3 lg:space-y-4 order-2 lg:order-1 lg:sticky lg:top-[64px] lg:self-start">
           {sections.length > 1 && (
             <Card className="p-2">
-              <div className="flex gap-1 overflow-x-auto">
+              <div className="flex gap-1 overflow-x-auto scrollbar-thin">
                 {sections.map((s) => (
                   <button key={s} onClick={() => { setActiveSection(s); setCurrent(0); }}
-                    className={`px-3 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition ${activeSection === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
+                    className={`px-3 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition-colors ${activeSection === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
                     {s}
                   </button>
                 ))}
@@ -486,23 +486,23 @@ function ExamPage() {
               <div className="rounded bg-muted text-muted-foreground p-2 font-bold">{unanswered}<div className="font-normal">Unanswered</div></div>
               <div className="rounded bg-warning/10 text-warning p-2 font-bold">{marked}<div className="font-normal">Marked</div></div>
             </div>
-            <div className="grid grid-cols-6 sm:grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-8 sm:grid-cols-10 lg:grid-cols-5 gap-1.5">
               {sectionQuestions.map((sq, i) => {
                 const a = answers[sq.id];
                 const isCur = i === current;
-                const cls = isCur ? "bg-primary text-primary-foreground"
+                const cls = isCur ? "bg-primary text-primary-foreground scale-105"
                   : a?.marked ? "bg-warning/20 text-warning border border-warning"
                   : a?.selected ? "bg-success/15 text-success border border-success/40"
                   : "bg-muted text-muted-foreground hover:bg-muted/70";
                 return (
-                  <button key={sq.id} onClick={() => setCurrent(i)} className={`h-9 rounded text-xs font-semibold transition ${cls}`}>{i + 1}</button>
+                  <button key={sq.id} onClick={() => setCurrent(i)} aria-label={`Go to question ${i + 1}`} className={`h-9 rounded text-xs font-semibold transition-all duration-150 ${cls}`}>{i + 1}</button>
                 );
               })}
             </div>
           </Card>
         </aside>
 
-        <main className="order-1 md:order-2">
+        <main className="order-1 lg:order-2 min-w-0">
           {q && (
             <Card key={q.id} className="p-4 md:p-8 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
@@ -546,7 +546,7 @@ function ExamPage() {
       </div>
 
       {/* Persistent live camera preview (proctor watching) */}
-      <div className="fixed bottom-3 right-3 z-30 w-32 sm:w-40 rounded-lg overflow-hidden border-2 border-accent shadow-elegant bg-foreground/10">
+      <div className="fixed bottom-3 right-3 z-30 w-24 sm:w-32 lg:w-40 rounded-lg overflow-hidden border-2 border-accent shadow-elegant bg-foreground/10">
         <video ref={videoRef} muted playsInline className="w-full aspect-[4/3] object-cover" />
         <div className="text-[10px] text-center bg-background/90 px-1 py-0.5 flex items-center justify-center gap-1">
           <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" /> AI Proctor
