@@ -529,7 +529,7 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
             <TooltipTrigger asChild>
               <span>
                 <Button
-                  onClick={() => setShowLock(true)}
+                  onClick={() => setShowCeremony(true)}
                   disabled={!title || !subject || !examDate || questions.length === 0 || (isInstitute && !allPartiesPresent)}
                   className={isInstitute && allPartiesPresent ? "ring-2 ring-success shadow-[0_0_20px_-4px] shadow-success/50 transition" : ""}
                 >
