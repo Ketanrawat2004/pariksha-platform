@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Shield, Eye, Lock, Zap, FileCheck, Globe, ArrowRight, CheckCircle2,
-  UserCheck, MonitorCheck, GraduationCap,
+  UserCheck, MonitorCheck, GraduationCap, MonitorPlay, ShieldCheck, Camera, Wifi,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -137,6 +137,90 @@ function LandingPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
                 </Card>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Exam Mode */}
+        <section id="exam-mode" className="py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent mb-3">
+                <MonitorPlay className="h-3.5 w-3.5" /> Exam Mode
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">A lockdown browser that watches the room.</h2>
+              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+                The moment the exam starts, Pariksha takes over the tab — fullscreen, copy-disabled, devtools-blocked, with continuous face verification and a per-second integrity score.
+              </p>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-5 items-stretch">
+              {/* Mock browser */}
+              <Card className="lg:col-span-3 p-0 overflow-hidden shadow-elegant">
+                <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
+                  <span className="ml-3 flex-1 rounded bg-background px-2 py-1 text-[11px] font-mono text-muted-foreground truncate">
+                    pariksha.app/exam/locked • secured session
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-bold text-success">
+                    <ShieldCheck className="h-3 w-3" /> LOCKED
+                  </span>
+                </div>
+                <div className="grid gap-0 sm:grid-cols-[1fr,180px]">
+                  <div className="p-5">
+                    <div className="text-xs text-muted-foreground">Question 14 / 60</div>
+                    <h3 className="mt-1 font-bold">If the SHA-256 hash of a question paper changes after publication, the platform should…</h3>
+                    <ul className="mt-4 space-y-2 text-sm">
+                      {["Auto-cancel the exam center-wide","Notify only the proctor","Suspend the candidate's session","Flag the paper as tampered and freeze results"].map((o, i) => (
+                        <li key={i} className={`rounded-lg border px-3 py-2 ${i===3?"border-accent bg-accent/10":"border-border"}`}>
+                          <span className="mr-2 font-mono text-xs text-muted-foreground">{String.fromCharCode(65+i)}.</span>{o}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <aside className="border-t sm:border-t-0 sm:border-l border-border bg-card p-4 space-y-3">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Time left</div>
+                      <div className="font-mono text-2xl font-extrabold">01:42:18</div>
+                    </div>
+                    <div className="rounded-lg border border-border p-2">
+                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        <Camera className="h-3 w-3" /> Identity
+                      </div>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                        <span className="text-xs font-semibold">Match · 98%</span>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-border p-2">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Integrity</div>
+                      <div className="mt-1 text-xs font-bold text-success">100 / 100</div>
+                    </div>
+                  </aside>
+                </div>
+              </Card>
+
+              {/* Side rules */}
+              <div className="lg:col-span-2 grid gap-3">
+                {[
+                  { icon: Lock, t: "Fullscreen lockdown", d: "Exit attempts pause the timer and log an event." },
+                  { icon: Camera, t: "Continuous face match", d: "Re-verified every 5 minutes via face-api.js." },
+                  { icon: Wifi, t: "Offline-resilient", d: "Answers queue locally and resync on reconnect." },
+                  { icon: Eye, t: "Anti-cheat heuristics", d: "Tab-switch, copy, devtools, mouse-exit — all scored." },
+                ].map((r) => (
+                  <Card key={r.t} className="p-4 flex gap-3 items-start">
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <r.icon className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <div className="font-semibold text-sm">{r.t}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{r.d}</div>
+                    </div>
+                  </Card>
+                ))}
+                <Button asChild className="mt-1"><Link to="/login">Enter Exam Mode <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+              </div>
             </div>
           </div>
         </section>
