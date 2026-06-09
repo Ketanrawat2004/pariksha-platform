@@ -43,7 +43,7 @@ function AttendancePage() {
     [data, q],
   );
 
-  const present = (data ?? []).filter((r) => r.status === "completed" || r.status === "approved").length;
+  const present = (data ?? []).filter((r) => r.status === "approved").length;
 
   return (
     <>
@@ -72,7 +72,7 @@ function AttendancePage() {
           filtered.map((r) => {
             const cand = (r as { candidate: { full_name?: string; email?: string } | null }).candidate;
             const ex = (r as { exam: { title?: string; exam_date?: string; start_time?: string } | null }).exam;
-            const isPresent = r.status === "completed" || r.status === "approved";
+            const isPresent = r.status === "approved";
             return (
               <Card key={r.id} className="p-3 flex flex-wrap items-center gap-3">
                 {isPresent ? (
