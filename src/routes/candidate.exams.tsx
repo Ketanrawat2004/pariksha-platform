@@ -263,6 +263,9 @@ function PayAndRegisterButton({ examId, examTitle }: { examId: string; examTitle
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>Register for {examTitle}</DialogTitle></DialogHeader>
+        <div className="rounded-md border border-orange-300 bg-orange-100 px-3 py-2 text-xs text-orange-800">
+          <strong>Test mode:</strong> Use card <span className="font-mono">4242 4242 4242 4242</span> with any future expiry and any CVC. No real money is charged.
+        </div>
         <StripeEmbeddedCheckoutForm priceId="exam_registration_500" examId={examId} />
       </DialogContent>
     </Dialog>
