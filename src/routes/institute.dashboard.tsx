@@ -170,6 +170,7 @@ function InstitutePage() {
       })));
     }
     toast.success("Edit request sent to admin & superadmin");
+    void logActivity("paper_edit_request", { paper_id: editRequestFor.id, title: editRequestFor.title }, "paper_submissions", editRequestFor.id);
     setEditRequestFor(null); setEditNote(""); setEditPhoto("");
     qc.invalidateQueries({ queryKey: ["paper-submissions"] });
   }
