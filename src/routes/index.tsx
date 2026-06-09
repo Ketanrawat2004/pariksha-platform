@@ -92,10 +92,13 @@ function LandingPage() {
               India's national examination integrity platform. Cryptographic anti-leak, AI proxy detection, and real-time monitoring — built for the scale of a billion.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              <Button size="lg" asChild className="shadow-elegant">
-                <Link to="/register">Register as Candidate <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Button size="lg" asChild className="bg-accent hover:bg-accent/90 shadow-elegant">
+                <Link to="/exam-entry"><PlayCircle className="mr-2 h-5 w-5" /> Give Exam</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
+                <Link to="/register">Register as Candidate <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+              <Button size="lg" variant="ghost" asChild>
                 <Link to="/login">Institution Login</Link>
               </Button>
             </div>
@@ -219,7 +222,7 @@ function LandingPage() {
                     </div>
                   </Card>
                 ))}
-                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/candidate/dashboard"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
+                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/exam-entry"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
               </div>
             </div>
           </div>

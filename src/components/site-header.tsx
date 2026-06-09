@@ -22,6 +22,9 @@ export function SiteHeader() {
           <Link to="/sitemap" className="text-muted-foreground hover:text-foreground transition" activeProps={{ className: "text-foreground font-semibold" }}>Sitemap</Link>
         </nav>
         <div className="flex items-center gap-2">
+          <Button size="sm" asChild className="bg-accent hover:bg-accent/90 shadow-elegant">
+            <Link to="/exam-entry">Give Exam</Link>
+          </Button>
           {user ? (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate({ to: defaultLandingFor(roles) })}>Dashboard</Button>
@@ -30,7 +33,7 @@ export function SiteHeader() {
           ) : (
             <>
               <Button variant="ghost" size="sm" asChild><Link to="/login">Login</Link></Button>
-              <Button size="sm" asChild><Link to="/register">Register</Link></Button>
+              <Button size="sm" variant="outline" asChild><Link to="/register">Register</Link></Button>
             </>
           )}
         </div>
