@@ -8,20 +8,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rolesLoading, setRolesLoading] = useState(false);
 
   const loadRoles = useCallback(async (userId: string) => {
+    setRolesLoading(true);
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     setRoles((data ?? []).map((r) => r.role as AppRole));
+    setRolesLoading(false);
   }, []);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
+        setRolesLoading(true);
         setTimeout(() => loadRoles(sess.user.id), 0);
       } else {
         setRoles([]);
+        setRolesLoading(false);
       }
     });
 
@@ -44,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hasAnyRole = (rs: AppRole[]) => rs.some((r) => roles.includes(r));
 
   return (
-    <AuthContext.Provider value={{ session, user, roles, loading, signOut, hasRole, hasAnyRole }}>
+    <AuthContext.Provider value={{ session, user, roles, loading, rolesLoading, signOut, hasRole, hasAnyRole }}>
       {children}
     </AuthContext.Provider>
   );

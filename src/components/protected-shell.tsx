@@ -44,21 +44,20 @@ const navByRole: Record<AppRole, NavItem[]> = {
 };
 
 export function ProtectedShell({ children, requireRoles }: { children: ReactNode; requireRoles: AppRole[] }) {
-  const { user, loading, roles, signOut, hasAnyRole } = useAuth();
+  const { user, loading, rolesLoading, roles, signOut, hasAnyRole } = useAuth();
   const navigate = useNavigate();
   const { location } = useRouterState();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        navigate({ to: "/login" });
-      } else if (!hasAnyRole(requireRoles)) {
-        navigate({ to: "/" });
-      }
+    if (loading || rolesLoading) return;
+    if (!user) {
+      navigate({ to: "/login" });
+    } else if (!hasAnyRole(requireRoles)) {
+      navigate({ to: "/" });
     }
-  }, [loading, user, roles, navigate, requireRoles, hasAnyRole]);
+  }, [loading, rolesLoading, user, roles, navigate, requireRoles, hasAnyRole]);
 
-  if (loading || !user || !hasAnyRole(requireRoles)) {
+  if (loading || rolesLoading || !user || !hasAnyRole(requireRoles)) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

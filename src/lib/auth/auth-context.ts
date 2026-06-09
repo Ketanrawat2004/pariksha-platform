@@ -8,6 +8,7 @@ export interface AuthContextValue {
   user: User | null;
   roles: AppRole[];
   loading: boolean;
+  rolesLoading: boolean;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   hasAnyRole: (roles: AppRole[]) => boolean;
