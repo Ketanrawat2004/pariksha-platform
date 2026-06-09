@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Shield, Eye, Lock, Zap, FileCheck, Globe, ArrowRight, CheckCircle2,
-  UserCheck, MonitorCheck, GraduationCap, MonitorPlay, ShieldCheck, Camera, Wifi,
+  UserCheck, MonitorCheck, GraduationCap, MonitorPlay, ShieldCheck, Camera, Wifi, PlayCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
