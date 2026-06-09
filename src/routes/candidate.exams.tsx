@@ -114,7 +114,7 @@ function PaperCard({
   const [starting, setStarting] = useState(false);
 
   const startsAt = new Date(`${paper.exam_date}T${paper.start_time ?? "00:00:00"}`);
-  const canGiveExam = !!myReg?.admit_released && Date.now() >= startsAt.getTime();
+  const canGiveExam = !!myReg?.admit_released;
 
   async function giveExam() {
     if (!myReg) return;
