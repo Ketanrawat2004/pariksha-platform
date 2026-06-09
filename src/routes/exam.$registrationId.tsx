@@ -315,14 +315,20 @@ function ExamPage() {
     setPhase("terms");
   };
 
-  // Accept terms -> request fullscreen + create session -> exam
+  // Accept terms -> request fullscreen (best-effort) + create session -> exam
   const acceptAndStart = async () => {
     if (!termsAccepted) { toast.error("Please accept the terms first."); return; }
+    // Fullscreen is best-effort: some embedded contexts (preview iframes) block it.
+    // We still enforce anti-cheat via focus/visibility events below.
     try {
-      await document.documentElement.requestFullscreen();
+      const el: any = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+      if (req) await req.call(el).catch(() => {});
+      if (!document.fullscreenElement) {
+        toast.warning("Could not enter fullscreen — exam will continue but please avoid switching apps/tabs.");
+      }
     } catch {
-      toast.error("Fullscreen is required to proceed.");
-      return;
+      toast.warning("Fullscreen unavailable in this view — exam will continue.");
     }
     if (isDemo) {
       setSessionId("demo-session");

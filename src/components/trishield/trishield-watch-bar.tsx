@@ -32,6 +32,12 @@ export function TriShieldWatchBar({ session, sticky = true }: { session: WatchSe
         </span>
         <Radio className="h-4 w-4" /> TriShield LiveWatch Active
       </span>
+      {session?.join_code && (
+        <span className="flex items-center gap-1.5 rounded-md bg-white/10 px-2 py-1 text-xs">
+          <span className="uppercase tracking-wider text-white/60">Join code</span>
+          <span className="font-mono font-bold tracking-[0.3em] text-base">{session.join_code}</span>
+        </span>
+      )}
       <div className="flex flex-wrap items-center gap-2 ml-auto">
         <Party label="Institute" count={session?.institute_snapshot_count ?? 0} active={!!session?.institute_camera_active} joinedAt={session?.session_started_at} />
         <Party label="Admin" count={session?.admin_snapshot_count ?? 0} active={!!session?.admin_camera_active} joinedAt={session?.admin_joined_at} />

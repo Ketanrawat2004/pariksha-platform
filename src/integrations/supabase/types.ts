@@ -812,6 +812,7 @@ export type Database = {
           institute_device_fingerprint: Json | null
           institute_ip: string | null
           institute_snapshot_count: number
+          join_code: string | null
           paper_submission_id: string | null
           session_ended_at: string | null
           session_started_at: string
@@ -841,6 +842,7 @@ export type Database = {
           institute_device_fingerprint?: Json | null
           institute_ip?: string | null
           institute_snapshot_count?: number
+          join_code?: string | null
           paper_submission_id?: string | null
           session_ended_at?: string | null
           session_started_at?: string
@@ -870,6 +872,7 @@ export type Database = {
           institute_device_fingerprint?: Json | null
           institute_ip?: string | null
           institute_snapshot_count?: number
+          join_code?: string | null
           paper_submission_id?: string | null
           session_ended_at?: string | null
           session_started_at?: string
@@ -937,6 +940,17 @@ export type Database = {
         Args: { _roles: Database["public"]["Enums"]["app_role"][] }
         Returns: boolean
       }
+      find_trishield_session_by_code: {
+        Args: { _code: string }
+        Returns: {
+          exam_id: string
+          id: string
+          paper_submission_id: string
+          session_type: string
+          status: string
+        }[]
+      }
+      generate_trishield_join_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

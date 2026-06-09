@@ -1,90 +1,65 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ShieldAlert } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ShieldAlert, KeyRound } from "lucide-react";
 import { StaffWatchDrawer } from "./staff-watch-drawer";
-import type { WatchSessionRow } from "@/lib/trishield/use-trishield-watch";
+import { toast } from "sonner";
 
 /**
- * Listens for active TriShield sessions and shows a persistent red banner
- * until the staff party joins. Renders the drawer when "Join" is clicked.
+ * Staff (admin/superadmin) join an institute's TriShield session by entering
+ * the 6-character code shown on the institute's dashboard. This guarantees
+ * each staff member connects to the exact session — no random pairing.
  */
 export function StaffWatchBanner({ party }: { party: "admin" | "superadmin" }) {
-  const [pending, setPending] = useState<WatchSessionRow[]>([]);
-  const [openSession, setOpenSession] = useState<WatchSessionRow | null>(null);
+  const [code, setCode] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [openSessionId, setOpenSessionId] = useState<string | null>(null);
 
-  // Initial load of active sessions not yet joined by this party
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data } = await supabase
-        .from("trishield_watch_sessions" as any)
-        .select("*")
-        .eq("status", "active")
-        .order("session_started_at", { ascending: false });
-      if (cancelled || !data) return;
-      const filtered = (data as any[]).filter((s) =>
-        party === "admin" ? !s.admin_camera_active : !s.superadmin_camera_active,
-      );
-      setPending(filtered as WatchSessionRow[]);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [party]);
-
-  // Realtime: new inserts + updates (so banner disappears when join completes)
-  useEffect(() => {
-    const ch = supabase
-      .channel(`staff-watch-banner-${party}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "trishield_watch_sessions" },
-        (payload) => {
-          const row = payload.new as any as WatchSessionRow;
-          if (row.status !== "active") return;
-          const cameraActive = party === "admin" ? row.admin_camera_active : row.superadmin_camera_active;
-          if (cameraActive) return;
-          setPending((p) => (p.some((r) => r.id === row.id) ? p : [row, ...p]));
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "trishield_watch_sessions" },
-        (payload) => {
-          const row = payload.new as any as WatchSessionRow;
-          const cameraActive = party === "admin" ? row.admin_camera_active : row.superadmin_camera_active;
-          if (cameraActive || row.status !== "active") {
-            setPending((p) => p.filter((r) => r.id !== row.id));
-          }
-        },
-      )
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(ch);
-    };
-  }, [party]);
-
-  const top = pending[0];
+  async function joinByCode() {
+    const trimmed = code.trim().toUpperCase();
+    if (trimmed.length < 4) { toast.error("Enter the 6-character code shown on the institute dashboard"); return; }
+    setJoining(true);
+    try {
+      const { data, error } = await supabase.rpc("find_trishield_session_by_code" as any, { _code: trimmed } as any);
+      if (error) throw error;
+      const row = Array.isArray(data) ? data[0] : data;
+      if (!row?.id) { toast.error("No active session found for that code"); return; }
+      setOpenSessionId(row.id);
+      toast.success("Joining institute's LiveWatch…");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not join session");
+    } finally {
+      setJoining(false);
+    }
+  }
 
   return (
     <>
-      {top && (
-        <div className="-mx-4 sm:-mx-6 mb-4 bg-destructive text-destructive-foreground px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3 shadow-lg">
-          <ShieldAlert className="h-5 w-5 shrink-0" />
-          <div className="text-sm flex-1">
-            <strong>TriShield LiveWatch Session Started</strong> — Institute is working on an exam paper. Your camera presence is required.
-          </div>
-          <Button size="sm" variant="secondary" onClick={() => setOpenSession(top)}>
-            Join LiveWatch
+      <div className="-mx-4 sm:-mx-6 mb-4 bg-destructive/10 border-y border-destructive/30 px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3">
+        <ShieldAlert className="h-5 w-5 shrink-0 text-destructive" />
+        <div className="text-sm flex-1 min-w-[200px]">
+          <strong>TriShield LiveWatch</strong> — Enter the join code from the institute to monitor their paper session in real time.
+        </div>
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-muted-foreground" />
+          <Input
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6))}
+            placeholder="ABC123"
+            className="w-32 font-mono uppercase tracking-widest"
+            onKeyDown={(e) => { if (e.key === "Enter") void joinByCode(); }}
+          />
+          <Button size="sm" onClick={joinByCode} disabled={joining || code.length < 4}>
+            {joining ? "Joining…" : "Join LiveWatch"}
           </Button>
         </div>
-      )}
-      {openSession && (
+      </div>
+      {openSessionId && (
         <StaffWatchDrawer
           party={party}
-          sessionId={openSession.id}
-          onClose={() => setOpenSession(null)}
+          sessionId={openSessionId}
+          onClose={() => setOpenSessionId(null)}
         />
       )}
     </>
