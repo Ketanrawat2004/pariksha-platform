@@ -57,6 +57,7 @@ export function StaffWatchDrawer({ party, sessionId, onClose }: { party: "admin"
         resource_id: sessionId,
         details: { dual_shield_event: true } as any,
       } as any);
+      void runGenerateReport({ data: { sessionId } }).catch(() => {});
       toast.success("Session halted");
       onClose();
     } catch (e: any) {
