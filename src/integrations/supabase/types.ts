@@ -318,12 +318,15 @@ export type Database = {
           admit_card_number: string | null
           admit_released: boolean
           admit_released_at: string | null
+          cancelled: boolean
           candidate_id: string
           created_at: string
           date_of_birth: string | null
           full_name: string
           id: string
+          paid: boolean
           paper_submission_id: string
+          payment_id: string | null
           phone: string | null
           updated_at: string
         }
@@ -331,12 +334,15 @@ export type Database = {
           admit_card_number?: string | null
           admit_released?: boolean
           admit_released_at?: string | null
+          cancelled?: boolean
           candidate_id: string
           created_at?: string
           date_of_birth?: string | null
           full_name: string
           id?: string
+          paid?: boolean
           paper_submission_id: string
+          payment_id?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -344,12 +350,15 @@ export type Database = {
           admit_card_number?: string | null
           admit_released?: boolean
           admit_released_at?: string | null
+          cancelled?: boolean
           candidate_id?: string
           created_at?: string
           date_of_birth?: string | null
           full_name?: string
           id?: string
+          paid?: boolean
           paper_submission_id?: string
+          payment_id?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -359,6 +368,13 @@ export type Database = {
             columns: ["paper_submission_id"]
             isOneToOne: false
             referencedRelation: "paper_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paper_registrations_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
             referencedColumns: ["id"]
           },
         ]
@@ -450,11 +466,15 @@ export type Database = {
       payments: {
         Row: {
           amount_cents: number
+          candidate_dob: string | null
+          candidate_full_name: string | null
+          candidate_phone: string | null
           created_at: string
           currency: string
           environment: string
           exam_id: string | null
           id: string
+          paper_submission_id: string | null
           registration_id: string | null
           status: string
           stripe_customer_id: string | null
@@ -465,11 +485,15 @@ export type Database = {
         }
         Insert: {
           amount_cents: number
+          candidate_dob?: string | null
+          candidate_full_name?: string | null
+          candidate_phone?: string | null
           created_at?: string
           currency?: string
           environment?: string
           exam_id?: string | null
           id?: string
+          paper_submission_id?: string | null
           registration_id?: string | null
           status?: string
           stripe_customer_id?: string | null
@@ -480,11 +504,15 @@ export type Database = {
         }
         Update: {
           amount_cents?: number
+          candidate_dob?: string | null
+          candidate_full_name?: string | null
+          candidate_phone?: string | null
           created_at?: string
           currency?: string
           environment?: string
           exam_id?: string | null
           id?: string
+          paper_submission_id?: string | null
           registration_id?: string | null
           status?: string
           stripe_customer_id?: string | null
@@ -499,6 +527,13 @@ export type Database = {
             columns: ["exam_id"]
             isOneToOne: false
             referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_paper_submission_id_fkey"
+            columns: ["paper_submission_id"]
+            isOneToOne: false
+            referencedRelation: "paper_submissions"
             referencedColumns: ["id"]
           },
           {
