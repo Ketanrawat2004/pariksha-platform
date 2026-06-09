@@ -1,17 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
 import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
 
-let _supabase: ReturnType<typeof createClient> | null = null;
-function getSupabase() {
-  if (!_supabase) {
-    _supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-  }
-  return _supabase;
+async function getSupabase() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin as any;
 }
 
 async function handleCheckoutCompleted(session: any, env: StripeEnv) {
-  const sb = getSupabase();
+  const sb = await getSupabase();
   const userId = session.metadata?.userId;
   const examId = session.metadata?.examId || null;
   const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
@@ -55,7 +51,7 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
 }
 
 async function handlePaymentFailed(intent: any, env: StripeEnv) {
-  const sb = getSupabase();
+  const sb = await getSupabase();
   await sb.from("payments")
     .update({ status: "failed", updated_at: new Date().toISOString() })
     .eq("stripe_payment_intent_id", intent.id)
@@ -63,7 +59,7 @@ async function handlePaymentFailed(intent: any, env: StripeEnv) {
 }
 
 async function handleRefunded(charge: any, env: StripeEnv) {
-  const sb = getSupabase();
+  const sb = await getSupabase();
   const piId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
   if (!piId) return;
   const { data: payment } = await sb.from("payments")

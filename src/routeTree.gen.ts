@@ -34,11 +34,13 @@ import { Route as InvigilatorDashboardRouteImport } from './routes/invigilator.d
 import { Route as InvigilatorAttendanceRouteImport } from './routes/invigilator.attendance'
 import { Route as InstituteDashboardRouteImport } from './routes/institute.dashboard'
 import { Route as ExamRegistrationIdRouteImport } from './routes/exam.$registrationId'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as CandidateResultsRouteImport } from './routes/candidate.results'
 import { Route as CandidateProfileRouteImport } from './routes/candidate.profile'
 import { Route as CandidateNotificationsRouteImport } from './routes/candidate.notifications'
 import { Route as CandidateExamsRouteImport } from './routes/candidate.exams'
 import { Route as CandidateDashboardRouteImport } from './routes/candidate.dashboard'
+import { Route as CandidateBillingRouteImport } from './routes/candidate.billing'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminIntegrityRouteImport } from './routes/admin.integrity'
@@ -47,6 +49,7 @@ import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCentersRouteImport } from './routes/admin.centers'
 import { Route as AdminCandidatesRouteImport } from './routes/admin.candidates'
 import { Route as ApiPublicGiveExamVerifyRouteImport } from './routes/api/public/give-exam-verify'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksCleanupSnapshotsRouteImport } from './routes/api/public/hooks/cleanup-snapshots'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -176,6 +179,11 @@ const ExamRegistrationIdRoute = ExamRegistrationIdRouteImport.update({
   path: '/exam/$registrationId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CandidateResultsRoute = CandidateResultsRouteImport.update({
   id: '/candidate/results',
   path: '/candidate/results',
@@ -199,6 +207,11 @@ const CandidateExamsRoute = CandidateExamsRouteImport.update({
 const CandidateDashboardRoute = CandidateDashboardRouteImport.update({
   id: '/candidate/dashboard',
   path: '/candidate/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidateBillingRoute = CandidateBillingRouteImport.update({
+  id: '/candidate/billing',
+  path: '/candidate/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -241,6 +254,12 @@ const ApiPublicGiveExamVerifyRoute = ApiPublicGiveExamVerifyRouteImport.update({
   path: '/api/public/give-exam-verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksCleanupSnapshotsRoute =
   ApiPublicHooksCleanupSnapshotsRouteImport.update({
     id: '/api/public/hooks/cleanup-snapshots',
@@ -268,11 +287,13 @@ export interface FileRoutesByFullPath {
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/chat': typeof ApiChatRoute
+  '/candidate/billing': typeof CandidateBillingRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
   '/candidate/exams': typeof CandidateExamsRoute
   '/candidate/notifications': typeof CandidateNotificationsRoute
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/exam/$registrationId': typeof ExamRegistrationIdRoute
   '/institute/dashboard': typeof InstituteDashboardRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
@@ -288,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -309,11 +331,13 @@ export interface FileRoutesByTo {
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/chat': typeof ApiChatRoute
+  '/candidate/billing': typeof CandidateBillingRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
   '/candidate/exams': typeof CandidateExamsRoute
   '/candidate/notifications': typeof CandidateNotificationsRoute
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/exam/$registrationId': typeof ExamRegistrationIdRoute
   '/institute/dashboard': typeof InstituteDashboardRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
@@ -329,6 +353,7 @@ export interface FileRoutesByTo {
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -351,11 +376,13 @@ export interface FileRoutesById {
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/chat': typeof ApiChatRoute
+  '/candidate/billing': typeof CandidateBillingRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
   '/candidate/exams': typeof CandidateExamsRoute
   '/candidate/notifications': typeof CandidateNotificationsRoute
   '/candidate/profile': typeof CandidateProfileRoute
   '/candidate/results': typeof CandidateResultsRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/exam/$registrationId': typeof ExamRegistrationIdRoute
   '/institute/dashboard': typeof InstituteDashboardRoute
   '/invigilator/attendance': typeof InvigilatorAttendanceRoute
@@ -371,6 +398,7 @@ export interface FileRoutesById {
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -394,11 +422,13 @@ export interface FileRouteTypes {
     | '/admin/integrity'
     | '/admin/reports'
     | '/api/chat'
+    | '/candidate/billing'
     | '/candidate/dashboard'
     | '/candidate/exams'
     | '/candidate/notifications'
     | '/candidate/profile'
     | '/candidate/results'
+    | '/checkout/return'
     | '/exam/$registrationId'
     | '/institute/dashboard'
     | '/invigilator/attendance'
@@ -414,6 +444,7 @@ export interface FileRouteTypes {
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
     | '/api/public/hooks/cleanup-snapshots'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -435,11 +466,13 @@ export interface FileRouteTypes {
     | '/admin/integrity'
     | '/admin/reports'
     | '/api/chat'
+    | '/candidate/billing'
     | '/candidate/dashboard'
     | '/candidate/exams'
     | '/candidate/notifications'
     | '/candidate/profile'
     | '/candidate/results'
+    | '/checkout/return'
     | '/exam/$registrationId'
     | '/institute/dashboard'
     | '/invigilator/attendance'
@@ -455,6 +488,7 @@ export interface FileRouteTypes {
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
     | '/api/public/hooks/cleanup-snapshots'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -476,11 +510,13 @@ export interface FileRouteTypes {
     | '/admin/integrity'
     | '/admin/reports'
     | '/api/chat'
+    | '/candidate/billing'
     | '/candidate/dashboard'
     | '/candidate/exams'
     | '/candidate/notifications'
     | '/candidate/profile'
     | '/candidate/results'
+    | '/checkout/return'
     | '/exam/$registrationId'
     | '/institute/dashboard'
     | '/invigilator/attendance'
@@ -496,6 +532,7 @@ export interface FileRouteTypes {
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
     | '/api/public/hooks/cleanup-snapshots'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -518,11 +555,13 @@ export interface RootRouteChildren {
   AdminIntegrityRoute: typeof AdminIntegrityRoute
   AdminReportsRoute: typeof AdminReportsRoute
   ApiChatRoute: typeof ApiChatRoute
+  CandidateBillingRoute: typeof CandidateBillingRoute
   CandidateDashboardRoute: typeof CandidateDashboardRoute
   CandidateExamsRoute: typeof CandidateExamsRoute
   CandidateNotificationsRoute: typeof CandidateNotificationsRoute
   CandidateProfileRoute: typeof CandidateProfileRoute
   CandidateResultsRoute: typeof CandidateResultsRoute
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
   ExamRegistrationIdRoute: typeof ExamRegistrationIdRoute
   InstituteDashboardRoute: typeof InstituteDashboardRoute
   InvigilatorAttendanceRoute: typeof InvigilatorAttendanceRoute
@@ -538,6 +577,7 @@ export interface RootRouteChildren {
   SuperadminTrishieldReportsRoute: typeof SuperadminTrishieldReportsRoute
   ApiPublicGiveExamVerifyRoute: typeof ApiPublicGiveExamVerifyRoute
   ApiPublicHooksCleanupSnapshotsRoute: typeof ApiPublicHooksCleanupSnapshotsRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -717,6 +757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamRegistrationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/candidate/results': {
       id: '/candidate/results'
       path: '/candidate/results'
@@ -750,6 +797,13 @@ declare module '@tanstack/react-router' {
       path: '/candidate/dashboard'
       fullPath: '/candidate/dashboard'
       preLoaderRoute: typeof CandidateDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidate/billing': {
+      id: '/candidate/billing'
+      path: '/candidate/billing'
+      fullPath: '/candidate/billing'
+      preLoaderRoute: typeof CandidateBillingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -808,6 +862,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicGiveExamVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/cleanup-snapshots': {
       id: '/api/public/hooks/cleanup-snapshots'
       path: '/api/public/hooks/cleanup-snapshots'
@@ -838,11 +899,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIntegrityRoute: AdminIntegrityRoute,
   AdminReportsRoute: AdminReportsRoute,
   ApiChatRoute: ApiChatRoute,
+  CandidateBillingRoute: CandidateBillingRoute,
   CandidateDashboardRoute: CandidateDashboardRoute,
   CandidateExamsRoute: CandidateExamsRoute,
   CandidateNotificationsRoute: CandidateNotificationsRoute,
   CandidateProfileRoute: CandidateProfileRoute,
   CandidateResultsRoute: CandidateResultsRoute,
+  CheckoutReturnRoute: CheckoutReturnRoute,
   ExamRegistrationIdRoute: ExamRegistrationIdRoute,
   InstituteDashboardRoute: InstituteDashboardRoute,
   InvigilatorAttendanceRoute: InvigilatorAttendanceRoute,
@@ -858,6 +921,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminTrishieldReportsRoute: SuperadminTrishieldReportsRoute,
   ApiPublicGiveExamVerifyRoute: ApiPublicGiveExamVerifyRoute,
   ApiPublicHooksCleanupSnapshotsRoute: ApiPublicHooksCleanupSnapshotsRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
