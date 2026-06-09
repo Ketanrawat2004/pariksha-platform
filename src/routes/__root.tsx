@@ -13,7 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 
 function NotFoundComponent() {
   return (
@@ -128,7 +128,6 @@ function RootComponent() {
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
           Skip to main content
         </a>
-        <PaymentTestModeBanner />
         <Outlet />
         <Toaster richColors position="top-right" />
       </AuthProvider>
