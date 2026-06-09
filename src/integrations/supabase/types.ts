@@ -667,6 +667,196 @@ export type Database = {
         }
         Relationships: []
       }
+      trishield_session_reports: {
+        Row: {
+          admin_ip: string | null
+          admin_snapshot_count: number | null
+          created_at: string
+          critical_actions: Json | null
+          duration_seconds: number | null
+          ended_at: string | null
+          exam_id: string | null
+          final_paper_hash: string | null
+          id: string
+          incomplete_reason: string | null
+          institute_ip: string | null
+          institute_snapshot_count: number | null
+          session_id: string
+          session_type: string | null
+          started_at: string | null
+          superadmin_ip: string | null
+          superadmin_snapshot_count: number | null
+          verification_status: string | null
+        }
+        Insert: {
+          admin_ip?: string | null
+          admin_snapshot_count?: number | null
+          created_at?: string
+          critical_actions?: Json | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          exam_id?: string | null
+          final_paper_hash?: string | null
+          id?: string
+          incomplete_reason?: string | null
+          institute_ip?: string | null
+          institute_snapshot_count?: number | null
+          session_id: string
+          session_type?: string | null
+          started_at?: string | null
+          superadmin_ip?: string | null
+          superadmin_snapshot_count?: number | null
+          verification_status?: string | null
+        }
+        Update: {
+          admin_ip?: string | null
+          admin_snapshot_count?: number | null
+          created_at?: string
+          critical_actions?: Json | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          exam_id?: string | null
+          final_paper_hash?: string | null
+          id?: string
+          incomplete_reason?: string | null
+          institute_ip?: string | null
+          institute_snapshot_count?: number | null
+          session_id?: string
+          session_type?: string | null
+          started_at?: string | null
+          superadmin_ip?: string | null
+          superadmin_snapshot_count?: number | null
+          verification_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trishield_session_reports_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trishield_session_reports_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "trishield_watch_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trishield_watch_sessions: {
+        Row: {
+          admin_camera_active: boolean
+          admin_confirmed: boolean
+          admin_device_fingerprint: Json | null
+          admin_ip: string | null
+          admin_joined_at: string | null
+          admin_snapshot_count: number
+          all_parties_present: boolean
+          created_at: string
+          exam_id: string | null
+          id: string
+          initiated_by: string
+          institute_camera_active: boolean
+          institute_device_fingerprint: Json | null
+          institute_ip: string | null
+          institute_snapshot_count: number
+          paper_submission_id: string | null
+          session_ended_at: string | null
+          session_started_at: string
+          session_type: string
+          status: string
+          superadmin_camera_active: boolean
+          superadmin_confirmed: boolean
+          superadmin_device_fingerprint: Json | null
+          superadmin_ip: string | null
+          superadmin_joined_at: string | null
+          superadmin_snapshot_count: number
+          updated_at: string
+        }
+        Insert: {
+          admin_camera_active?: boolean
+          admin_confirmed?: boolean
+          admin_device_fingerprint?: Json | null
+          admin_ip?: string | null
+          admin_joined_at?: string | null
+          admin_snapshot_count?: number
+          all_parties_present?: boolean
+          created_at?: string
+          exam_id?: string | null
+          id?: string
+          initiated_by: string
+          institute_camera_active?: boolean
+          institute_device_fingerprint?: Json | null
+          institute_ip?: string | null
+          institute_snapshot_count?: number
+          paper_submission_id?: string | null
+          session_ended_at?: string | null
+          session_started_at?: string
+          session_type: string
+          status?: string
+          superadmin_camera_active?: boolean
+          superadmin_confirmed?: boolean
+          superadmin_device_fingerprint?: Json | null
+          superadmin_ip?: string | null
+          superadmin_joined_at?: string | null
+          superadmin_snapshot_count?: number
+          updated_at?: string
+        }
+        Update: {
+          admin_camera_active?: boolean
+          admin_confirmed?: boolean
+          admin_device_fingerprint?: Json | null
+          admin_ip?: string | null
+          admin_joined_at?: string | null
+          admin_snapshot_count?: number
+          all_parties_present?: boolean
+          created_at?: string
+          exam_id?: string | null
+          id?: string
+          initiated_by?: string
+          institute_camera_active?: boolean
+          institute_device_fingerprint?: Json | null
+          institute_ip?: string | null
+          institute_snapshot_count?: number
+          paper_submission_id?: string | null
+          session_ended_at?: string | null
+          session_started_at?: string
+          session_type?: string
+          status?: string
+          superadmin_camera_active?: boolean
+          superadmin_confirmed?: boolean
+          superadmin_device_fingerprint?: Json | null
+          superadmin_ip?: string | null
+          superadmin_joined_at?: string | null
+          superadmin_snapshot_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trishield_watch_sessions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trishield_watch_sessions_initiated_by_fkey"
+            columns: ["initiated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trishield_watch_sessions_paper_submission_id_fkey"
+            columns: ["paper_submission_id"]
+            isOneToOne: false
+            referencedRelation: "paper_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -703,6 +893,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_watch_snapshot: {
+        Args: { _party: string; _session_id: string }
+        Returns: undefined
       }
     }
     Enums: {
