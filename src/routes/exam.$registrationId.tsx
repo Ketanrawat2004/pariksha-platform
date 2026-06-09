@@ -112,12 +112,13 @@ function ExamPage() {
   const sectionQuestions = useMemo(() => questions.filter((q) => (q.category ?? "General") === activeSection), [questions, activeSection]);
   const q = sectionQuestions[current];
 
-  // Timer
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+  // Timer (use null sentinel so the auto-submit effect doesn't fire before
+  // the initial duration is applied — otherwise demo/exam submits instantly)
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   useEffect(() => {
     if (phase !== "exam" || !exam) return;
     setTimeLeft(exam.duration_minutes * 60);
-    const t = setInterval(() => setTimeLeft((p) => Math.max(0, p - 1)), 1000);
+    const t = setInterval(() => setTimeLeft((p) => (p == null ? p : Math.max(0, p - 1))), 1000);
     return () => clearInterval(t);
   }, [phase, exam]);
 
