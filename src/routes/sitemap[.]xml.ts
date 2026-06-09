@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-// TODO: replace with your project URL once a project name or custom domain is set.
-const BASE_URL = "";
+const BASE_URL = "https://pariksha-platform.lovable.app";
 
 interface SitemapEntry {
   path: string;
@@ -14,13 +13,18 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // Only public, indexable routes. Auth-gated dashboards (candidate/*, admin/*,
+        // superadmin/*, institute/*, invigilator/*, exam/*) are intentionally omitted
+        // and disallowed in robots.txt.
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/about", changefreq: "monthly", priority: "0.8" },
           { path: "/trishield-vault", changefreq: "monthly", priority: "0.8" },
-          { path: "/sitemap", changefreq: "monthly", priority: "0.3" },
+          { path: "/give-exam", changefreq: "weekly", priority: "0.9" },
           { path: "/login", changefreq: "yearly", priority: "0.4" },
           { path: "/register", changefreq: "yearly", priority: "0.6" },
+          { path: "/forgot-password", changefreq: "yearly", priority: "0.2" },
+          { path: "/sitemap", changefreq: "monthly", priority: "0.3" },
         ];
 
         const urls = entries.map((e) =>
