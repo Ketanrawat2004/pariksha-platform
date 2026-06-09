@@ -19,6 +19,7 @@ export function SiteHeader() {
           <Link to="/about" className="text-muted-foreground hover:text-foreground transition" activeProps={{ className: "text-foreground font-semibold" }}>About</Link>
           <Link to="/trishield-vault" className="text-muted-foreground hover:text-foreground transition" activeProps={{ className: "text-foreground font-semibold" }}>TriShield Vault</Link>
           <a href="/#features" className="text-muted-foreground hover:text-foreground transition">Features</a>
+          <Link to="/sitemap" className="text-muted-foreground hover:text-foreground transition" activeProps={{ className: "text-foreground font-semibold" }}>Sitemap</Link>
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
