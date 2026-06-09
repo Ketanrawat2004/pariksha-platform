@@ -18,6 +18,7 @@ import {
   CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library,
 } from "lucide-react";
 import { toast } from "sonner";
+import { FaceCapture } from "@/components/face-capture";
 
 export const Route = createFileRoute("/institute/dashboard")({
   head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
@@ -87,6 +88,7 @@ function InstitutePage() {
   const [editing, setEditing] = useState<any | null>(null);
   const [editRequestFor, setEditRequestFor] = useState<any | null>(null);
   const [editNote, setEditNote] = useState("");
+  const [editPhoto, setEditPhoto] = useState("");
 
   const { data: subs, isLoading } = useQuery({
     queryKey: ["paper-submissions", user?.id],
@@ -110,9 +112,19 @@ function InstitutePage() {
 
   async function requestEdit() {
     if (!editRequestFor || !editNote.trim()) return;
+    if (!editPhoto) return toast.error("Capture your photo to authenticate the edit request");
+    // upload photo for audit
+    let editPhotoUrl: string | null = null;
+    try {
+      const { dataUrlToBlob } = await import("@/components/face-capture");
+      const path = `edit-requests/${user!.id}/${Date.now()}.jpg`;
+      const blob = dataUrlToBlob(editPhoto);
+      const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: false });
+      if (!upErr) editPhotoUrl = supabase.storage.from("face-photos").getPublicUrl(path).data.publicUrl;
+    } catch { /* ignore */ }
     const { error } = await supabase
       .from("paper_submissions")
-      .update({ status: "edit_requested", edit_request_note: editNote })
+      .update({ status: "edit_requested", edit_request_note: editNote + (editPhotoUrl ? `\n\n[Submitter photo: ${editPhotoUrl}]` : "") })
       .eq("id", editRequestFor.id);
     if (error) return toast.error(error.message);
     // notify admins
@@ -126,7 +138,7 @@ function InstitutePage() {
       })));
     }
     toast.success("Edit request sent to admin & superadmin");
-    setEditRequestFor(null); setEditNote("");
+    setEditRequestFor(null); setEditNote(""); setEditPhoto("");
     qc.invalidateQueries({ queryKey: ["paper-submissions"] });
   }
 
@@ -287,17 +299,18 @@ function InstitutePage() {
       </Tabs>
 
       <Dialog open={!!editRequestFor} onOpenChange={(o) => !o && setEditRequestFor(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Request edit — under super-admin supervision</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            A notification will be sent to <strong>admin</strong> and <strong>super admin</strong>. The paper stays locked until approved.
+            Capture your photo and explain the change. A notification will be sent to <strong>admin</strong> and <strong>super admin</strong>. The paper stays locked until approved.
           </p>
+          <FaceCapture onCapture={setEditPhoto} />
           <Textarea value={editNote} onChange={(e) => setEditNote(e.target.value)} placeholder="What needs to change and why?" rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRequestFor(null)}>Cancel</Button>
-            <Button onClick={requestEdit} disabled={!editNote.trim()}>Send request</Button>
+            <Button onClick={requestEdit} disabled={!editNote.trim() || !editPhoto}>Send request</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Shield, Eye, Lock, Zap, FileCheck, Globe, ArrowRight, CheckCircle2,
-  UserCheck, MonitorCheck, GraduationCap, MonitorPlay, ShieldCheck, Camera, Wifi,
+  UserCheck, MonitorCheck, GraduationCap, MonitorPlay, ShieldCheck, Camera, Wifi, PlayCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -219,7 +219,7 @@ function LandingPage() {
                     </div>
                   </Card>
                 ))}
-                <Button asChild className="mt-1"><Link to="/login">Enter Exam Mode <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/candidate/dashboard"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
               </div>
             </div>
           </div>

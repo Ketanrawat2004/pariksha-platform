@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, Camera } from "lucide-react";
 import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 
 export const Route = createFileRoute("/register")({
   head: () => ({ meta: [{ title: "Register — Pariksha" }] }),
@@ -43,9 +44,12 @@ function RegisterPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [photo, setPhoto] = useState<string>("");
   const form = useForm<FormData>({ resolver: zodResolver(schema), mode: "onBlur" });
   const { register, handleSubmit, formState: { errors }, trigger, getValues, watch } = form;
   const aadhaar = watch("aadhaar") ?? "";
+
+  const STEPS = ["Personal", "Account", "Identity", "Face photo", "Review"];
 
   const next = async () => {
     const fields: (keyof FormData)[][] = [
@@ -53,12 +57,15 @@ function RegisterPage() {
       ["fullName", "dateOfBirth", "gender", "phone", "state"],
       ["email", "password", "confirmPassword"],
       ["aadhaar"],
+      [],
     ];
+    if (step === 4 && !photo) { toast.error("Please capture your face photo"); return; }
     const ok = await trigger(fields[step]);
     if (ok) setStep(step + 1);
   };
 
   const onSubmit = async (data: FormData) => {
+    if (!photo) { toast.error("Face photo is required"); setStep(4); return; }
     setLoading(true);
     const aadhaarHash = await sha256(data.aadhaar);
     const redirectUrl = `${window.location.origin}/verify-email`;
@@ -75,14 +82,25 @@ function RegisterPage() {
       toast.error(error.message);
       return;
     }
-    // Update profile with extra fields
+    // Upload photo + update profile with extra fields
     if (result.user) {
+      let photo_url: string | null = null;
+      try {
+        const path = `candidates/${result.user.id}/profile.jpg`;
+        const blob = dataUrlToBlob(photo);
+        const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: true });
+        if (!upErr) {
+          photo_url = supabase.storage.from("face-photos").getPublicUrl(path).data.publicUrl;
+        }
+      } catch { /* ignore */ }
+
       await supabase.from("profiles").update({
         phone: data.phone,
         date_of_birth: data.dateOfBirth,
         gender: data.gender,
         state: data.state,
         aadhaar_hash: aadhaarHash,
+        photo_url,
       }).eq("id", result.user.id);
     }
     setLoading(false);
@@ -111,10 +129,10 @@ function RegisterPage() {
         </Link>
         <div className="mb-6">
           <div className="flex justify-between text-xs text-muted-foreground mb-2">
-            <span>Step {step} of 4</span>
-            <span>{["Personal", "Account", "Identity", "Review"][step - 1]}</span>
+            <span>Step {step} of {STEPS.length}</span>
+            <span>{STEPS[step - 1]}</span>
           </div>
-          <Progress value={(step / 4) * 100} />
+          <Progress value={(step / STEPS.length) * 100} />
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -186,15 +204,30 @@ function RegisterPage() {
                 </p>
                 {errors.aadhaar && <p className="mt-1 text-sm text-destructive">{errors.aadhaar.message}</p>}
               </div>
-              <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-                Face photo upload will be required on first login. You can complete it from your profile.
-              </div>
             </>
           )}
 
           {step === 4 && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Camera className="h-5 w-5 text-accent" />
+                <Label className="text-base">Capture your face photo</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This photo is your identity baseline. It will be matched against your live face on every exam and appear on your admit card.
+              </p>
+              <FaceCapture onCapture={setPhoto} initial={photo || null} />
+            </div>
+          )}
+
+          {step === 5 && (
             <div className="space-y-2 text-sm">
               <div className="font-semibold text-base mb-2">Review your details</div>
+              {photo && (
+                <div className="flex justify-center mb-3">
+                  <img src={photo} alt="Your face" className="h-28 w-28 rounded-lg object-cover border-2 border-accent" />
+                </div>
+              )}
               {[
                 ["Name", getValues("fullName")],
                 ["DOB", getValues("dateOfBirth")],
@@ -213,7 +246,7 @@ function RegisterPage() {
 
           <div className="flex justify-between pt-4 gap-2">
             <Button type="button" variant="outline" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>Back</Button>
-            {step < 4 ? (
+            {step < STEPS.length ? (
               <Button type="button" onClick={next}>Continue</Button>
             ) : (
               <Button type="submit" disabled={loading}>

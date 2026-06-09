@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Calendar, Award, ShieldCheck, BookOpen } from "lucide-react";
+import { Calendar, Award, ShieldCheck, BookOpen, PlayCircle, UserCircle2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/candidate/dashboard")({
@@ -15,30 +16,92 @@ export const Route = createFileRoute("/candidate/dashboard")({
 
 function Dashboard() {
   const { user } = useAuth();
+  const qc = useQueryClient();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("full_name, photo_url").eq("id", user!.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const { data: regs } = useQuery({
     queryKey: ["my-registrations", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("registrations").select("*, exams(*)").eq("candidate_id", user!.id);
+      const { data } = await supabase
+        .from("registrations")
+        .select("*, exams(*)")
+        .eq("candidate_id", user!.id)
+        .order("registered_at", { ascending: false });
       return data ?? [];
     },
     enabled: !!user,
   });
+
+  // Auto-register the candidate to the most recent live/upcoming exam so they
+  // can take an exam immediately — no friction.
+  useEffect(() => {
+    if (!user || !regs) return;
+    if (regs.length > 0) return;
+    let cancelled = false;
+    (async () => {
+      const { data: exam } = await supabase
+        .from("exams")
+        .select("id")
+        .in("status", ["live", "scheduled"])
+        .order("exam_date", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (cancelled || !exam) return;
+      await supabase.from("registrations").insert({
+        candidate_id: user.id,
+        exam_id: exam.id,
+        status: "approved",
+      });
+      qc.invalidateQueries({ queryKey: ["my-registrations", user.id] });
+    })();
+    return () => { cancelled = true; };
+  }, [user, regs, qc]);
+
   const { data: results } = useQuery({
-    queryKey: ["my-results", user?.id],
+    queryKey: ["my-results", user?.id, regs?.length],
     queryFn: async () => {
-      const { data } = await supabase.from("results").select("*, exams(title)").in("registration_id", (regs ?? []).map((r) => r.id));
+      if (!regs?.length) return [];
+      const { data } = await supabase.from("results").select("*, exams(title)").in("registration_id", regs.map((r) => r.id));
       return data ?? [];
     },
     enabled: !!regs,
   });
 
   const upcoming = (regs ?? []).filter((r) => r.exams && new Date(r.exams.exam_date) >= new Date()).length;
+  const liveReg = (regs ?? []).find((r) => r.exams?.status === "live" || r.exams?.exam_date === new Date().toISOString().slice(0, 10))
+    ?? (regs ?? [])[0];
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Welcome back</h1>
-        <p className="text-muted-foreground mt-1">Your exams, results, and integrity status — all here.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
+        <div className="flex items-center gap-4">
+          {profile?.photo_url ? (
+            <img src={profile.photo_url} alt={profile.full_name ?? "You"} className="h-16 w-16 rounded-full object-cover border-2 border-accent shadow-elegant" />
+          ) : (
+            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+              <UserCircle2 className="h-8 w-8 text-muted-foreground" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold">Welcome, {profile?.full_name?.split(" ")[0] ?? "candidate"}</h1>
+            <p className="text-muted-foreground mt-1">Your exams, results, and integrity status — all here.</p>
+          </div>
+        </div>
+        {liveReg && (
+          <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
+            <Link to="/exam/$registrationId" params={{ registrationId: liveReg.id }}>
+              <PlayCircle className="mr-2 h-5 w-5" /> Give Exam
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -66,17 +129,24 @@ function Dashboard() {
         {regs && regs.length > 0 ? (
           <ul className="divide-y divide-border">
             {regs.map((r) => (
-              <li key={r.id} className="py-3 flex items-center justify-between">
-                <div>
-                  <div className="font-semibold">{r.exams?.title}</div>
+              <li key={r.id} className="py-3 flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-semibold truncate">{r.exams?.title}</div>
                   <div className="text-sm text-muted-foreground">{r.exams?.exam_date} · Admit: {r.admit_card_number}</div>
                 </div>
-                <span className="text-xs rounded-full bg-muted px-3 py-1 capitalize">{r.status}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs rounded-full bg-muted px-3 py-1 capitalize">{r.status}</span>
+                  <Button asChild size="sm" className="bg-accent hover:bg-accent/90">
+                    <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
+                      <PlayCircle className="mr-1.5 h-4 w-4" /> Give Exam
+                    </Link>
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-muted-foreground text-sm">No registrations yet. <Link to="/candidate/exams" className="text-accent hover:underline">Browse available exams</Link>.</p>
+          <p className="text-muted-foreground text-sm">Preparing your demo exam… <Link to="/candidate/exams" className="text-accent hover:underline">Browse available exams</Link>.</p>
         )}
       </Card>
     </div>

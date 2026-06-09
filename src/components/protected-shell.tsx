@@ -3,6 +3,7 @@ import { useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useAuth, type AppRole } from "@/lib/auth/auth-context";
 import { Shield, LogOut, Loader2, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StaffSigninGate } from "@/components/staff-signin-gate";
 
 interface NavItem { to: string; label: string }
 
@@ -100,7 +101,7 @@ export function ProtectedShell({ children, requireRoles }: { children: ReactNode
         </nav>
       </header>
       <main id="main-content" className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-8">
-        {children}
+        <StaffSigninGate>{children}</StaffSigninGate>
       </main>
     </div>
   );

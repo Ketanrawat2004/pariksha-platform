@@ -16,6 +16,14 @@ export const Route = createFileRoute("/candidate/exams")({
 
 function ExamsList() {
   const { user } = useAuth();
+  const { data: profile } = useQuery({
+    queryKey: ["profile-photo", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("photo_url, full_name").eq("id", user!.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
   const { data: regs, isLoading } = useQuery({
     queryKey: ["my-regs-full", user?.id],
     queryFn: async () => {
@@ -43,7 +51,7 @@ function ExamsList() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">My exams</h1>
-        <p className="text-muted-foreground mt-1">Registered exams. The Enter Exam button activates on exam day.</p>
+        <p className="text-muted-foreground mt-1">Registered exams — click "Give Exam" to start any time. No delay.</p>
       </div>
 
       {available && available.length > 0 && (
@@ -98,17 +106,11 @@ function ExamsList() {
                   <div className="mt-2 text-xs text-muted-foreground">Admit Card: <span className="font-mono">{r.admit_card_number}</span> · Seat: <span className="font-semibold text-foreground">{r.seat_number ?? "—"}</span></div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {isToday ? (
-                    <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
-                      <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
-                        <PlayCircle className="mr-2 h-5 w-5" /> Enter Exam
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button size="lg" disabled variant="outline">
-                      Opens on exam day
-                    </Button>
-                  )}
+                  <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
+                    <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
+                      <PlayCircle className="mr-2 h-5 w-5" /> Give Exam
+                    </Link>
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -116,7 +118,7 @@ function ExamsList() {
                     onClick={async () => {
                       try {
                         await downloadAdmitCard({
-                          candidateName: user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
+                          candidateName: profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
                           admitCardNumber: r.admit_card_number,
                           seatNumber: r.seat_number,
                           examTitle: exam.title,
@@ -124,6 +126,7 @@ function ExamsList() {
                           startTime: exam.start_time?.slice(0, 5) ?? "",
                           durationMinutes: exam.duration_minutes,
                           centerName: r.centers?.name,
+                          photoUrl: profile?.photo_url ?? null,
                         });
                         toast.success("Admit card downloaded");
                       } catch {
