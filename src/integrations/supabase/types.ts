@@ -313,6 +313,56 @@ export type Database = {
         }
         Relationships: []
       }
+      paper_registrations: {
+        Row: {
+          admit_card_number: string | null
+          admit_released: boolean
+          admit_released_at: string | null
+          candidate_id: string
+          created_at: string
+          date_of_birth: string | null
+          full_name: string
+          id: string
+          paper_submission_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          admit_card_number?: string | null
+          admit_released?: boolean
+          admit_released_at?: string | null
+          candidate_id: string
+          created_at?: string
+          date_of_birth?: string | null
+          full_name: string
+          id?: string
+          paper_submission_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admit_card_number?: string | null
+          admit_released?: boolean
+          admit_released_at?: string | null
+          candidate_id?: string
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string
+          id?: string
+          paper_submission_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_registrations_paper_submission_id_fkey"
+            columns: ["paper_submission_id"]
+            isOneToOne: false
+            referencedRelation: "paper_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       paper_submissions: {
         Row: {
           admin_note: string | null
@@ -911,6 +961,12 @@ export type Database = {
           teacher_name: string
           title: string
           total_marks: number
+        }[]
+      }
+      release_paper_admits: {
+        Args: { _paper_submission_id: string }
+        Returns: {
+          released_count: number
         }[]
       }
       verify_admit_card: {
