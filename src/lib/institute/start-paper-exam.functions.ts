@@ -33,11 +33,8 @@ export const startPaperExam = createServerFn({ method: "POST" })
       .single();
     if (sErr || !sub?.published_exam_id) return { ok: false, reason: "Exam is not live yet." };
 
-    const startsAt = new Date(`${sub.exam_date}T${(sub.start_time as string) ?? "00:00:00"}`);
-    if (!Number.isNaN(startsAt.getTime()) && Date.now() < startsAt.getTime()) {
-      const mins = Math.ceil((startsAt.getTime() - Date.now()) / 60000);
-      return { ok: false, reason: `Exam starts at ${startsAt.toLocaleString()} (in ${mins} min).` };
-    }
+    // Time gate removed — candidates may attempt anytime once admit card is released.
+    // Scheduled date/time remains printed on the admit card for reference.
 
     let { data: reg } = await supabaseAdmin
       .from("registrations")
