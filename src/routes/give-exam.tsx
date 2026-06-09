@@ -71,19 +71,25 @@ function PublicGiveExam() {
       let title = "Demo Exam";
 
       if (isDemo) {
-        // Open demo path — anyone can enter. Try to match against the photo
-        // captured on the candidate profile page (saved in localStorage).
+        // Anonymous demo: match against the live capture stored on the
+        // candidate profile page (base64 data URL in localStorage).
         try { photoUrl = localStorage.getItem("pariksha:demo-profile-photo"); } catch {}
       } else {
-        const { data, error } = await supabase.rpc("verify_admit_anonymous" as any, {
-          _full_name: fullName,
-          _dob: dob,
-          _aadhaar_last4: aadhaar4 || null,
-          _admit_card_number: admitNo.trim(),
-        } as any);
-        if (error) throw error;
-        const row = (data as any[])?.[0];
-        if (!row) throw new Error("No matching registration. Check your name, date of birth, Aadhaar and admit number. Tip: use admit DEMO-0000 to try the demo exam.");
+        const res = await fetch("/api/public/give-exam-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name: fullName,
+            dob: dob || null,
+            aadhaar_last4: aadhaar4 || null,
+            admit_card_number: admitNo.trim(),
+          }),
+        });
+        if (!res.ok) {
+          if (res.status === 404) throw new Error("No matching registration. Check your name, date of birth, Aadhaar and admit number. Tip: use admit DEMO-0000 to try the demo exam.");
+          throw new Error(`Verification failed (${res.status})`);
+        }
+        const row = await res.json();
         photoUrl = row.photo_url;
         regId = row.registration_id;
         title = row.exam_title;
