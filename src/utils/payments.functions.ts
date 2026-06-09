@@ -8,7 +8,7 @@ type DeleteAccountResult = { ok: true } | { error: string };
 
 async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
-  options: { email?: string; userId?: string },
+  options: { email?: string; userId?: string; name?: string },
 ): Promise<string> {
   if (options.userId && !/^[a-zA-Z0-9_-]+$/.test(options.userId)) {
     throw new Error("Invalid userId");
@@ -17,8 +17,9 @@ async function resolveOrCreateCustomer(
     const existing = await stripe.customers.list({ email: options.email, limit: 1 });
     if (existing.data.length) {
       const customer = existing.data[0];
-      if (options.userId && customer.metadata?.userId !== options.userId) {
+      if ((options.userId && customer.metadata?.userId !== options.userId) || (options.name && customer.name !== options.name)) {
         await stripe.customers.update(customer.id, {
+          ...(options.name && { name: options.name }),
           metadata: { ...customer.metadata, userId: options.userId },
         });
       }
@@ -27,6 +28,7 @@ async function resolveOrCreateCustomer(
   }
   const created = await stripe.customers.create({
     ...(options.email && { email: options.email }),
+    ...(options.name && { name: options.name }),
     ...(options.userId && { metadata: { userId: options.userId } }),
   });
   return created.id;
@@ -57,7 +59,11 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       if (!prices.data.length) throw new Error("Price not found");
       const stripePrice = prices.data[0];
 
-      const customerId = await resolveOrCreateCustomer(stripe, { email, userId });
+      const customerId = await resolveOrCreateCustomer(stripe, {
+        email,
+        userId,
+        name: data.candidateFullName?.trim() || undefined,
+      });
 
       const productId = typeof stripePrice.product === "string" ? stripePrice.product : stripePrice.product.id;
       const product = await stripe.products.retrieve(productId);
@@ -69,6 +75,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
         customer: customerId,
+        billing_address_collection: "required",
+        customer_update: { address: "auto", name: "auto" },
         payment_intent_data: { description: productDescription },
         metadata: {
           userId,
