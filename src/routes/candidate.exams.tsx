@@ -172,8 +172,9 @@ function PaperCard({
             <div className="text-xs text-muted-foreground flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Payment not confirmed yet.</div>
             <PayAndRegisterForPaper paperId={paper.id} paperTitle={paper.title} onDone={onRegistered} retry />
           </div>
-        ) : !myReg.admit_released ? (
-          <div className="text-xs text-muted-foreground">Paid — waiting for institute to release admit card.</div>
+        ) : !myReg.admit_card_number ? (
+          <div className="text-xs text-muted-foreground">Paid — generating admit card…</div>
+
         ) : (
           <>
             <div className="text-xs text-success flex items-center gap-1.5">
