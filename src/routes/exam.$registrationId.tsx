@@ -147,7 +147,10 @@ function ExamPage() {
   useEffect(() => {
     if (phase !== "exam") return;
     const t = setInterval(() => {
-      Object.entries(answers).forEach(([qid, a]) => saveAnswer(qid, a.selected, a.marked));
+      const entries = Object.entries(answers);
+      if (!entries.length) return;
+      entries.forEach(([qid, a]) => saveAnswer(qid, a.selected, a.marked));
+      toast.success("Progress auto-saved", { duration: 1500, icon: <Save className="h-4 w-4" /> });
     }, 30000);
     return () => clearInterval(t);
   }, [answers, phase, saveAnswer]);
