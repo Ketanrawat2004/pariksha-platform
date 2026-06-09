@@ -194,13 +194,24 @@ function ExamPage() {
   // → warn + immediate auto-submit. ----
   useEffect(() => {
     if (phase !== "exam") return;
+    // Grace period: entering fullscreen + dialog teardown can fire a transient
+    // window blur / visibilitychange. Ignore those for the first 2s so the
+    // candidate actually sees the exam paper instead of being instantly submitted.
+    const startedAt = Date.now();
+    const GRACE_MS = 2000;
+    const isGrace = () => Date.now() - startedAt < GRACE_MS;
+
     const triggerHardSubmit = (reason: string) => {
+      if (isGrace()) return;
       toast.error(`Exam terminated: ${reason}. Submitting now.`);
       void logEvent(reason.includes("tab") ? "tab_switch" : "fullscreen_exit", "critical", { reason });
       void handleFinalSubmit(reason);
     };
     const onVis = () => { if (document.hidden) triggerHardSubmit("tab/app switched"); };
-    const onBlur = () => triggerHardSubmit("window lost focus");
+    const onBlur = () => {
+      // Some browsers fire blur transiently when fullscreen activates; double-check focus on next tick.
+      setTimeout(() => { if (!document.hasFocus()) triggerHardSubmit("window lost focus"); }, 300);
+    };
     const onFs = () => { if (!document.fullscreenElement) triggerHardSubmit("fullscreen exited"); };
     const onCopy = (e: ClipboardEvent) => { e.preventDefault(); void logEvent("copy_attempt", "high"); toast.error("Copy disabled"); };
     const onCtx = (e: MouseEvent) => e.preventDefault();

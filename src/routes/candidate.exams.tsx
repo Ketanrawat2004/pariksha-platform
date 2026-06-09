@@ -142,6 +142,8 @@ function ExamsList() {
                     aria-label={`Download admit card for ${exam.title}`}
                     onClick={async () => {
                       try {
+                        const { signFacePhotoUrl } = await import("@/lib/storage/face-photo");
+                        const signed = profile?.photo_url ? await signFacePhotoUrl(profile.photo_url, 60 * 60) : null;
                         await downloadAdmitCard({
                           candidateName: profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
                           admitCardNumber: r.admit_card_number,
@@ -151,7 +153,7 @@ function ExamsList() {
                           startTime: exam.start_time?.slice(0, 5) ?? "",
                           durationMinutes: exam.duration_minutes,
                           centerName: r.centers?.name,
-                          photoUrl: profile?.photo_url ?? null,
+                          photoUrl: signed ?? profile?.photo_url ?? null,
                         });
                         toast.success("Admit card downloaded");
                       } catch {
