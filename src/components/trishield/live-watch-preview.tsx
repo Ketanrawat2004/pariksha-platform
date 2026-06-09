@@ -1,10 +1,20 @@
 import type { RefObject } from "react";
 
-export function LiveWatchPreview({ videoRef, canvasRef }: { videoRef: RefObject<HTMLVideoElement | null>; canvasRef: RefObject<HTMLCanvasElement | null> }) {
+interface Props {
+  videoRef: RefObject<HTMLVideoElement | null>;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
+  position?: "top-center" | "bottom-right";
+}
+
+export function LiveWatchPreview({ videoRef, canvasRef, position = "top-center" }: Props) {
+  const posClass =
+    position === "top-center"
+      ? "top-20 left-1/2 -translate-x-1/2"
+      : "bottom-4 right-4";
   return (
     <div
-      className="fixed bottom-4 right-4 z-[1000] rounded-lg overflow-hidden border-2 border-destructive shadow-xl bg-slate-900"
-      style={{ width: 180, height: 135 }}
+      className={`fixed ${posClass} z-[1000] rounded-lg overflow-hidden border-2 border-destructive shadow-xl bg-slate-900`}
+      style={{ width: 220, height: 165 }}
       aria-label="TriShield live camera preview"
     >
       <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />

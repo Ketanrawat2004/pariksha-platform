@@ -969,6 +969,23 @@ export type Database = {
           released_count: number
         }[]
       }
+      verify_admit_anonymous: {
+        Args: {
+          _aadhaar_last4: string
+          _admit_card_number: string
+          _dob: string
+          _full_name: string
+        }
+        Returns: {
+          candidate_id: string
+          exam_date: string
+          exam_id: string
+          exam_title: string
+          full_name: string
+          photo_url: string
+          registration_id: string
+        }[]
+      }
       verify_admit_card: {
         Args: { _admit_card_number: string }
         Returns: {

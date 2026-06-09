@@ -93,7 +93,7 @@ function LandingPage() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-up" style={{ animationDelay: "0.2s" }}>
               <Button size="lg" asChild className="bg-accent hover:bg-accent/90 shadow-elegant">
-                <Link to="/exam-entry"><PlayCircle className="mr-2 h-5 w-5" /> Give Exam</Link>
+                <Link to="/give-exam"><PlayCircle className="mr-2 h-5 w-5" /> Give Exam</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/register">Register as Candidate <ArrowRight className="ml-2 h-4 w-4" /></Link>
