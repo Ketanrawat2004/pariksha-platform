@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useSignedFacePhoto } from "@/lib/storage/face-photo";
 import { Loader2, Save, UserCircle2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -57,6 +58,8 @@ function ProfileEditor() {
     }
   }, [profile]);
 
+  const signedPhoto = useSignedFacePhoto(profile?.photo_url);
+
   async function save() {
     if (!user) return;
     setBusy(true);
@@ -70,8 +73,9 @@ function ProfileEditor() {
           .upload(path, blob, { contentType: "image/jpeg", upsert: true });
         if (upErr) throw upErr;
         photo_url = supabase.storage.from("face-photos").getPublicUrl(path).data.publicUrl;
-        // Stash for demo face-match on /give-exam
-        try { localStorage.setItem(DEMO_PHOTO_KEY, photo_url); } catch {}
+        // Stash the actual base64 capture so the anonymous /give-exam demo
+        // flow can match against it without needing storage access.
+        try { localStorage.setItem(DEMO_PHOTO_KEY, livePhoto); } catch {}
       }
       const { error } = await supabase
         .from("profiles")
@@ -109,8 +113,8 @@ function ProfileEditor() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="p-6 flex flex-col items-center text-center lg:col-span-1">
-          {profile?.photo_url ? (
-            <img src={profile.photo_url} alt={profile.full_name ?? "You"} className="h-32 w-32 rounded-full object-cover border-4 border-accent shadow-elegant" />
+          {signedPhoto ? (
+            <img src={signedPhoto} alt={profile?.full_name ?? "You"} className="h-32 w-32 rounded-full object-cover border-4 border-accent shadow-elegant" />
           ) : (
             <div className="h-32 w-32 rounded-full bg-muted flex items-center justify-center">
               <UserCircle2 className="h-16 w-16 text-muted-foreground" />
@@ -120,7 +124,7 @@ function ProfileEditor() {
           <p className="text-sm text-muted-foreground">{profile?.email}</p>
           {profile?.phone && <p className="text-sm text-muted-foreground mt-1">{profile.phone}</p>}
           {profile?.date_of_birth && <p className="text-xs text-muted-foreground mt-1">DOB: {profile.date_of_birth}</p>}
-          {profile?.photo_url && (
+          {signedPhoto && (
             <div className="mt-3 inline-flex items-center gap-1 text-xs text-success">
               <ShieldCheck className="h-3 w-3" /> Reference photo on file
             </div>
