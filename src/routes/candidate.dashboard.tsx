@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useSignedFacePhoto } from "@/lib/storage/face-photo";
-import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2, PlayCircle, Loader2 } from "lucide-react";
+import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2, PlayCircle, Loader2, Download, FileText, Trophy } from "lucide-react";
+import { downloadCertificate } from "@/lib/pdf/certificate";
 import { Link } from "@tanstack/react-router";
 import { startPaperExam } from "@/lib/institute/start-paper-exam.functions";
 import { toast } from "sonner";
@@ -167,6 +168,72 @@ function Dashboard() {
           <p className="text-muted-foreground text-sm">Preparing your demo exam… <Link to="/candidate/exams" className="text-accent hover:underline">Browse available exams</Link>.</p>
         )}
       </Card>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-success" />
+            <h2 className="font-bold text-lg">Results & certificates</h2>
+          </div>
+          <Button asChild variant="outline" size="sm"><Link to="/candidate/results">View all</Link></Button>
+        </div>
+        {results && results.length > 0 ? (
+          <ul className="divide-y divide-border">
+            {results.slice(0, 5).map((r: any) => {
+              const pct = r.exams?.total_marks ? (r.total_score / r.exams.total_marks) * 100 : Number(r.percentage ?? 0);
+              const passed = r.pass_fail ?? pct >= 35;
+              return (
+                <li key={r.id} className="py-3 flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-semibold truncate flex items-center gap-2">
+                      {r.exams?.title ?? "Exam"}
+                      <span className={`text-[10px] font-bold rounded-full px-2 py-0.5 ${passed ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>
+                        {passed ? "PASSED" : "TRY AGAIN"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Score: {r.total_score}{r.exams?.total_marks ? `/${r.exams.total_marks}` : ""} · {pct.toFixed(1)}%
+                      {r.rank ? ` · Rank #${r.rank}` : ""}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button asChild variant="ghost" size="sm">
+                      <Link to="/candidate/results"><FileText className="mr-1 h-4 w-4" />Details</Link>
+                    </Button>
+                    {passed && (
+                      <Button
+                        size="sm"
+                        onClick={async () => {
+                          try {
+                            await downloadCertificate({
+                              candidateName: profile?.full_name ?? user?.email ?? "Candidate",
+                              examTitle: r.exams?.title ?? "Examination",
+                              scoreObtained: r.total_score,
+                              totalMarks: r.exams?.total_marks ?? 100,
+                              percentage: pct,
+                              rank: r.rank,
+                              examDate: new Date().toISOString().slice(0, 10),
+                              certificateId: r.id.slice(0, 8).toUpperCase(),
+                            });
+                            toast.success("Certificate downloaded");
+                          } catch {
+                            toast.error("Could not generate certificate");
+                          }
+                        }}
+                      >
+                        <Download className="mr-1 h-4 w-4" />Certificate
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="text-muted-foreground text-sm">No results yet. Complete an exam to see your result and download your certificate here.</p>
+        )}
+      </Card>
+
     </div>
   );
 }
