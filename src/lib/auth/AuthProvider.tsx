@@ -18,7 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
@@ -27,6 +27,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setRoles([]);
         setRolesLoading(false);
+      }
+      if (event === "SIGNED_IN" && sess?.user) {
+        setTimeout(() => {
+          void import("@/lib/activity-log").then((m) =>
+            m.logActivity("signin", { provider: sess.user.app_metadata?.provider ?? "email" }),
+          );
+        }, 0);
       }
     });
 
@@ -41,6 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadRoles]);
 
   const signOut = async () => {
+    try {
+      const { logActivity } = await import("@/lib/activity-log");
+      await logActivity("signout");
+    } catch { /* noop */ }
     await supabase.auth.signOut();
     setRoles([]);
   };
