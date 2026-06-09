@@ -313,6 +313,11 @@ function ExamPage() {
       toast.error("Fullscreen is required to proceed.");
       return;
     }
+    if (isDemo) {
+      setSessionId("demo-session");
+      setPhase("exam");
+      return;
+    }
     const { data: sess, error } = await supabase.from("exam_sessions").insert({ registration_id: registrationId }).select().single();
     if (error || !sess) { toast.error("Could not start session"); return; }
     setSessionId(sess.id);
