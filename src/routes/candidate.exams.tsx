@@ -46,7 +46,7 @@ function ExamsList() {
     queryFn: async () => {
       const { data } = await supabase
         .from("paper_registrations" as any)
-        .select("id, paper_submission_id, admit_card_number, admit_released, full_name")
+        .select("id, paper_submission_id, admit_card_number, admit_released, full_name, paid, cancelled")
         .eq("candidate_id", user!.id);
       return (data as any[]) ?? [];
     },
@@ -114,7 +114,7 @@ function PaperCard({
   const [starting, setStarting] = useState(false);
 
   const startsAt = new Date(`${paper.exam_date}T${paper.start_time ?? "00:00:00"}`);
-  const canGiveExam = !!myReg?.admit_released;
+  const canGiveExam = !!myReg?.admit_released && !!myReg?.paid && !myReg?.cancelled;
 
   async function giveExam() {
     if (!myReg) return;
