@@ -609,43 +609,59 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
 function LockDialog({ onClose, onLocked }: { onClose: () => void; onLocked: (photoUrl: string, passkeyHash: string) => Promise<void> }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [passkey, setPasskey] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function startCam() {
+  const startCam = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 360 } });
-      if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 360, facingMode: "user" } });
+      streamRef.current = stream;
       setStreaming(true);
     } catch { toast.error("Camera permission denied"); }
-  }
+  }, []);
+
+  // Auto-start camera when the dialog opens, and re-attach the stream whenever the <video> mounts.
+  useEffect(() => { void startCam(); return () => { streamRef.current?.getTracks().forEach((t) => t.stop()); streamRef.current = null; }; }, [startCam]);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v && streamRef.current && v.srcObject !== streamRef.current) {
+      v.srcObject = streamRef.current;
+      void v.play().catch(() => {});
+    }
+  });
+
   function snap() {
     if (!videoRef.current || !canvasRef.current) return;
     const v = videoRef.current, c = canvasRef.current;
-    c.width = v.videoWidth; c.height = v.videoHeight;
-    c.getContext("2d")!.drawImage(v, 0, 0);
+    c.width = v.videoWidth || 480; c.height = v.videoHeight || 360;
+    c.getContext("2d")!.drawImage(v, 0, 0, c.width, c.height);
     setPhoto(c.toDataURL("image/jpeg", 0.85));
-    (v.srcObject as MediaStream | null)?.getTracks().forEach((t) => t.stop());
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
     setStreaming(false);
   }
+  async function retake() { setPhoto(null); await startCam(); }
 
   async function commit() {
     if (!photo) return toast.error("Capture submitter photo");
     if (passkey.length < 6) return toast.error("Passkey must be 6+ chars");
     if (passkey !== confirm) return toast.error("Passkey mismatch");
+    const { data: u } = await supabase.auth.getUser();
+    const uid = u?.user?.id;
+    if (!uid) return toast.error("Sign-in expired — please re-login");
     setBusy(true);
     try {
       const blob = await (await fetch(photo)).blob();
-      const path = `institute-submitters/${crypto.randomUUID()}.jpg`;
+      // RLS on storage requires the first path segment to equal auth.uid()
+      const path = `${uid}/submitters/${Date.now()}-${crypto.randomUUID()}.jpg`;
       const up = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg" });
       if (up.error) throw up.error;
-      const { data: urlData } = supabase.storage.from("face-photos").createSignedUrl
-        ? await supabase.storage.from("face-photos").createSignedUrl(path, 60 * 60 * 24 * 365)
-        : { data: { signedUrl: path } } as any;
-      const photoUrl = (urlData as any)?.signedUrl ?? path;
+      const { data: urlData } = await supabase.storage.from("face-photos").createSignedUrl(path, 60 * 60 * 24 * 365);
+      const photoUrl = urlData?.signedUrl ?? path;
       const passkeyHash = await sha256(passkey);
       await onLocked(photoUrl, passkeyHash);
     } catch (e: any) {
