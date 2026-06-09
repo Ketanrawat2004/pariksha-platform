@@ -20,6 +20,7 @@ export const Route = createFileRoute("/candidate/exams")({
 
 function ExamsList() {
   const { user } = useAuth();
+  const qc = useQueryClient();
   const { data: profile } = useQuery({
     queryKey: ["profile-photo", user?.id],
     queryFn: async () => {
