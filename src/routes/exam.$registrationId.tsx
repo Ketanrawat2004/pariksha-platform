@@ -11,6 +11,7 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 export const Route = createFileRoute("/exam/$registrationId")({
   head: () => ({ meta: [{ title: "Exam in Progress — Pariksha" }] }),
