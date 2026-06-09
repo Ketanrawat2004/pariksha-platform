@@ -143,23 +143,84 @@ function InstitutePage() {
   }
 
   async function publish(sub: any) {
-    // Fan out notifications to all candidates
-    const { data: cands } = await supabase.from("user_roles").select("user_id").eq("role", "candidate");
-    const { error } = await supabase
-      .from("paper_submissions")
-      .update({ status: "published" })
-      .eq("id", sub.id);
-    if (error) return toast.error(error.message);
-    if (cands?.length) {
-      await supabase.from("notifications").insert(cands.map((c) => ({
-        user_id: c.user_id,
-        title: "New exam scheduled: " + sub.title,
-        message: `${sub.subject} on ${sub.exam_date} at ${sub.start_time?.slice(0, 5)}. Register from your dashboard.`,
-        type: "info" as const,
-      })));
+    try {
+      // 1) Auto-fill date/time if missing
+      const tomorrow = new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 10);
+      const examDate = sub.exam_date ?? tomorrow;
+      const startTime = sub.start_time ?? "10:00";
+
+      // 2) Pick/auto-create a center
+      let { data: center } = await supabase.from("centers").select("id, name, district, state").limit(1).maybeSingle();
+      if (!center) {
+        const { data: created, error: cErr } = await supabase
+          .from("centers")
+          .insert({ name: "Pariksha National Center", district: "New Delhi", state: "Delhi", pincode: "110001", is_verified: true })
+          .select("id, name, district, state").single();
+        if (cErr) throw cErr;
+        center = created;
+      }
+
+      // 3) Create an exam row mirroring the paper submission
+      const { data: exam, error: eErr } = await supabase.from("exams").insert({
+        title: sub.title,
+        subject: sub.subject,
+        description: sub.description ?? null,
+        exam_date: examDate,
+        start_time: startTime,
+        duration_minutes: sub.duration_minutes ?? 60,
+        total_marks: sub.total_marks ?? 100,
+        passing_marks: sub.passing_marks ?? Math.floor((sub.total_marks ?? 100) * 0.4),
+        status: "live" as const,
+        created_by: user?.id ?? null,
+      }).select("id").single();
+      if (eErr) throw eErr;
+
+      // 4) Insert questions (encrypt fields = plain text for demo)
+      const qs = (sub.questions ?? []) as any[];
+      if (qs.length) {
+        await supabase.from("questions").insert(qs.map((q, idx) => ({
+          exam_id: exam.id,
+          question_text_encrypted: q.text ?? "",
+          option_a_encrypted: q.options?.[0] ?? "",
+          option_b_encrypted: q.options?.[1] ?? "",
+          option_c_encrypted: q.options?.[2] ?? "",
+          option_d_encrypted: q.options?.[3] ?? "",
+          correct_answer_encrypted: ["A","B","C","D"][q.correct ?? 0],
+          marks: q.marks ?? 4,
+          question_order: idx + 1,
+          category: sub.subject ?? "General",
+        })));
+      }
+
+      // 5) Auto-register all candidates with admit cards
+      const { data: cands } = await supabase.from("user_roles").select("user_id").eq("role", "candidate");
+      if (cands?.length) {
+        await supabase.from("registrations").insert(cands.map((c) => ({
+          candidate_id: c.user_id,
+          exam_id: exam.id,
+          center_id: center!.id,
+          status: "approved" as const,
+        })));
+        await supabase.from("notifications").insert(cands.map((c) => ({
+          user_id: c.user_id,
+          title: "New exam available: " + sub.title,
+          message: `📅 ${examDate} · ⏰ ${startTime.slice(0,5)} · 📍 ${center!.name}, ${center!.district}, ${center!.state}. Download your admit card, then click "Give Exam".`,
+          type: "info" as const,
+        })));
+      }
+
+      // 6) Mark the submission as published
+      const { error: upErr } = await supabase
+        .from("paper_submissions")
+        .update({ status: "published", exam_date: examDate, start_time: startTime })
+        .eq("id", sub.id);
+      if (upErr) throw upErr;
+
+      toast.success(`📢 Broadcast sent — ${cands?.length ?? 0} candidates notified · ${center!.name}`);
+      qc.invalidateQueries({ queryKey: ["paper-submissions"] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Broadcast failed");
     }
-    toast.success(`Published. Notified ${cands?.length ?? 0} candidates.`);
-    qc.invalidateQueries({ queryKey: ["paper-submissions"] });
   }
 
   async function remove(id: string) {
@@ -246,9 +307,9 @@ function InstitutePage() {
                       <Pencil className="h-4 w-4 mr-1" /> Edit
                     </Button>
                   )}
-                  {(s.status === "locked" || s.status === "approved") && (
-                    <Button size="sm" onClick={() => publish(s)}>
-                      <Send className="h-4 w-4 mr-1" /> Publish to candidates
+                  {(s.status === "locked" || s.status === "approved" || s.status === "draft") && (
+                    <Button size="sm" onClick={() => publish(s)} className="bg-accent hover:bg-accent/90">
+                      <Send className="h-4 w-4 mr-1" /> Send to all
                     </Button>
                   )}
                   {s.status !== "draft" && s.status !== "edit_requested" && (

@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Calendar, Award, ShieldCheck, BookOpen, PlayCircle, UserCircle2 } from "lucide-react";
+import { Calendar, Award, ShieldCheck, BookOpen, UserCircle2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/candidate/dashboard")({
@@ -76,8 +76,6 @@ function Dashboard() {
   });
 
   const upcoming = (regs ?? []).filter((r) => r.exams && new Date(r.exams.exam_date) >= new Date()).length;
-  const liveReg = (regs ?? []).find((r) => r.exams?.status === "live" || r.exams?.exam_date === new Date().toISOString().slice(0, 10))
-    ?? (regs ?? [])[0];
 
   return (
     <div className="space-y-8">
@@ -95,13 +93,6 @@ function Dashboard() {
             <p className="text-muted-foreground mt-1">Your exams, results, and integrity status — all here.</p>
           </div>
         </div>
-        {liveReg && (
-          <Button asChild size="lg" className="bg-accent hover:bg-accent/90 shadow-elegant">
-            <Link to="/exam/$registrationId" params={{ registrationId: liveReg.id }}>
-              <PlayCircle className="mr-2 h-5 w-5" /> Give Exam
-            </Link>
-          </Button>
-        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -134,14 +125,7 @@ function Dashboard() {
                   <div className="font-semibold truncate">{r.exams?.title}</div>
                   <div className="text-sm text-muted-foreground">{r.exams?.exam_date} · Admit: {r.admit_card_number}</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs rounded-full bg-muted px-3 py-1 capitalize">{r.status}</span>
-                  <Button asChild size="sm" className="bg-accent hover:bg-accent/90">
-                    <Link to="/exam/$registrationId" params={{ registrationId: r.id }}>
-                      <PlayCircle className="mr-1.5 h-4 w-4" /> Give Exam
-                    </Link>
-                  </Button>
-                </div>
+                <span className="text-xs rounded-full bg-muted px-3 py-1 capitalize">{r.status}</span>
               </li>
             ))}
           </ul>
