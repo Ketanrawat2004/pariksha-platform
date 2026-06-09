@@ -118,7 +118,7 @@ function ExamsList() {
                     onClick={async () => {
                       try {
                         await downloadAdmitCard({
-                          candidateName: user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
+                          candidateName: profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? "Candidate",
                           admitCardNumber: r.admit_card_number,
                           seatNumber: r.seat_number,
                           examTitle: exam.title,
@@ -126,6 +126,7 @@ function ExamsList() {
                           startTime: exam.start_time?.slice(0, 5) ?? "",
                           durationMinutes: exam.duration_minutes,
                           centerName: r.centers?.name,
+                          photoUrl: profile?.photo_url ?? null,
                         });
                         toast.success("Admit card downloaded");
                       } catch {
