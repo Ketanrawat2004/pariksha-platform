@@ -25,6 +25,18 @@ function ExamsList() {
     enabled: !!user,
   });
 
+  const { data: available } = useQuery({
+    queryKey: ["available-paper-submissions"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("paper_submissions")
+        .select("id, title, subject, exam_date, start_time, duration_minutes, total_marks")
+        .eq("status", "published")
+        .order("exam_date", { ascending: true });
+      return data ?? [];
+    },
+  });
+
   const today = new Date().toISOString().slice(0, 10);
 
   return (
@@ -33,6 +45,27 @@ function ExamsList() {
         <h1 className="text-3xl font-bold">My exams</h1>
         <p className="text-muted-foreground mt-1">Registered exams. The Enter Exam button activates on exam day.</p>
       </div>
+
+      {available && available.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold">Available from institutes</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {available.map((p) => (
+              <Card key={p.id} className="p-4 border-accent/30">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-semibold truncate">{p.title}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {p.subject} · {p.exam_date} · {p.start_time?.slice(0, 5)} · {p.duration_minutes} min · {p.total_marks} marks
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-accent/15 text-accent text-[10px] font-bold px-2 py-0.5 shrink-0">NEW</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       {isLoading && <Card className="p-8 text-center text-muted-foreground">Loading…</Card>}
 
