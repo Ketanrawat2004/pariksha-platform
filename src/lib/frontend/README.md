@@ -1,4 +1,12 @@
-// Re-export shim: browser-only helpers. Do not import from server code.
-export { downloadCertificate } from "@/lib/pdf/certificate";
-export { downloadAdmitCard } from "@/lib/pdf/admit-card";
-export { signFacePhotoUrl, useSignedFacePhoto } from "@/lib/storage/face-photo";
+# `src/lib/frontend`
+
+Browser-only helpers — DOM, `window`, jsPDF, Stripe.js client, file
+downloads. Must never be imported from server functions or server routes.
+
+Existing helpers keep their original paths so every route stays stable;
+this folder is the discovery point for new browser-only code.
+
+- `@/lib/pdf/certificate` — `downloadCertificate()`
+- `@/lib/pdf/admit-card` — `downloadAdmitCard()`
+- `@/lib/storage/face-photo` — signed URL helpers
+- `@/lib/stripe` — Stripe.js client loader

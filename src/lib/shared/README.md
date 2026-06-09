@@ -7,5 +7,3 @@ Existing helpers keep their original paths so every route stays stable;
 this folder is the discovery point for new shared code.
 
 - `@/lib/utils` — `cn()` class merger
-</content>
-</invoke>
