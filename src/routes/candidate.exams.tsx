@@ -168,7 +168,10 @@ function PaperCard({
         ) : myReg.cancelled ? (
           <div className="text-xs text-destructive">Registration cancelled (payment refunded).</div>
         ) : !myReg.paid ? (
-          <div className="text-xs text-muted-foreground flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Confirming payment…</div>
+          <div className="space-y-2">
+            <div className="text-xs text-muted-foreground flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Payment not confirmed yet.</div>
+            <PayAndRegisterForPaper paperId={paper.id} paperTitle={paper.title} onDone={onRegistered} retry />
+          </div>
         ) : !myReg.admit_released ? (
           <div className="text-xs text-muted-foreground">Paid — waiting for institute to release admit card.</div>
         ) : (
@@ -190,7 +193,7 @@ function PaperCard({
   );
 }
 
-function PayAndRegisterForPaper({ paperId, paperTitle, onDone }: { paperId: string; paperTitle: string; onDone: () => void }) {
+function PayAndRegisterForPaper({ paperId, paperTitle, onDone, retry }: { paperId: string; paperTitle: string; onDone: () => void; retry?: boolean }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"details" | "pay">("details");
   const [fullName, setFullName] = useState("");
@@ -205,8 +208,8 @@ function PayAndRegisterForPaper({ paperId, paperTitle, onDone }: { paperId: stri
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setStep("details"); }}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="w-full">
-          <UserPlus className="h-4 w-4 mr-1.5" /> Register & Pay ₹500
+        <Button size="sm" variant={retry ? "default" : "outline"} className={retry ? "w-full bg-accent hover:bg-accent/90" : "w-full"}>
+          <UserPlus className="h-4 w-4 mr-1.5" /> {retry ? "Retry payment ₹500" : "Register & Pay ₹500"}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
