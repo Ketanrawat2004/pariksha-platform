@@ -16,6 +16,14 @@ export const Route = createFileRoute("/candidate/exams")({
 
 function ExamsList() {
   const { user } = useAuth();
+  const { data: profile } = useQuery({
+    queryKey: ["profile-photo", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("photo_url, full_name").eq("id", user!.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
   const { data: regs, isLoading } = useQuery({
     queryKey: ["my-regs-full", user?.id],
     queryFn: async () => {
