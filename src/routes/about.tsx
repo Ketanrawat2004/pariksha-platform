@@ -43,22 +43,23 @@ const uniqueness = [
   "No production Indian exam platform combines time-locked cryptography + live web anomaly crawling + biometric continuous auth + multi-role workflow in one stack.",
   "Most anti-cheating tools are bolted onto a proctoring layer. TriShield is the foundation — every layer below trusts the cryptographic seal.",
   "Open architecture: any examining body can audit the SHA-256 paper hash and Ed25519 result signatures independently.",
+  "Five role-based operations consoles — candidate, invigilator, institute, admin, superadmin — each surfacing only the data and actions that role is authorised to see.",
 ];
 
 const techStack = [
   { icon: Code2, label: "Frontend", value: "React 19 + TanStack Start (SSR) + Vite 7 + Tailwind v4 + shadcn/ui" },
   { icon: Database, label: "Backend", value: "Lovable Cloud (Supabase) — Postgres + RLS + Auth + Storage + Realtime" },
-  { icon: Cpu, label: "AI / Vision", value: "face-api.js (TinyFaceDetector + FaceLandmark68 + FaceRecognition) · Lovable AI Gateway (Gemini)" },
+  { icon: Cpu, label: "AI / Vision", value: "face-api.js (TinyFaceDetector + FaceLandmark68 + FaceRecognition) · TensorFlow.js COCO-SSD object detection · Lovable AI Gateway (Gemini) confirm" },
   { icon: Layers, label: "Cryptography", value: "Web Crypto API · SHA-256 paper hashing · AES-256-GCM encryption · Ed25519 signatures" },
-  { icon: Shield, label: "Security", value: "Role-based access (5 roles) · RLS policies on every public table · server-side validation via Zod" },
-  { icon: Rocket, label: "PDF / QR", value: "jsPDF + qrcode for admit cards & certificates with verification QR" },
+  { icon: Shield, label: "Security", value: "Role-based access (5 roles) · RLS policies on every public table · server-side validation via Zod · per-event activity reports" },
+  { icon: Rocket, label: "PDF / QR", value: "jsPDF + qrcode for admit cards, certificates, score reports & activity logs with verification QR" },
 ];
 
 const stats = [
   { v: "2.4M+", l: "Candidates protected" },
   { v: "99.97%", l: "Platform uptime" },
   { v: "0", l: "Verified paper leaks" },
-  { v: "12", l: "Languages supported" },
+  { v: "5", l: "Role-based consoles" },
 ];
 
 function AboutPage() {
