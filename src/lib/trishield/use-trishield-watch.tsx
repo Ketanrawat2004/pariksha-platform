@@ -92,13 +92,15 @@ export function useTriShieldWatch(opts: InitOptions) {
     void requestCamera();
   }, [opts.enabled, granted, denied, requestCamera]);
 
-  // Attach stream to <video> when both available
+  // Attach stream to <video> when both available. Re-runs whenever the
+  // consumer mounts/remounts the <video> element (e.g. drawer opens later).
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-      void videoRef.current.play().catch(() => {});
+    const v = videoRef.current;
+    if (v && stream && v.srcObject !== stream) {
+      v.srcObject = stream;
+      void v.play().catch(() => {});
     }
-  }, [stream]);
+  });
 
   // Create or join the session row when camera granted
   useEffect(() => {
