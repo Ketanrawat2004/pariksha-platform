@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
