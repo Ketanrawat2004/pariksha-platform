@@ -130,6 +130,7 @@ function RootComponent() {
           Skip to main content
         </a>
         <Outlet />
+        <AccessibilityFab />
         <Toaster richColors position="top-right" />
       </AuthProvider>
     </QueryClientProvider>
