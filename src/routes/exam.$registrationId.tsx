@@ -268,85 +268,108 @@ function ExamPage() {
     }
   });
 
-  // AI integrity check every 6s — face-api.js for face presence + COCO-SSD for suspicious objects
+  // AI integrity check every 3s — face-api.js for face presence + COCO-SSD for
+  // suspicious objects + brightness check for camera-covered / candidate-out-of-frame.
+  // Each subsystem runs independently so a single failure doesn't disable the others.
   useEffect(() => {
     if (phase !== "exam" || !camReady) return;
     let cancelled = false;
     let timer: number | null = null;
-    (async () => {
+
+    const faceApiPromise = loadFaceApi().catch(() => null);
+    const objDetectPromise = import("@/lib/exam/object-detector")
+      .then((m) => m.detectSuspiciousObject)
+      .catch(() => null);
+
+    // Sample brightness from a downscaled frame. Returns 0..255 average luma.
+    const sampleCanvas = document.createElement("canvas");
+    sampleCanvas.width = 64; sampleCanvas.height = 48;
+    const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
+    function frameBrightness(v: HTMLVideoElement): number | null {
+      if (!sampleCtx || v.readyState < 2) return null;
       try {
-        const faceapi = await loadFaceApi();
-        const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
-        // Pre-warm object detector in the background; don't block face checks if it fails to load
-        const objDetectPromise = import("@/lib/exam/object-detector")
-          .then((m) => m.detectSuspiciousObject)
-          .catch(() => null);
-        const tick = async () => {
-          if (cancelled) return;
-          const v = videoRef.current;
-          if (v && v.readyState >= 2) {
+        sampleCtx.drawImage(v, 0, 0, 64, 48);
+        const data = sampleCtx.getImageData(0, 0, 64, 48).data;
+        let sum = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        }
+        return sum / (data.length / 4);
+      } catch { return null; }
+    }
+
+    const fireWarning = (msg: string) => {
+      toast.error(msg, { duration: 7000 });
+      setWarningBanner(msg);
+      setTimeout(() => setWarningBanner((cur) => (cur === msg ? null : cur)), 8000);
+    };
+
+    const tick = async () => {
+      if (cancelled) return;
+      const v = videoRef.current;
+      if (v && v.readyState >= 2) {
+        // ---- 1. Brightness / camera-covered / out-of-frame check ----
+        const bright = frameBrightness(v);
+        const tooDark = bright !== null && bright < 25; // covered lens / unplugged / hiding
+
+        // ---- 2. Face presence (face-api) ----
+        let faceCount: number | null = null;
+        try {
+          const faceapi = await faceApiPromise;
+          if (faceapi) {
+            const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
             const dets = await faceapi.detectAllFaces(v, opts);
-            if (dets.length === 0) {
-              noFaceStreakRef.current += 1;
-              if (noFaceStreakRef.current === 2) {
-                toast.warning("Face not visible — stay in frame");
-                void logEvent("no_face", "medium");
-              }
-              if (noFaceStreakRef.current >= 4) {
-                void handleFinalSubmit("candidate left the camera frame");
+            faceCount = dets.length;
+          }
+        } catch { /* keep going */ }
+
+        const noFace = tooDark || faceCount === 0;
+        if (noFace) {
+          noFaceStreakRef.current += 1;
+          if (noFaceStreakRef.current === 2) {
+            fireWarning(tooDark
+              ? "STRICT WARNING: camera blocked or room too dark — show your face clearly."
+              : "STRICT WARNING: face not visible — stay centred in the camera frame.");
+            void logEvent("no_face", "high", { tooDark, brightness: bright });
+          } else if (noFaceStreakRef.current >= 4) {
+            void logEvent("no_face", "critical", { tooDark, brightness: bright });
+            void handleFinalSubmit(tooDark ? "camera blocked / dark frame" : "candidate left the camera frame");
+            return;
+          }
+        } else if (faceCount !== null && faceCount > 1) {
+          fireWarning("Multiple faces detected — exam will end.");
+          void logEvent("multiple_faces", "critical", { count: faceCount });
+          void handleFinalSubmit("multiple faces detected");
+          return;
+        } else {
+          noFaceStreakRef.current = 0;
+        }
+
+        // ---- 3. Suspicious-object check (phone / book / laptop / etc.) ----
+        // Two-strike rule: 1st detection → strict warning, 2nd → auto-submit.
+        try {
+          const detectFn = await objDetectPromise;
+          if (detectFn) {
+            const obj = await detectFn(v);
+            if (obj) {
+              objectWarningRef.current += 1;
+              if (objectWarningRef.current === 1) {
+                fireWarning(`STRICT WARNING: ${obj.label} detected in frame. Remove it immediately — next detection will auto-submit your exam.`);
+                void logEvent("suspicious_pattern", "high", { reason: "object_in_frame_warning", label: obj.label, score: obj.score, strike: 1 });
+              } else {
+                fireWarning(`Second violation (${obj.label}) — exam auto-submitting now.`);
+                void logEvent("suspicious_pattern", "critical", { reason: "object_in_frame_second_strike", label: obj.label, score: obj.score, strike: objectWarningRef.current });
+                void handleFinalSubmit(`repeated prohibited item: ${obj.label}`);
                 return;
               }
-            } else if (dets.length > 1) {
-              toast.error("Multiple faces detected — exam will end");
-              void logEvent("multiple_faces", "critical", { count: dets.length });
-              void handleFinalSubmit("multiple faces detected");
-              return;
-            } else {
-              noFaceStreakRef.current = 0;
             }
-
-            // Suspicious-object check (phone / book / laptop / etc.)
-            // AI/ML-driven two-strike rule: 1st detection → strict warning,
-            // 2nd detection → automatic submission.
-            try {
-              const detectFn = await objDetectPromise;
-              if (detectFn) {
-                const obj = await detectFn(v);
-                if (obj) {
-                  objectWarningRef.current += 1;
-                  if (objectWarningRef.current === 1) {
-                    const msg = `STRICT WARNING: ${obj.label} detected in frame. Remove it immediately — next detection will auto-submit your exam.`;
-                    toast.error(msg, { duration: 8000 });
-                    setWarningBanner(msg);
-                    void logEvent("suspicious_pattern", "high", {
-                      reason: "object_in_frame_warning",
-                      label: obj.label,
-                      score: obj.score,
-                      strike: 1,
-                    });
-                    setTimeout(() => setWarningBanner(null), 10000);
-                  } else {
-                    toast.error(`Second violation (${obj.label}) — exam auto-submitting now`);
-                    void logEvent("suspicious_pattern", "critical", {
-                      reason: "object_in_frame_second_strike",
-                      label: obj.label,
-                      score: obj.score,
-                      strike: objectWarningRef.current,
-                    });
-                    void handleFinalSubmit(`repeated prohibited item: ${obj.label}`);
-                    return;
-                  }
-                }
-              }
-            } catch { /* object detector unavailable — keep face checks running */ }
           }
-          timer = window.setTimeout(tick, 6000);
-        };
-        void tick();
-      } catch {
-        /* face-api failed to load — skip AI but keep camera + DOM anti-cheat */
+        } catch { /* object detector unavailable */ }
       }
-    })();
+      timer = window.setTimeout(tick, 3000);
+    };
+    void tick();
+
     return () => { cancelled = true; if (timer) window.clearTimeout(timer); };
   }, [phase, camReady, logEvent, handleFinalSubmit]);
 
