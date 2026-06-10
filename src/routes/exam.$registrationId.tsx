@@ -261,20 +261,20 @@ function ExamPage() {
     }
   });
 
-  // AI integrity check every 3s — face-api.js for face presence + COCO-SSD for
-  // suspicious objects + brightness check for camera-covered / candidate-out-of-frame.
-  // Each subsystem runs independently so a single failure doesn't disable the others.
+  // Demo-only simulators so testers (and the user) can force-trigger each rule.
+  const simulateRef = useRef<{ object: number; noFace: number; dark: number }>({ object: 0, noFace: 0, dark: 0 });
+
+  // AI integrity check ~every 1.2s — single COCO-SSD pass per tick gives
+  // person presence + suspicious objects; brightness covers blocked camera.
   useEffect(() => {
     if (phase !== "exam" || !camReady) return;
     let cancelled = false;
     let timer: number | null = null;
 
-    const faceApiPromise = loadFaceApi().catch(() => null);
-    const objDetectPromise = import("@/lib/exam/object-detector")
-      .then((m) => m.detectSuspiciousObject)
-      .catch(() => null);
+    const analyzePromise = import("@/lib/exam/object-detector")
+      .then((m) => m.analyzeFrame)
+      .catch((e) => { console.error("[proctor] analyzer load failed", e); return null; });
 
-    // Sample brightness from a downscaled frame. Returns 0..255 average luma.
     const sampleCanvas = document.createElement("canvas");
     sampleCanvas.width = 64; sampleCanvas.height = 48;
     const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
@@ -301,66 +301,70 @@ function ExamPage() {
       if (cancelled) return;
       const v = videoRef.current;
       if (v && v.readyState >= 2) {
-        // ---- 1. Brightness / camera-covered / out-of-frame check ----
-        const bright = frameBrightness(v);
-        const tooDark = bright !== null && bright < 25; // covered lens / unplugged / hiding
+        // ---- Brightness check (camera covered / lights off / hiding) ----
+        let bright = frameBrightness(v);
+        if (simulateRef.current.dark > 0) { bright = 5; simulateRef.current.dark -= 1; }
+        const tooDark = bright !== null && bright < 25;
 
-        // ---- 2. Face presence (face-api) ----
-        let faceCount: number | null = null;
+        // ---- Single COCO-SSD pass: person count + suspicious object ----
+        let personCount: number | null = null;
+        let suspicious: { label: string; score: number } | null = null;
         try {
-          const faceapi = await faceApiPromise;
-          if (faceapi) {
-            const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
-            const dets = await faceapi.detectAllFaces(v, opts);
-            faceCount = dets.length;
+          const analyze = await analyzePromise;
+          if (analyze) {
+            const a = await analyze(v);
+            if (a) { personCount = a.personCount; suspicious = a.suspicious; }
           }
-        } catch { /* keep going */ }
+        } catch (e) { console.warn("[proctor] frame analyze failed", e); }
 
-        const noFace = tooDark || faceCount === 0;
+        // Simulator overrides (demo-only buttons)
+        if (simulateRef.current.object > 0) {
+          suspicious = { label: "cell phone (simulated)", score: 0.99 };
+          simulateRef.current.object -= 1;
+        }
+        if (simulateRef.current.noFace > 0) {
+          personCount = 0;
+          simulateRef.current.noFace -= 1;
+        }
+
+        // ---- 1. No-face / dark frame (two-strike) ----
+        const noFace = tooDark || personCount === 0;
         if (noFace) {
           noFaceStreakRef.current += 1;
           if (noFaceStreakRef.current === 1) {
             fireWarning(tooDark
-              ? "STRICT WARNING: camera blocked or room too dark — show your face clearly. Next violation will auto-submit."
-              : "STRICT WARNING: face not detected — stay centred in the camera frame. Next violation will auto-submit.");
+              ? "STRICT WARNING: camera blocked or room too dark — show your face clearly. Next violation auto-submits."
+              : "STRICT WARNING: face not detected — stay centred in the camera frame. Next violation auto-submits.");
             void logEvent("no_face", "high", { tooDark, brightness: bright, strike: 1 });
           } else if (noFaceStreakRef.current >= 2) {
             void logEvent("no_face", "critical", { tooDark, brightness: bright, strike: noFaceStreakRef.current });
             void handleFinalSubmit(tooDark ? "camera blocked / dark frame" : "candidate left the camera frame");
             return;
           }
-        } else if (faceCount !== null && faceCount > 1) {
-          fireWarning("Multiple faces detected — exam will end.");
-          void logEvent("multiple_faces", "critical", { count: faceCount });
-          void handleFinalSubmit("multiple faces detected");
+        } else if (personCount !== null && personCount > 1) {
+          fireWarning("Multiple people detected in frame — exam terminated.");
+          void logEvent("multiple_faces", "critical", { count: personCount });
+          void handleFinalSubmit("multiple people detected");
           return;
         } else {
           noFaceStreakRef.current = 0;
         }
 
-        // ---- 3. Suspicious-object check (phone / book / laptop / etc.) ----
-        // Two-strike rule: 1st detection → strict warning, 2nd → auto-submit.
-        try {
-          const detectFn = await objDetectPromise;
-          if (detectFn) {
-            const obj = await detectFn(v);
-            if (obj) {
-              objectWarningRef.current += 1;
-              if (objectWarningRef.current === 1) {
-                fireWarning(`STRICT WARNING: ${obj.label} detected in frame (${Math.round(obj.score * 100)}%). Remove it immediately — next detection will auto-submit your exam.`);
-                void logEvent("suspicious_pattern", "high", { reason: "object_in_frame_warning", label: obj.label, score: obj.score, strike: 1, ts: new Date().toISOString() });
-              } else {
-                fireWarning(`Second violation (${obj.label}) — exam auto-submitting now.`);
-                void logEvent("suspicious_pattern", "critical", { reason: "object_in_frame_second_strike", label: obj.label, score: obj.score, strike: objectWarningRef.current, ts: new Date().toISOString() });
-                void handleFinalSubmit(`repeated prohibited item: ${obj.label}`);
-                return;
-              }
-            }
+        // ---- 2. Suspicious object (two-strike) ----
+        if (suspicious) {
+          objectWarningRef.current += 1;
+          if (objectWarningRef.current === 1) {
+            fireWarning(`STRICT WARNING: ${suspicious.label} detected in frame (${Math.round(suspicious.score * 100)}%). Remove it now — next detection auto-submits.`);
+            void logEvent("suspicious_pattern", "high", { reason: "object_in_frame_warning", label: suspicious.label, score: suspicious.score, strike: 1, ts: new Date().toISOString() });
+          } else {
+            fireWarning(`Second violation (${suspicious.label}) — auto-submitting now.`);
+            void logEvent("suspicious_pattern", "critical", { reason: "object_in_frame_second_strike", label: suspicious.label, score: suspicious.score, strike: objectWarningRef.current, ts: new Date().toISOString() });
+            void handleFinalSubmit(`repeated prohibited item: ${suspicious.label}`);
+            return;
           }
-        } catch { /* object detector unavailable */ }
+        }
       }
-      timer = window.setTimeout(tick, 1500);
-
+      timer = window.setTimeout(tick, 1200);
     };
     void tick();
 
