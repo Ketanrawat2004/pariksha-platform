@@ -10,6 +10,7 @@ type Prefs = {
   reduceMotion: boolean;
   underlineLinks: boolean;
   largeCursor: boolean;
+  screenReader: boolean;
 };
 
 const DEFAULTS: Prefs = {
@@ -20,6 +21,7 @@ const DEFAULTS: Prefs = {
   reduceMotion: false,
   underlineLinks: false,
   largeCursor: false,
+  screenReader: false,
 };
 
 const KEY = "pariksha:a11y";
@@ -50,6 +52,8 @@ export function AccessibilityFab() {
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const lastSpokenRef = useRef<string>("");
 
   useEffect(() => {
     const p = load();
@@ -57,6 +61,41 @@ export function AccessibilityFab() {
     apply(p);
     setReady(true);
   }, []);
+
+  // Screen reader: speak text on click/focus + announce route changes.
+  useEffect(() => {
+    if (!prefs.screenReader || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const synth = window.speechSynthesis;
+    const speak = (text: string) => {
+      const clean = text.replace(/\s+/g, " ").trim();
+      if (!clean || clean === lastSpokenRef.current) return;
+      lastSpokenRef.current = clean;
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(clean.slice(0, 240));
+      u.rate = 1; u.pitch = 1; u.lang = document.documentElement.lang || "en-US";
+      u.onstart = () => setSpeaking(true);
+      u.onend = () => setSpeaking(false);
+      synth.speak(u);
+    };
+    const handler = (e: Event) => {
+      const t = e.target as HTMLElement | null;
+      if (!t) return;
+      const el = t.closest("a,button,[role='button'],h1,h2,h3,[aria-label],label,li") as HTMLElement | null;
+      if (!el) return;
+      const text = el.getAttribute("aria-label") || el.innerText || el.textContent || "";
+      if (text) speak(text);
+    };
+    document.addEventListener("click", handler, true);
+    document.addEventListener("focusin", handler, true);
+    // Initial announcement
+    speak(`Screen reader enabled. ${document.title}`);
+    return () => {
+      document.removeEventListener("click", handler, true);
+      document.removeEventListener("focusin", handler, true);
+      synth.cancel();
+      setSpeaking(false);
+    };
+  }, [prefs.screenReader]);
 
   const update = useCallback((patch: Partial<Prefs>) => {
     setPrefs((cur) => {
