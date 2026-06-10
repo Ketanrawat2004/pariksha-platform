@@ -1,0 +1,16 @@
+# Pariksha
+
+> India's national exam integrity platform. Anti-leak paper system with SHA-256 hashing, AI proxy detection via live face matching, and tri-party (institute + admin + superadmin) live integrity monitoring (TriShield).
+
+Pariksha lets institutes publish secure online exams and lets candidates take them under verified, tamper-evident conditions. Candidates register with Aadhaar-hashed identity and a face baseline; every exam session is watermarked per-candidate and monitored for tab-switches, copy-paste, fullscreen exits, and proxy faces. Results, ranks, and certificates are generated instantly.
+
+## Pages
+
+- [Home](/): Platform overview, features, and how exam integrity is enforced end-to-end.
+- [About](/about): Mission, the integrity stack (anti-leak, proctoring, TriShield), and who Pariksha is for.
+- [Privacy Policy](/privacy): What data Pariksha collects, how it is hashed/encrypted, retention windows, and user rights.
+- [Terms of Service](/terms): Eligibility, exam code of conduct, staff-code confidentiality, IP, and liability.
+
+## Optional
+
+- [Sitemap](/sitemap.xml): Machine-readable list of public routes.

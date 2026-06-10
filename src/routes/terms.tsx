@@ -9,7 +9,9 @@ export const Route = createFileRoute("/terms")({
       { name: "description", content: "The rules and code of conduct for candidates, invigilators, institutes, and admins using Pariksha." },
       { property: "og:title", content: "Terms of Service — Pariksha" },
       { property: "og:description", content: "Code of conduct and acceptable-use rules for Pariksha." },
+      { property: "og:url", content: "/terms" },
     ],
+    links: [{ rel: "canonical", href: "/terms" }],
   }),
   component: TermsPage,
 });

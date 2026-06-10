@@ -9,7 +9,9 @@ export const Route = createFileRoute("/privacy")({
       { name: "description", content: "How Pariksha collects, uses, secures, and shares your personal data, biometric verification photos, and exam activity." },
       { property: "og:title", content: "Privacy Policy — Pariksha" },
       { property: "og:description", content: "How Pariksha handles your personal and biometric data." },
+      { property: "og:url", content: "/privacy" },
     ],
+    links: [{ rel: "canonical", href: "/privacy" }],
   }),
   component: PrivacyPage,
 });

@@ -12,7 +12,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Set new password — Pariksha" }] }),
+  head: () => ({
+    meta: [
+      { title: "Set a new password — Pariksha" },
+      { name: "description", content: "Choose a new password for your Pariksha account. Passwords are checked against known breach lists to keep your exam record safe." },
+      { property: "og:title", content: "Set a new password — Pariksha" },
+      { property: "og:description", content: "Choose a new password for your Pariksha account." },
+      { property: "og:url", content: "/reset-password" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+    links: [{ rel: "canonical", href: "/reset-password" }],
+  }),
   component: ResetPage,
 });
 

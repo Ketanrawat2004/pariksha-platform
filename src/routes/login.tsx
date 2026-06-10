@@ -15,7 +15,16 @@ import { toast } from "sonner";
 import { ParikshaLogo } from "@/components/pariksha-logo";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Login — Pariksha" }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign in — Pariksha" },
+      { name: "description", content: "Sign in to Pariksha to access your candidate dashboard, admit cards, exam results, or staff console for invigilators, institutes, and admins." },
+      { property: "og:title", content: "Sign in — Pariksha" },
+      { property: "og:description", content: "Sign in to Pariksha to access your candidate dashboard, admit cards, exam results, or staff console." },
+      { property: "og:url", content: "/login" },
+    ],
+    links: [{ rel: "canonical", href: "/login" }],
+  }),
   component: LoginPage,
 });
 

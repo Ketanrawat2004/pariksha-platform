@@ -34,7 +34,11 @@ import { ActivityReportButton } from "@/components/activity-report-button";
 import { logActivity } from "@/lib/activity-log";
 
 export const Route = createFileRoute("/institute/dashboard")({
-  head: () => ({ meta: [{ title: "Institute · Paper Builder — Pariksha" }] }),
+  head: () => ({ meta: [
+    { title: "Institute · Paper Builder — Pariksha" },
+    { name: "description", content: "Build, publish, and release secure exam papers — manage rosters, admit cards, and TriShield sessions for your institute." },
+    { name: "robots", content: "noindex, nofollow" },
+  ] }),
   component: () => (
     <ProtectedShell requireRoles={["institute", "admin", "superadmin"]}>
       <InstitutePage />

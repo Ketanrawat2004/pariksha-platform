@@ -5,7 +5,11 @@ import { Construction } from "lucide-react";
 import { ActivityReportButton } from "@/components/activity-report-button";
 
 export const Route = createFileRoute("/invigilator/dashboard")({
-  head: () => ({ meta: [{ title: "Invigilator — Pariksha" }] }),
+  head: () => ({ meta: [
+    { title: "Invigilator — Pariksha" },
+    { name: "description", content: "Pariksha invigilator console — monitor live exam sessions, log incidents, and verify attendance." },
+    { name: "robots", content: "noindex, nofollow" },
+  ] }),
   component: () => (
     <ProtectedShell requireRoles={["invigilator", "admin", "superadmin"]}>
       <div className="flex flex-wrap items-start justify-between gap-3">

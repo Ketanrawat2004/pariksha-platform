@@ -13,11 +13,14 @@ import { ChatbotWidget } from "@/components/chatbot-widget";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Pariksha — Every mark, earned." },
-      { name: "description", content: "India's national exam integrity platform. 2.4M+ candidates protected. Zero paper leaks." },
-      { property: "og:title", content: "Pariksha — Every mark, earned." },
-      { property: "og:description", content: "India's national exam integrity platform." },
+      { title: "Pariksha — Secure Online Exams with Live Integrity Monitoring" },
+      { name: "description", content: "India's national exam integrity platform. Encrypted papers, SHA-256 anti-leak hashing, AI proxy detection, and live tri-party invigilation at national scale." },
+      { property: "og:title", content: "Pariksha — Secure Online Exams with Live Integrity Monitoring" },
+      { property: "og:description", content: "India's national exam integrity platform. Encrypted papers, anti-leak hashing, AI proxy detection, and live tri-party invigilation." },
+      { property: "og:url", content: "/" },
+      { name: "twitter:url", content: "/" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   component: LandingPage,
 });
