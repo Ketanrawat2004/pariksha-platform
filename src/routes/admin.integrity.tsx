@@ -54,7 +54,7 @@ function IntegrityPage() {
       </h1>
       <p className="text-muted-foreground mt-1 mb-6">Real-time signals from every exam session — tab-switch, copy, devtools, multi-face, prohibited objects.</p>
 
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
         <Stat icon={<Activity className="h-4 w-4" />} label="Total" value={counts.total} />
         <Stat icon={<AlertTriangle className="h-4 w-4 text-destructive" />} label="High / Critical" value={counts.high} />
         <Stat icon={<ShieldCheck className="h-4 w-4 text-success" />} label="Unresolved" value={counts.open} />

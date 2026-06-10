@@ -108,7 +108,7 @@ function InstitutePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("paper_submissions")
-        .select("*")
+        .select("id, institute_id, title, subject, description, exam_date, start_time, duration_minutes, total_marks, passing_marks, teacher_name, submitter_photo_url, status, edit_request_note, admin_note, published_exam_id, created_at, updated_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
