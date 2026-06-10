@@ -82,6 +82,6 @@ export const getVaultStats = createServerFn({ method: "GET" }).handler(async () 
       results: resRes?.count ?? 0,
       centers: cRes?.count ?? 0,
     },
-    recentFlags: flagsRes?.data ?? [],
+    recentFlags: [],
   } satisfies VaultStats;
 });
