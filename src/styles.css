@@ -179,3 +179,43 @@
   body { background: white; color: black; }
 }
 .print-only { display: none; }
+
+/* ============== Accessibility modes ============== */
+.a11y-contrast {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --muted-foreground: oklch(0.2 0 0);
+  --border: oklch(0 0 0);
+  --primary: oklch(0 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --accent: oklch(0.45 0.25 25);
+}
+.a11y-contrast.dark {
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --muted-foreground: oklch(0.9 0 0);
+  --border: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0 0 0);
+}
+.a11y-dyslexic, .a11y-dyslexic * {
+  font-family: "Comic Sans MS", "Trebuchet MS", Verdana, system-ui, sans-serif !important;
+  letter-spacing: 0.02em;
+  word-spacing: 0.08em;
+  line-height: 1.65;
+}
+.a11y-motion-reduce *, .a11y-motion-reduce *::before, .a11y-motion-reduce *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+.a11y-underline a { text-decoration: underline !important; text-underline-offset: 3px; }
+.a11y-cursor, .a11y-cursor * {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M3 3 L3 30 L11 22 L16 33 L21 31 L16 20 L27 20 Z' fill='black' stroke='white' stroke-width='2'/></svg>") 2 2, auto !important;
+}
+:focus-visible {
+  outline: 3px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
