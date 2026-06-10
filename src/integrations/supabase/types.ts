@@ -1113,6 +1113,10 @@ export type Database = {
         }[]
       }
       generate_trishield_join_code: { Args: never; Returns: string }
+      get_paper_submission_questions: {
+        Args: { _paper_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1139,6 +1143,15 @@ export type Database = {
           total_marks: number
         }[]
       }
+      log_integrity_event: {
+        Args: {
+          _details?: Json
+          _event_type: string
+          _session_id: string
+          _severity: string
+        }
+        Returns: string
+      }
       paper_has_full_trishield: {
         Args: { _paper_submission_id: string }
         Returns: boolean
@@ -1148,6 +1161,10 @@ export type Database = {
         Returns: {
           released_count: number
         }[]
+      }
+      user_can_access_trishield_topic: {
+        Args: { _topic: string }
+        Returns: boolean
       }
       verify_admit_anonymous: {
         Args: {
