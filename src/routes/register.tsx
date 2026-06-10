@@ -15,7 +15,16 @@ import { toast } from "sonner";
 import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 
 export const Route = createFileRoute("/register")({
-  head: () => ({ meta: [{ title: "Register — Pariksha" }] }),
+  head: () => ({
+    meta: [
+      { title: "Create your account — Pariksha" },
+      { name: "description", content: "Register as a candidate, invigilator, institute, admin, or super admin on Pariksha — India's secure exam platform with face-verified identity and live integrity monitoring." },
+      { property: "og:title", content: "Create your account — Pariksha" },
+      { property: "og:description", content: "Register as a candidate or staff member on Pariksha — India's secure exam platform with face-verified identity and live integrity monitoring." },
+      { property: "og:url", content: "/register" },
+    ],
+    links: [{ rel: "canonical", href: "/register" }],
+  }),
   component: RegisterPage,
 });
 
