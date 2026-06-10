@@ -182,10 +182,12 @@ function RegisterPage() {
   return (
     <div className="min-h-dvh flex items-center justify-center px-4 py-10 bg-gradient-to-br from-background to-secondary">
       <Card className="w-full max-w-2xl p-8 shadow-elegant">
-        <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-4">
+        <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-2">
           <ParikshaLogo className="h-10 w-10" />
           <span>Pariksha</span>
         </Link>
+        <h1 className="text-center text-2xl font-bold tracking-tight mb-1">Create your Pariksha account</h1>
+        <p className="text-center text-sm text-muted-foreground mb-6">Register as a candidate or staff member to take or run secure online exams.</p>
         <div className="mb-6">
           <div className="flex justify-between text-xs text-muted-foreground mb-2">
             <span>Step {step} of {STEPS.length}</span>
