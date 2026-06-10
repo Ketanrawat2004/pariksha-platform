@@ -85,13 +85,14 @@ function PublicGiveExam() {
           }),
         });
         if (res.status === 404) {
-          // No matching registration in DB → graceful fall-back to the public demo exam
-          // so candidates can still try the platform without a real admit card.
-          toast.message("Admit number not found — entering the demo exam instead.");
-          usedDemoFallback = true;
-          try { photoUrl = localStorage.getItem("pariksha:demo-profile-photo"); } catch {}
+          throw new Error(
+            "No matching registration found. The admit card number and full name must exactly match the record on file. Check the spelling of your name and the admit card number, or use DEMO-0000 to try the demo exam.",
+          );
+        } else if (res.status === 400) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body?.error ?? "Some details are missing or invalid. Please re-check name, DOB and admit number.");
         } else if (!res.ok) {
-          throw new Error(`Verification failed (${res.status})`);
+          throw new Error(`Verification service unavailable (${res.status}). Please try again in a moment.`);
         } else {
           const row = await res.json();
           photoUrl = row.photo_url;
@@ -99,6 +100,7 @@ function PublicGiveExam() {
           title = row.exam_title;
         }
       }
+
 
       if (photoUrl) {
         toast.message("Loading face-match models (first time can take ~10s)…");

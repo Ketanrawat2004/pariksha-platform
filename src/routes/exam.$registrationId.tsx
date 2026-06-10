@@ -326,13 +326,13 @@ function ExamPage() {
         const noFace = tooDark || faceCount === 0;
         if (noFace) {
           noFaceStreakRef.current += 1;
-          if (noFaceStreakRef.current === 2) {
+          if (noFaceStreakRef.current === 1) {
             fireWarning(tooDark
-              ? "STRICT WARNING: camera blocked or room too dark — show your face clearly."
-              : "STRICT WARNING: face not visible — stay centred in the camera frame.");
-            void logEvent("no_face", "high", { tooDark, brightness: bright });
-          } else if (noFaceStreakRef.current >= 4) {
-            void logEvent("no_face", "critical", { tooDark, brightness: bright });
+              ? "STRICT WARNING: camera blocked or room too dark — show your face clearly. Next violation will auto-submit."
+              : "STRICT WARNING: face not detected — stay centred in the camera frame. Next violation will auto-submit.");
+            void logEvent("no_face", "high", { tooDark, brightness: bright, strike: 1 });
+          } else if (noFaceStreakRef.current >= 2) {
+            void logEvent("no_face", "critical", { tooDark, brightness: bright, strike: noFaceStreakRef.current });
             void handleFinalSubmit(tooDark ? "camera blocked / dark frame" : "candidate left the camera frame");
             return;
           }
@@ -354,11 +354,11 @@ function ExamPage() {
             if (obj) {
               objectWarningRef.current += 1;
               if (objectWarningRef.current === 1) {
-                fireWarning(`STRICT WARNING: ${obj.label} detected in frame. Remove it immediately — next detection will auto-submit your exam.`);
-                void logEvent("suspicious_pattern", "high", { reason: "object_in_frame_warning", label: obj.label, score: obj.score, strike: 1 });
+                fireWarning(`STRICT WARNING: ${obj.label} detected in frame (${Math.round(obj.score * 100)}%). Remove it immediately — next detection will auto-submit your exam.`);
+                void logEvent("suspicious_pattern", "high", { reason: "object_in_frame_warning", label: obj.label, score: obj.score, strike: 1, ts: new Date().toISOString() });
               } else {
                 fireWarning(`Second violation (${obj.label}) — exam auto-submitting now.`);
-                void logEvent("suspicious_pattern", "critical", { reason: "object_in_frame_second_strike", label: obj.label, score: obj.score, strike: objectWarningRef.current });
+                void logEvent("suspicious_pattern", "critical", { reason: "object_in_frame_second_strike", label: obj.label, score: obj.score, strike: objectWarningRef.current, ts: new Date().toISOString() });
                 void handleFinalSubmit(`repeated prohibited item: ${obj.label}`);
                 return;
               }
@@ -366,7 +366,8 @@ function ExamPage() {
           }
         } catch { /* object detector unavailable */ }
       }
-      timer = window.setTimeout(tick, 3000);
+      timer = window.setTimeout(tick, 1500);
+
     };
     void tick();
 
