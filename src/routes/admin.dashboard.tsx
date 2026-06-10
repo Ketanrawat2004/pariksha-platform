@@ -5,7 +5,11 @@ import { EditRequestsInbox } from "@/components/admin/edit-requests-inbox";
 import { ActivityReportButton } from "@/components/activity-report-button";
 
 export const Route = createFileRoute("/admin/dashboard")({
-  head: () => ({ meta: [{ title: "Admin — Pariksha" }] }),
+  head: () => ({ meta: [
+    { title: "Admin — Pariksha" },
+    { name: "description", content: "Pariksha admin console — manage exams, centers, candidates, and integrity reports." },
+    { name: "robots", content: "noindex, nofollow" },
+  ] }),
   component: () => (
     <ProtectedShell requireRoles={["admin", "superadmin"]}>
       <StaffWatchBanner party="admin" />
