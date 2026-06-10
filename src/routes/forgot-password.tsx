@@ -12,7 +12,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/forgot-password")({
-  head: () => ({ meta: [{ title: "Reset password — Pariksha" }] }),
+  head: () => ({
+    meta: [
+      { title: "Reset your password — Pariksha" },
+      { name: "description", content: "Forgot your Pariksha password? Enter your email and we'll send a secure reset link so you can regain access to your exam account." },
+      { property: "og:title", content: "Reset your password — Pariksha" },
+      { property: "og:description", content: "Request a secure password reset link for your Pariksha account." },
+      { property: "og:url", content: "/forgot-password" },
+    ],
+    links: [{ rel: "canonical", href: "/forgot-password" }],
+  }),
   component: ForgotPasswordPage,
 });
 
