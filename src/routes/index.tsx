@@ -249,7 +249,7 @@ function LandingPage() {
                   {i < steps.length - 1 && (
                     <span
                       aria-hidden="true"
-                      className="hidden md:flex absolute top-1/2 -right-3 lg:-right-4 -translate-y-1/2 z-10 h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-md ring-2 ring-background"
+                      className="hidden md:flex absolute top-1/2 -right-2 -translate-y-1/2 translate-x-1/2 z-10 h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-md ring-2 ring-background"
                     >
                       <ArrowRight className="h-4 w-4" strokeWidth={3} />
                     </span>
