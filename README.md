@@ -531,7 +531,7 @@ Three honest reasons, not a pitch deck:
 
 I'm **Ketan Rawat**, final year B.Tech ECE at NIT Jamshedpur. Pariksha is a solo build — design, schema, RLS, crypto, the lot. The TriShield Vault concept (three-party Shamir custody + time-locked decryption + continuous webcam presence for every critical paper action) is original to this project. It is a direct response to NEET 2024 and 2026, not a fork of any existing exam platform.
 
-[GitHub](https://github.com/Ketanrawat2004) · [LinkedIn](https://www.linkedin.com/in/ketan-rawat-97a8aa2a0/) · [Live Platform](https://pariksha-platform.lovable.app)
+[GitHub](https://github.com/Ketanrawat2004) · [LinkedIn](https://www.linkedin.com/in/ketan-rawat-97a8aa2a0/) · [Live Platform](https://pariksha-platform.lovable.app) · [Unstop Profile](https://unstop.com/u/ketanraw35877)
 
 ---
 
