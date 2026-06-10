@@ -65,14 +65,13 @@ function PublicGiveExam() {
     setBusy(true);
     setConfidence(null);
     try {
-      const isDemo = admitNo.trim().toUpperCase() === "DEMO-0000";
+      const isDemoCode = admitNo.trim().toUpperCase().startsWith("DEMO");
       let photoUrl: string | null = null;
-      let regId = "demo";
-      let title = "Demo Exam";
+      let regId = "88888888-8888-8888-8888-888888888888";
+      let title = "Pariksha Demo Exam";
+      let usedDemoFallback = isDemoCode;
 
-      if (isDemo) {
-        // Anonymous demo: match against the live capture stored on the
-        // candidate profile page (base64 data URL in localStorage).
+      if (isDemoCode) {
         try { photoUrl = localStorage.getItem("pariksha:demo-profile-photo"); } catch {}
       } else {
         const res = await fetch("/api/public/give-exam-verify", {
@@ -85,14 +84,20 @@ function PublicGiveExam() {
             admit_card_number: admitNo.trim(),
           }),
         });
-        if (!res.ok) {
-          if (res.status === 404) throw new Error("No matching registration. Check your name, date of birth, Aadhaar and admit number. Tip: use admit DEMO-0000 to try the demo exam.");
+        if (res.status === 404) {
+          // No matching registration in DB → graceful fall-back to the public demo exam
+          // so candidates can still try the platform without a real admit card.
+          toast.message("Admit number not found — entering the demo exam instead.");
+          usedDemoFallback = true;
+          try { photoUrl = localStorage.getItem("pariksha:demo-profile-photo"); } catch {}
+        } else if (!res.ok) {
           throw new Error(`Verification failed (${res.status})`);
+        } else {
+          const row = await res.json();
+          photoUrl = row.photo_url;
+          regId = row.registration_id;
+          title = row.exam_title;
         }
-        const row = await res.json();
-        photoUrl = row.photo_url;
-        regId = row.registration_id;
-        title = row.exam_title;
       }
 
       if (photoUrl) {
@@ -112,7 +117,7 @@ function PublicGiveExam() {
         if (distance > 0.6) {
           throw new Error(`Face does not match registration (${conf}% match). Please retake.`);
         }
-      } else if (isDemo) {
+      } else if (usedDemoFallback) {
         toast.message("No reference photo yet — demo entry granted without face match.");
       }
 

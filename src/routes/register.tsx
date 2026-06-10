@@ -22,6 +22,14 @@ export const Route = createFileRoute("/register")({
 const ROLES = ["candidate", "invigilator", "admin", "superadmin", "institute"] as const;
 type Role = (typeof ROLES)[number];
 
+// Staff access codes — shown on the page; required for any non-candidate role.
+const STAFF_CODES: Record<Exclude<Role, "candidate">, string> = {
+  invigilator: "INVIG-2026",
+  admin: "ADMIN-2026",
+  superadmin: "SUPER-2026",
+  institute: "INST-2026",
+};
+
 const schema = z.object({
   role: z.enum(ROLES, { required_error: "Choose a role" }),
   fullName: z.string().trim().min(2, "Min 2 characters").max(120),
@@ -33,7 +41,14 @@ const schema = z.object({
   password: z.string().min(8, "Min 8 chars").max(128).regex(/[A-Z]/, "Need uppercase").regex(/[0-9]/, "Need number").regex(/[^A-Za-z0-9]/, "Need symbol"),
   confirmPassword: z.string(),
   aadhaar: z.string().regex(/^[0-9]{12}$/, "Enter 12-digit Aadhaar"),
-}).refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] });
+  staffCode: z.string().optional(),
+})
+  .refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] })
+  .refine(
+    (d) => d.role === "candidate" ||
+      (d.staffCode != null && STAFF_CODES[d.role as Exclude<Role, "candidate">] === d.staffCode.trim().toUpperCase()),
+    { message: "Invalid access code for the selected role", path: ["staffCode"] },
+  );
 
 type FormData = z.infer<typeof schema>;
 
@@ -66,7 +81,7 @@ function RegisterPage() {
 
   const next = async () => {
     const fields: (keyof FormData)[][] = [
-      ["role"],
+      ["role", "staffCode"],
       ["fullName", "dateOfBirth", "gender", "phone", "state"],
       ["email", "password", "confirmPassword"],
       ["aadhaar"],
@@ -175,6 +190,26 @@ function RegisterPage() {
                 })}
               </div>
               {errors.role && <p className="mt-1 text-sm text-destructive">{errors.role.message as string}</p>}
+
+              {role !== "candidate" && (
+                <div className="mt-4 rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
+                  <div className="text-sm font-bold">Staff access code required</div>
+                  <p className="text-xs text-muted-foreground">
+                    Non-candidate roles need an authorisation code. Codes are issued per role; candidates do not need one.
+                  </p>
+                  <ul className="text-xs grid sm:grid-cols-2 gap-1.5">
+                    <li><b>Invigilator:</b> <code className="font-mono">INVIG-2026</code></li>
+                    <li><b>Admin:</b> <code className="font-mono">ADMIN-2026</code></li>
+                    <li><b>Super Admin:</b> <code className="font-mono">SUPER-2026</code></li>
+                    <li><b>Institute:</b> <code className="font-mono">INST-2026</code></li>
+                  </ul>
+                  <div>
+                    <Label htmlFor="staffCode">Enter the code for "{ROLE_META[role].title}"</Label>
+                    <Input id="staffCode" {...register("staffCode")} placeholder="e.g. ADMIN-2026" aria-invalid={!!errors.staffCode} />
+                    {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
