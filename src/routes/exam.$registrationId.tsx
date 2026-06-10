@@ -129,7 +129,13 @@ function ExamPage() {
     details: Record<string, unknown> = {},
   ) => {
     if (!sessionId || isDemo) return;
-    await supabase.from("integrity_events").insert({ session_id: sessionId, event_type, severity, details: details as never });
+    // Write through a SECURITY DEFINER RPC — candidates no longer have direct INSERT on integrity_events
+    await supabase.rpc("log_integrity_event" as never, {
+      _session_id: sessionId,
+      _event_type: event_type,
+      _severity: severity,
+      _details: details as never,
+    } as never);
   }, [sessionId, isDemo]);
 
   // ---- Final submit (declared early so anti-cheat effects can reference) ----
