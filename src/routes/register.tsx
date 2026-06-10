@@ -22,6 +22,14 @@ export const Route = createFileRoute("/register")({
 const ROLES = ["candidate", "invigilator", "admin", "superadmin", "institute"] as const;
 type Role = (typeof ROLES)[number];
 
+// Staff access codes — shown on the page; required for any non-candidate role.
+const STAFF_CODES: Record<Exclude<Role, "candidate">, string> = {
+  invigilator: "INVIG-2026",
+  admin: "ADMIN-2026",
+  superadmin: "SUPER-2026",
+  institute: "INST-2026",
+};
+
 const schema = z.object({
   role: z.enum(ROLES, { required_error: "Choose a role" }),
   fullName: z.string().trim().min(2, "Min 2 characters").max(120),
@@ -33,7 +41,14 @@ const schema = z.object({
   password: z.string().min(8, "Min 8 chars").max(128).regex(/[A-Z]/, "Need uppercase").regex(/[0-9]/, "Need number").regex(/[^A-Za-z0-9]/, "Need symbol"),
   confirmPassword: z.string(),
   aadhaar: z.string().regex(/^[0-9]{12}$/, "Enter 12-digit Aadhaar"),
-}).refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] });
+  staffCode: z.string().optional(),
+})
+  .refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] })
+  .refine(
+    (d) => d.role === "candidate" ||
+      (d.staffCode != null && STAFF_CODES[d.role as Exclude<Role, "candidate">] === d.staffCode.trim().toUpperCase()),
+    { message: "Invalid access code for the selected role", path: ["staffCode"] },
+  );
 
 type FormData = z.infer<typeof schema>;
 
