@@ -81,7 +81,7 @@ function RegisterPage() {
 
   const next = async () => {
     const fields: (keyof FormData)[][] = [
-      ["role"],
+      ["role", "staffCode"],
       ["fullName", "dateOfBirth", "gender", "phone", "state"],
       ["email", "password", "confirmPassword"],
       ["aadhaar"],
