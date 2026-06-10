@@ -76,6 +76,64 @@ The platform is fully deployed, all five roles work, real payments run through R
 
 ---
 
+## Screenshots
+
+A walk-through of every surface in the platform — captured from the live deployment.
+
+### 1. Home / Landing
+The public landing page that explains the mission and routes visitors to the TriShield Vault and the live demo.
+
+![Home — landing page](docs/screenshots/01-home-landing.png)
+
+### 2. Login — one-click demo sign-in
+Five demo roles (Superadmin, Admin, Invigilator, Candidate, Institute) plus standard email/password and Google OAuth.
+
+![Login screen with demo accounts](docs/screenshots/02-login.png)
+
+### 3. Candidate dashboard
+Upcoming exams, registrations, results and the running integrity score for the signed-in candidate.
+
+![Candidate dashboard](docs/screenshots/03-candidate-dashboard.png)
+
+### 4. Exam paper UI (AI-proctored)
+Per-candidate watermark, live face proctor (bottom-right), section navigator, timer, and demo controls for simulating proctor events.
+
+![Candidate exam paper UI](docs/screenshots/04-exam-paper-ui.png)
+
+### 5. Institute — Paper Builder & Schedule Lock
+Build the paper, capture teacher authentication, and lock the schedule under a live TriShield LiveWatch session with join code.
+
+![Institute paper builder with TriShield LiveWatch](docs/screenshots/05-institute-paper-builder.png)
+
+### 6. Invigilator — Attendance
+Searchable admit-card roster with live approval state for each candidate at the centre.
+
+![Invigilator attendance roster](docs/screenshots/06-invigilator-attendance.png)
+
+### 7. Admin — Reports
+Cross-cutting analytics across registrations, published results, pass rate and average score, plus the latest published result rows.
+
+![Admin reports](docs/screenshots/07-admin-reports.png)
+
+### 8. Superadmin — National Overview
+Network-wide edit-request inbox and the join-code entry to attach into any institute's TriShield LiveWatch session.
+
+![Superadmin national overview](docs/screenshots/08-superadmin-overview.png)
+
+### 9. Superadmin — Paper Leak Detector
+Continuous SHA-256 hash-matching crawler comparing sealed paper digests against open-web sources, with recent high-severity signals.
+
+![Superadmin paper leak detector](docs/screenshots/09-superadmin-leak-detector.png)
+
+### 10. TriShield Vault — live cryptographic activity
+24×7 ML anomaly detection, perceptual-hash crawlers and quorum heartbeats with cryptographic proofs streamed live.
+
+![TriShield Vault activity stream](docs/screenshots/10-trishield-vault.png)
+
+---
+
+
+
 ## Try it — one click, five roles
 
 ![Login with demo accounts](./screenshots/Screenshot_2026-06-10_151012.png)
