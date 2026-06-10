@@ -117,7 +117,7 @@ function PublicGiveExam() {
         if (distance > 0.6) {
           throw new Error(`Face does not match registration (${conf}% match). Please retake.`);
         }
-      } else if (isDemo) {
+      } else if (usedDemoFallback) {
         toast.message("No reference photo yet — demo entry granted without face match.");
       }
 
