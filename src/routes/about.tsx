@@ -18,7 +18,9 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "Built by Ketan Rawat (NIT Jamshedpur, ECE). Pariksha solves India's exam paper-leak crisis with TriShield Vault — cryptography, biometrics, and live monitoring at national scale." },
       { property: "og:title", content: "About — Pariksha" },
       { property: "og:description", content: "Problem. Solution. Why no one else has done this. The story behind Pariksha." },
+      { property: "og:url", content: "/about" },
     ],
+    links: [{ rel: "canonical", href: "/about" }],
   }),
   component: AboutPage,
 });
