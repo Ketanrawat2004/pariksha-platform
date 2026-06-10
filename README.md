@@ -63,8 +63,8 @@ Encrypted PDFs, sealed envelopes, biometric gates, CCTV — they all treat sympt
 
 ## So what is Pariksha, actually?
 
-![Pariksha Landing Page](./screenshots/Screenshot_2026-06-10_152538.png)
-*Home — live stats, tagline, and entry points for exam, registration and institution login.*
+![Pariksha — About page](./screenshots/Screenshot_2026-06-10_152538.png)
+*About — the "India's exams, re-earned" manifesto, builder credit, and entry points into the TriShield Vault and live demo.*
 
 Pariksha is not a proctoring plugin and it is not a white-label exam host. Think of it as **the examination authority itself**, end-to-end — closer to a digital UPSC or SSC than to a typical edtech product. One student registers, pays, sits, gets caught cheating (or doesn't), and walks away with a cryptographically signed certificate. All of it on one stack.
 
@@ -92,8 +92,8 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ### As a Candidate
 
-![Candidate Dashboard](./screenshots/Screenshot_2026-06-10_152224.png)
-*Candidate dashboard — registered exams, integrity score (100), upcoming exam count, results*
+![Candidate Dashboard](./screenshots/Screenshot_2026-06-10_151229.png)
+*Candidate dashboard — welcome card, upcoming exams (SSC CGL, JEE Mains), integrity score 100, and a one-click **Try Demo Exam** button*
 
 1. Sign in with `candidate@pariksha.in` / `Demo@1234`
 2. Your dashboard shows upcoming exams (JEE Mains 2026, SSC CGL), your integrity score, and any results
@@ -103,8 +103,8 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ### Taking the Exam (Demo Exam)
 
-![Exam Interface with AI Proctor](./screenshots/Screenshot_2026-06-10_152209.png)
-*Live exam — AI proctor bottom-right, watermarked paper, integrity timer, section navigator*
+![Live Exam — lockdown browser with AI proctor](./screenshots/Screenshot_2026-06-10_152048.png)
+*Inside the exam — diagonal watermark with candidate email + IP, AI Proctor webcam tile (bottom-right), section tabs, integrity timer, and the **DEMO: Simulate Proctor Events** panel (Phone / Hide face / Dark) for triggering live violations.*
 
 1. The browser enters mandatory fullscreen — there is no skip
 2. Face verification runs against your registration photo — a confidence bar climbs to GRANTED
@@ -116,8 +116,8 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ### As an Invigilator
 
-![Invigilator Attendance](./screenshots/Screenshot_2026-06-10_151025.png)
-*Invigilator attendance view — 6 registered, 6 present, admit-card numbers, APPROVED status*
+![Invigilator Attendance](./screenshots/Screenshot_2026-06-10_152412.png)
+*Invigilator attendance — 6 registered · 6 present, admit-card numbers (KNS-2026-…), exam and date per row, and APPROVED chips. Search by admit card or candidate name in the top-right.*
 
 1. Sign in as `invig@pariksha.in`
 2. **Attendance** tab shows all registered candidates, their admit-card numbers, and approval status
@@ -127,8 +127,8 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ### As an Institute
 
-![Institute Paper Builder with LiveWatch](./screenshots/Screenshot_2026-06-10_152315.png)
-*Institute dashboard — TriShield LiveWatch active (join code shown), live webcam feed, snapshot counts per party*
+![Institute Paper Builder with TriShield LiveWatch](./screenshots/Screenshot_2026-06-10_151159.png)
+*Institute workspace — Paper Builder & Schedule Lock, draft/locked/published counters, and the black **TriShield LiveWatch Active** bar showing the join code (`D Q G X V B`) plus live snap counts for INSTITUTE / ADMIN / SUPERADMIN. The institute's own webcam recording tile is pinned bottom-right.*
 
 1. Sign in as `institute@pariksha.in`
 2. Click **+ New Paper** to create a paper — enter title, subject, and teacher/faculty name
@@ -139,8 +139,8 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ### As an Admin
 
-![Admin Reports Dashboard](./screenshots/Screenshot_2026-06-10_151159.png)
-*Admin reports — cross-cutting analytics, pass rate, average score, latest published results*
+![Admin Reports Dashboard](./screenshots/Screenshot_2026-06-10_152315.png)
+*Admin → Reports — cross-cutting analytics (registrations, results published, pass rate, average %) and the latest published results with per-exam status chips.*
 
 1. Sign in as `admin@pariksha.in`
 2. **Dashboard** shows live integrity events across all active sessions
@@ -151,10 +151,10 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ### As Superadmin
 
-![Superadmin National Overview](./screenshots/Screenshot_2026-06-10_152048.png)
+![Superadmin National Overview](./screenshots/Screenshot_2026-06-10_152209.png)
 *Superadmin overview — TriShield LiveWatch join, edit-request inbox, national session oversight*
 
-![Paper Leak Detector](./screenshots/Screenshot_2026-06-10_151229.png)
+![Paper Leak Detector](./screenshots/Screenshot_2026-06-10_152224.png)
 *Leak Detector — SHA-256 continuous crawl, sealed papers under watch, recent high-severity signals*
 
 1. Sign in as `super@pariksha.in`
@@ -167,10 +167,10 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ## TriShield Vault — the core innovation
 
-![TriShield 6-Step Demo](./screenshots/Screenshot_2026-06-10_152452.png)
+![TriShield Vault — 6-step anti-leak flow](./screenshots/trishield-vault-demo.png)
 *TriShield Vault — 6-step paper lifecycle: Paper Authored → SHA-256 Sealed → AES-256 Encrypted → Time-Locked → Live Anomaly Watch → Verified Delivery*
 
-![TriShield 24×7 Threat Intelligence](./screenshots/Screenshot_2026-06-10_152412.png)
+![TriShield 24×7 Threat Intelligence](./screenshots/Screenshot_2026-06-10_151025.png)
 *TriShield AI threat intelligence — live threat radar, cryptographic activity stream, SHA-256 seal verifications, Ed25519 signature chain, AES-256-GCM key rotations*
 
 This is the concept that does not exist anywhere else.
