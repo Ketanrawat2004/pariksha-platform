@@ -4,8 +4,8 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 export function SiteFooter() {
   return (
     <footer className="border-t border-border/60 bg-background mt-auto">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 grid gap-8 md:grid-cols-4 text-sm">
-        <div className="md:col-span-2">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 grid gap-8 sm:grid-cols-2 md:grid-cols-4 text-sm">
+        <div className="sm:col-span-2 md:col-span-2">
           <div className="flex items-center gap-2 font-bold">
             <ParikshaLogo className="h-8 w-8" />
             <span>Pariksha</span>
@@ -22,16 +22,17 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-3">Account</h4>
+          <h4 className="font-semibold mb-3">Account &amp; Legal</h4>
           <ul className="space-y-2 text-muted-foreground">
             <li><Link to="/login" className="hover:text-foreground">Login</Link></li>
             <li><Link to="/register" className="hover:text-foreground">Register</Link></li>
+            <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
+            <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
             <li><Link to="/sitemap" className="hover:text-foreground">Sitemap</Link></li>
-            <li><a href="/sitemap.xml" className="hover:text-foreground">sitemap.xml</a></li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">© 2026 Pariksha. Built for FAR AWAY Hackathon · All marks, earned.</div>
+      <div className="border-t border-border/60 py-4 px-4 text-center text-xs text-muted-foreground">© 2026 Pariksha. Built for FAR AWAY Hackathon · All marks, earned.</div>
     </footer>
   );
 }

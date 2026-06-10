@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TrishieldVaultRouteImport } from './routes/trishield-vault'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapRouteImport } from './routes/sitemap'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -61,6 +62,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const TrishieldVaultRoute = TrishieldVaultRouteImport.update({
   id: '/trishield-vault',
   path: '/trishield-vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -285,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap': typeof SitemapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap': typeof SitemapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -376,6 +384,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap': typeof SitemapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -423,6 +432,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap'
     | '/sitemap.xml'
+    | '/terms'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap'
     | '/sitemap.xml'
+    | '/terms'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -513,6 +524,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap'
     | '/sitemap.xml'
+    | '/terms'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -559,6 +571,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapRoute: typeof SitemapRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrishieldVaultRoute: typeof TrishieldVaultRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   AdminCandidatesRoute: typeof AdminCandidatesRoute
@@ -607,6 +620,13 @@ declare module '@tanstack/react-router' {
       path: '/trishield-vault'
       fullPath: '/trishield-vault'
       preLoaderRoute: typeof TrishieldVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -911,6 +931,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapRoute: SitemapRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrishieldVaultRoute: TrishieldVaultRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   AdminCandidatesRoute: AdminCandidatesRoute,
