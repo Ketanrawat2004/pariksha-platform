@@ -12,6 +12,7 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
+import { ExamWatermark } from "@/components/exam/watermark";
 // Recharts is heavy (~300KB). Lazy so it never blocks initial exam paint.
 const SubmitChart = lazy(() => import("@/components/exam/submit-chart"));
 
