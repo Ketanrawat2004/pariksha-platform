@@ -41,7 +41,7 @@ export const getVaultStats = createServerFn({ method: "GET" }).handler(async () 
     exams?.[0] ??
     null;
 
-  const [qRes, rRes, sRes, subRes, iRes, resRes, cRes, flagsRes] = await Promise.all([
+  const [qRes, rRes, sRes, subRes, iRes, resRes, cRes] = await Promise.all([
     exam ? supabaseAdmin.from("questions").select("id", { count: "exact", head: true }).eq("exam_id", exam.id) : null,
     exam ? supabaseAdmin.from("registrations").select("id", { count: "exact", head: true }).eq("exam_id", exam.id) : null,
     supabaseAdmin.from("exam_sessions").select("id", { count: "exact", head: true }),
@@ -49,11 +49,6 @@ export const getVaultStats = createServerFn({ method: "GET" }).handler(async () 
     supabaseAdmin.from("integrity_events").select("id", { count: "exact", head: true }),
     supabaseAdmin.from("results").select("id", { count: "exact", head: true }),
     supabaseAdmin.from("centers").select("id", { count: "exact", head: true }),
-    supabaseAdmin
-      .from("integrity_events")
-      .select("id, event_type, severity, timestamp")
-      .order("timestamp", { ascending: false })
-      .limit(3),
   ]);
 
   // Deterministic hash if DB column is empty — uses real exam metadata
