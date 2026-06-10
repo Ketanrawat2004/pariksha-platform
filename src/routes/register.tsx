@@ -190,6 +190,26 @@ function RegisterPage() {
                 })}
               </div>
               {errors.role && <p className="mt-1 text-sm text-destructive">{errors.role.message as string}</p>}
+
+              {role !== "candidate" && (
+                <div className="mt-4 rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
+                  <div className="text-sm font-bold">Staff access code required</div>
+                  <p className="text-xs text-muted-foreground">
+                    Non-candidate roles need an authorisation code. Codes are issued per role; candidates do not need one.
+                  </p>
+                  <ul className="text-xs grid sm:grid-cols-2 gap-1.5">
+                    <li><b>Invigilator:</b> <code className="font-mono">INVIG-2026</code></li>
+                    <li><b>Admin:</b> <code className="font-mono">ADMIN-2026</code></li>
+                    <li><b>Super Admin:</b> <code className="font-mono">SUPER-2026</code></li>
+                    <li><b>Institute:</b> <code className="font-mono">INST-2026</code></li>
+                  </ul>
+                  <div>
+                    <Label htmlFor="staffCode">Enter the code for "{ROLE_META[role].title}"</Label>
+                    <Input id="staffCode" {...register("staffCode")} placeholder="e.g. ADMIN-2026" aria-invalid={!!errors.staffCode} />
+                    {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
