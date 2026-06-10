@@ -11,6 +11,8 @@ const SUSPICIOUS = new Set([
   "tv",
   "tablet",
   "keyboard",
+  "mouse",
+  "headphones",
 ]);
 
 type CocoDetector = {
@@ -24,7 +26,8 @@ async function getDetector(): Promise<CocoDetector> {
     detectorPromise = (async () => {
       await import("@tensorflow/tfjs");
       const cocoSsd = await import("@tensorflow-models/coco-ssd");
-      const model = await cocoSsd.load({ base: "lite_mobilenet_v2" });
+      // mobilenet_v2 (full) is more accurate than lite for small/held-up phones.
+      const model = await cocoSsd.load({ base: "mobilenet_v2" });
       return model as unknown as CocoDetector;
     })();
   }
@@ -35,6 +38,8 @@ export async function detectSuspiciousObject(video: HTMLVideoElement): Promise<{
   if (video.readyState < 2) return null;
   const det = await getDetector();
   const preds = await det.detect(video);
-  const hit = preds.find((p) => SUSPICIOUS.has(p.class) && p.score > 0.55);
+  // Lower threshold — phones held close to camera often score 0.4–0.55.
+  const hit = preds.find((p) => SUSPICIOUS.has(p.class) && p.score > 0.4);
   return hit ? { label: hit.class, score: hit.score } : null;
 }
+
