@@ -120,7 +120,7 @@ function Dashboard() {
             </div>
           )}
           <div>
-            <h1 className="text-3xl font-bold">Welcome, {profile?.full_name?.split(" ")[0] ?? "candidate"}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {profile?.full_name?.split(" ")[0] ?? "candidate"}</h1>
             <p className="text-muted-foreground mt-1">Your exams, results, and integrity status — all here.</p>
           </div>
         </div>
