@@ -235,19 +235,24 @@ function LandingPage() {
               <h2 className="text-3xl md:text-4xl font-bold">From sign-up to certificate</h2>
               <p className="mt-3 text-muted-foreground">Four steps. Zero compromises.</p>
             </div>
-            <div className="grid gap-6 md:grid-cols-4 relative">
+            <div className="grid gap-6 md:gap-4 md:grid-cols-4 relative">
               {steps.map((s, i) => (
                 <div key={s.n} className="relative">
                   <Card className="p-6 h-full">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground font-bold">{s.n}</span>
-                      <s.icon className="h-5 w-5 text-muted-foreground" />
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground font-bold shadow-md">{s.n}</span>
+                      <s.icon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                     </div>
                     <h3 className="font-bold text-lg">{s.title}</h3>
                     <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
                   </Card>
                   {i < steps.length - 1 && (
-                    <ArrowRight className="hidden md:block absolute top-1/2 -right-4 -translate-y-1/2 text-muted-foreground/40 z-10" />
+                    <span
+                      aria-hidden="true"
+                      className="hidden md:flex absolute top-1/2 -right-3 lg:-right-4 -translate-y-1/2 z-10 h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-md ring-2 ring-background"
+                    >
+                      <ArrowRight className="h-4 w-4" strokeWidth={3} />
+                    </span>
                   )}
                 </div>
               ))}

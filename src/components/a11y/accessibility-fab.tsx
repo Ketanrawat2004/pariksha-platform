@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { Accessibility, Sun, Moon, Type, Contrast, MousePointer2, Sparkles, RotateCcw, X } from "lucide-react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { Accessibility, Sun, Moon, Type, Contrast, MousePointer2, Sparkles, RotateCcw, X, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Prefs = {
