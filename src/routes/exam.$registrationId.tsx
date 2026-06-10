@@ -220,6 +220,12 @@ function ExamPage() {
         e.preventDefault();
         void logEvent("suspicious_pattern", "high", { reason: "devtools_attempt" });
       }
+      if (e.key === "PrintScreen" || (e.ctrlKey && e.key.toLowerCase() === "p")) {
+        e.preventDefault();
+        void logEvent("suspicious_pattern", "critical", { reason: "screenshot_or_print_attempt" });
+        toast.error("Screenshots / printing are disabled during the exam.");
+        try { navigator.clipboard.writeText(""); } catch {}
+      }
     };
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("blur", onBlur);
