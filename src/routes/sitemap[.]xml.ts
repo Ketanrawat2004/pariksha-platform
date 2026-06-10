@@ -16,14 +16,18 @@ export const Route = createFileRoute("/sitemap.xml")({
         // Only public, indexable routes. Auth-gated dashboards (candidate/*, admin/*,
         // superadmin/*, institute/*, invigilator/*, exam/*) are intentionally omitted
         // and disallowed in robots.txt.
-        const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/about", changefreq: "monthly", priority: "0.8" },
-          { path: "/trishield-vault", changefreq: "monthly", priority: "0.8" },
-          { path: "/give-exam", changefreq: "weekly", priority: "0.9" },
+        const today = new Date().toISOString().slice(0, 10);
+        const entries: (SitemapEntry & { lastmod?: string })[] = [
+          { path: "/", changefreq: "weekly", priority: "1.0", lastmod: today },
+          { path: "/about", changefreq: "monthly", priority: "0.8", lastmod: today },
+          { path: "/trishield-vault", changefreq: "monthly", priority: "0.8", lastmod: today },
+          { path: "/give-exam", changefreq: "weekly", priority: "0.9", lastmod: today },
+          { path: "/exam-entry", changefreq: "weekly", priority: "0.7", lastmod: today },
           { path: "/login", changefreq: "yearly", priority: "0.4" },
           { path: "/register", changefreq: "yearly", priority: "0.6" },
           { path: "/forgot-password", changefreq: "yearly", priority: "0.2" },
+          { path: "/reset-password", changefreq: "yearly", priority: "0.2" },
+          { path: "/verify-email", changefreq: "yearly", priority: "0.2" },
           { path: "/sitemap", changefreq: "monthly", priority: "0.3" },
         ];
 
@@ -31,6 +35,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           [
             `  <url>`,
             `    <loc>${BASE_URL}${e.path}</loc>`,
+            e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,

@@ -7,3 +7,14 @@ Disallow: /institute/
 Disallow: /candidate/
 Disallow: /exam/
 Disallow: /api/
+
+# Block AI scrapers from training on protected exam content
+User-agent: GPTBot
+Disallow: /exam/
+Disallow: /api/
+
+User-agent: CCBot
+Disallow: /exam/
+Disallow: /api/
+
+Sitemap: https://pariksha-platform.lovable.app/sitemap.xml
