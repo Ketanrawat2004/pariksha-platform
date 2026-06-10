@@ -507,6 +507,12 @@ function ExamPage() {
         </div>
       </header>
 
+      {warningBanner && (
+        <div className="bg-destructive text-destructive-foreground px-4 py-3 text-sm font-bold text-center animate-pulse flex items-center justify-center gap-2 sticky top-[52px] md:top-[60px] z-30">
+          <AlertTriangle className="h-5 w-5" /> {warningBanner}
+        </div>
+      )}
+
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-3 lg:gap-4 p-3 lg:p-4 max-w-[1600px] mx-auto w-full">
         <aside className="space-y-3 lg:space-y-4 order-2 lg:order-1 lg:sticky lg:top-[64px] lg:self-start">
           {sections.length > 1 && (
