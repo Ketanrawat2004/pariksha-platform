@@ -1,22 +1,45 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { z } from "zod";
+
+const Input = z.object({
+  sessionId: z.string().uuid(),
+  finalPaperHash: z.string().max(256).nullish(),
+});
 
 /**
  * Generates a TriShield session report for a completed/halted watch session.
- * Computes duration, snapshot totals, and verification status, then upserts
- * a row in trishield_session_reports (keyed on session_id).
+ * Restricted to staff roles (admin, superadmin, institute) — candidates must not
+ * be able to mutate audit records.
  */
 export const generateSessionReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { sessionId: string; finalPaperHash?: string | null }) => data)
-  .handler(async ({ data }) => {
+  .inputValidator((data: unknown) => Input.parse(data))
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
+
+    // Role gate — only staff may generate/overwrite TriShield reports.
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+    const allowed = (roles ?? []).some((r: any) =>
+      ["admin", "superadmin", "institute"].includes(r.role),
+    );
+    if (!allowed) throw new Error("Forbidden");
+
     const { data: sess, error } = await supabase
       .from("trishield_watch_sessions")
       .select("*")
       .eq("id", data.sessionId)
       .single();
     if (error || !sess) throw new Error(error?.message ?? "Session not found");
+
+    // Institute users may only report on sessions they initiated.
+    const isStaff = (roles ?? []).some((r: any) => ["admin", "superadmin"].includes(r.role));
+    if (!isStaff && sess.initiated_by !== context.userId) {
+      throw new Error("Forbidden");
+    }
 
     const started = sess.session_started_at ? new Date(sess.session_started_at).getTime() : Date.now();
     const ended = sess.session_ended_at ? new Date(sess.session_ended_at).getTime() : Date.now();
