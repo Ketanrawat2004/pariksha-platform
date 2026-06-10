@@ -18,7 +18,11 @@ import { startPaperExam } from "@/lib/institute/start-paper-exam.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidate/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Pariksha" }] }),
+  head: () => ({ meta: [
+    { title: "Dashboard — Pariksha" },
+    { name: "description", content: "Your Pariksha candidate dashboard — upcoming exams, admit cards, results, and notifications in one place." },
+    { name: "robots", content: "noindex, nofollow" },
+  ] }),
   component: () => <ProtectedShell requireRoles={["candidate"]}><Dashboard /></ProtectedShell>,
 });
 
