@@ -170,6 +170,12 @@ export function AccessibilityFab() {
           <ToggleRow icon={<Sparkles className="h-4 w-4" />} label="Reduce motion" checked={prefs.reduceMotion} onChange={(v) => update({ reduceMotion: v })} />
           <ToggleRow icon={<Type className="h-4 w-4" />} label="Underline links" checked={prefs.underlineLinks} onChange={(v) => update({ underlineLinks: v })} />
           <ToggleRow icon={<MousePointer2 className="h-4 w-4" />} label="Large cursor" checked={prefs.largeCursor} onChange={(v) => update({ largeCursor: v })} />
+          <ToggleRow
+            icon={speaking ? <Volume2 className="h-4 w-4 text-accent animate-pulse" /> : <VolumeX className="h-4 w-4" />}
+            label="Screen reader (read aloud)"
+            checked={prefs.screenReader}
+            onChange={(v) => update({ screenReader: v })}
+          />
 
           <Button variant="outline" size="sm" className="w-full" onClick={() => { setPrefs(DEFAULTS); apply(DEFAULTS); try { localStorage.removeItem(KEY); } catch {} }}>
             <RotateCcw className="h-3.5 w-3.5" /> Reset
