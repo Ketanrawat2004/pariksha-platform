@@ -88,10 +88,26 @@ function RegisterPage() {
       [],
       [],
     ];
+    if (step === 1) {
+      // Manually enforce staff-code rule before allowing step 2 (schema refine
+      // runs only on full submit, not on per-field trigger()).
+      const r = getValues("role") as Role | undefined;
+      if (!r) { toast.error("Select a role to continue"); return; }
+      if (r !== "candidate") {
+        const code = (getValues("staffCode") ?? "").trim().toUpperCase();
+        const expected = STAFF_CODES[r as Exclude<Role, "candidate">];
+        if (code !== expected) {
+          form.setError("staffCode", { message: "Invalid access code for the selected role" });
+          toast.error("Enter the correct staff access code to continue");
+          return;
+        }
+      }
+    }
     if (step === 5 && !photo) { toast.error("Please capture your face photo"); return; }
     const ok = await trigger(fields[step - 1]);
     if (ok) setStep(step + 1);
   };
+
 
   const onSubmit = async (data: FormData) => {
     if (!photo) { toast.error("Face photo is required"); setStep(5); return; }
