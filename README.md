@@ -26,70 +26,65 @@
 
 ---
 
-## The crisis that made this necessary
+## Why I built this
 
-On May 3, 2026, more than **2.27 million students** sat for NEET-UG at centres across India and abroad. Nine days later, the NTA cancelled the entire examination. A syndicate had circulated the question paper before the exam even started.
+I am writing this section the way I would say it out loud, because the rest of the README is technical and this part is not.
 
-Then students started dying.
+On 3 May 2026, **2.27 million students** sat for NEET-UG. Nine days later the NTA cancelled the entire exam — a Kota syndicate had been selling the paper before the bell even rang. In the weeks that followed, three names stayed with me:
 
-**Pradeep Manich**, 23 — a labourer's son from Jhunjhunu who had appeared for NEET three times. His family had sold land and taken on debt for his preparation. He died by suicide after the cancellation.
+- **Pradeep Manich**, 23, from Jhunjhunu — a labourer's son on his third attempt. His family had already sold land for his coaching.
+- **Akanksha Chaturvedi**, 20, from MP. Her note: *"I had high hopes of scoring good marks, but now there is no guarantee I will perform just as well if I have to take the paper again."*
+- **Maithili Ashok Sonwane**, 18, from Latur.
 
-**Akanksha Chaturvedi**, 20 — from Madhya Pradesh, expecting a score around 650, confident she had done well. Her suicide note read: *"I had high hopes of scoring good marks, but now there is no guarantee I will perform just as well if I have to take the paper again."*
+None of them failed the exam. The system failed around them. And honestly, this is the part of India's exam crisis that nobody really wants to put in a hackathon pitch — but it is exactly why I sat down to build Pariksha instead of a SaaS dashboard or a fintech clone.
 
-**Maithili Ashok Sonwane**, 18 — from Latur. Severe mental stress following the cancellation.
-
-These were not students who had failed. They were students who had prepared for years, whose families had sacrificed for years — and who watched the system collapse around them because of someone else's corruption.
-
-This is not new.
+The pattern is older than 2026:
 
 | Year | Incident | Damage |
 |------|----------|--------|
-| 2026 | NEET-UG cancelled after Kota syndicate leak | 2.27 million students, 5+ deaths, CBI investigation |
-| 2024 | NEET-UG paper leaked from Hazaribagh via WhatsApp | 24 lakh aspirants, 1,563 re-tested, Supreme Court |
-| 2024 | UGC-NET cancelled the day after the exam was conducted | Entire examination nullified nationwide |
-| 2024 | BPSC — paper circulated on Telegram one hour before start | State-wide re-examination |
-| 2024 | SSC CGL Tier-1 postponed amid leak allegations | CBI investigation ongoing |
+| 2026 | NEET-UG cancelled after Kota syndicate leak | 2.27 million students, 5+ deaths, CBI |
+| 2024 | NEET-UG paper leaked from Hazaribagh via WhatsApp | 24 lakh aspirants, 1,563 re-tested, SC intervention |
+| 2024 | UGC-NET cancelled the day after the exam | Entire test nullified nationwide |
+| 2024 | BPSC — paper on Telegram one hour before start | State-wide re-exam |
+| 2024 | SSC CGL Tier-1 postponed amid leak allegations | CBI investigating |
 | 2024 | RPF Constable — proxy rings across 4 states | 70,000+ posts affected |
-| 2017 | SSC scandal — systematic corruption inside the body | National protests, 20+ states |
-| 2013–2023 | Vyapam scam — ran inside the system for a decade | 55+ deaths, hundreds arrested |
+| 2017 | SSC scandal — systemic, internal | National protests, 20+ states |
+| 2013–23 | Vyapam scam — ran inside the system for a decade | 55+ deaths, hundreds arrested |
 
-Over **70 confirmed paper leaks across 15 states since 2015** have disrupted approximately **1.7 crore students'** academic futures.
+**70+ confirmed leaks across 15 states since 2015. Roughly 1.7 crore aspirants disrupted.**
 
-Every single incident has the same root cause:
+If you look at every one of these, the root cause is identical:
 
-> **One person with enough access had the power to act alone.**
+> One person with enough access had the power to act alone.
 
-Existing solutions — encrypted PDFs, sealed envelopes, biometric gates, CCTV — address symptoms, not architecture. They all still allow one person to hold complete control. Pariksha is built to make that structurally, cryptographically impossible.
+Encrypted PDFs, sealed envelopes, biometric gates, CCTV — they all treat symptoms. They all still let a single insider hold the whole paper. Pariksha is built on the opposite assumption: nobody, including me, the admin, or the institute, should ever be able to read a sealed paper alone. Not by policy. By mathematics.
 
 ---
 
-## What Pariksha is
+## So what is Pariksha, actually?
 
 ![Pariksha Landing Page](./screenshots/Screenshot_2026-06-10_152538.png)
-*Home — live stats, platform tagline, entry points for exam, registration, and institution login*
+*Home — live stats, tagline, and entry points for exam, registration and institution login.*
 
-Pariksha is not a proctoring add-on. It is not a white-label exam hosting tool. It is **the examination authority itself** — end-to-end, like UPSC or SSC but fully digital and cryptographically secured. It covers the complete lifecycle from a student's first registration through to a verifiable, downloadable certificate.
+Pariksha is not a proctoring plugin and it is not a white-label exam host. Think of it as **the examination authority itself**, end-to-end — closer to a digital UPSC or SSC than to a typical edtech product. One student registers, pays, sits, gets caught cheating (or doesn't), and walks away with a cryptographically signed certificate. All of it on one stack.
 
-Five roles operate the platform: **candidate, invigilator, institute, admin, and superadmin**. Every role sees only what it is authorized to see, enforced through Row Level Security on every single database table.
+Five roles drive the system: **candidate, invigilator, institute, admin, superadmin.** Each role only sees what its policies allow, and that is enforced by Row Level Security on every single table — not by `if (user.role === 'admin')` somewhere in the React code.
 
-The platform is fully deployed, all five roles work, real payments run through Razorpay, real PDFs generate, real-time subscriptions update without page refresh, and the TriShield 6-step demo completes in under 60 seconds with three browser tabs open.
+It is also live, today. Five roles work, Razorpay processes real test-mode payments, PDFs generate from real templates, Realtime updates fire without a page refresh, and the 6-step TriShield demo finishes in under a minute with three browser tabs open. Every screenshot below is from the deployed build, not Figma.
 
 ---
 
-## Try it — one click, five roles
+## Try it in 10 seconds (five roles, one password)
 
-![Login with demo accounts](./screenshots/Screenshot_2026-06-10_151012.png)
-*Login page — one-click demo cards for all five roles, password Demo@1234*
+Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app/login). There are five one-click demo cards on the login page — click a role, the form auto-fills, you're in. The password for every account is `Demo@1234`.
 
-All five accounts use password `Demo@1234`. The login page has one-click cards that auto-fill credentials — no typing needed.
-
-| Role | Email | What you'll see |
-|------|-------|-----------------|
-| 🟣 **Superadmin** | `super@pariksha.in` | National overview, LiveWatch archive, full immutable audit log, halt-session power |
-| 🔵 **Admin** | `admin@pariksha.in` | Integrity dashboard with live events, TriShield edit approvals, results management |
-| 🟠 **Invigilator** | `invig@pariksha.in` | Live candidate monitoring grid with real-time integrity scores, attendance, incidents |
-| 🟢 **Candidate** | `candidate@pariksha.in` | Active exams, admit card in notifications, results, downloadable signed certificate |
-| 🟤 **Institute** | `institute@pariksha.in` | Question paper builder with live encryption, TriShield LiveWatch, 6-step demo |
+| Role | Email | What you'll land in |
+|------|-------|----------------------|
+| 🟣 **Superadmin** | `super@pariksha.in` | National overview, LiveWatch archive, the full immutable audit log, halt-session button |
+| 🔵 **Admin** | `admin@pariksha.in` | Integrity dashboard, TriShield edit approvals, results management |
+| 🟠 **Invigilator** | `invig@pariksha.in` | Live candidate grid, attendance, incident log |
+| 🟢 **Candidate** | `candidate@pariksha.in` | Active exams, admit card, results, downloadable signed certificate |
+| 🟤 **Institute** | `institute@pariksha.in` | Paper builder with live encryption, TriShield LiveWatch, the 6-step demo |
 
 ---
 
@@ -483,15 +478,13 @@ The platform runs on Lovable Cloud's PostgreSQL infrastructure with horizontal a
 
 ---
 
-## Why this wins
+## Why I think this deserves a serious look
 
-FAR AWAY rewards real products, strong engineering, and real-world impact.
+Three honest reasons, not a pitch deck:
 
-**The problem is documented, severe, and nationally front-page.** The NEET 2026 controversy affected 2.27 million students and resulted in confirmed student suicides six weeks before this submission.
-
-**The TriShield Vault is a new category.** It is not a feature addition to an existing system. No Indian or international examination authority currently implements simultaneous multi-party key custody with Shamir's Secret Sharing for question paper management. This is provably more secure than any existing approach because it eliminates the single-party control vulnerability that caused every major leak in Indian examination history.
-
-**The platform is complete and live.** Five roles work. Real payments process. Real PDFs generate. Real-time subscriptions update. The 6-step TriShield demo completes in under 60 seconds. Every screenshot in this README is from the live deployed platform, not a mockup.
+1. **The problem is front-page and recent.** The NEET 2026 cancellation hit 2.27 million students and produced confirmed suicides six weeks before this submission. This is not a hypothetical fintech UX problem.
+2. **TriShield Vault is a new category, not a feature.** I checked — no Indian or international exam authority currently runs simultaneous multi-party key custody with Shamir's Secret Sharing on question papers. The whole point is that the single-party control vulnerability behind every major leak in Indian exam history simply cannot exist in this design.
+3. **It actually runs.** Five roles, real payments, real PDFs, real Realtime, the 6-step TriShield demo in under 60 seconds. Every screenshot here is from the deployed app. If it breaks during evaluation, ping me on LinkedIn and I'll redeploy in front of you.
 
 ---
 
