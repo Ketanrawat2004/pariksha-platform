@@ -19,7 +19,11 @@ export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
+const ROLES = ["candidate", "invigilator", "admin", "superadmin", "institute"] as const;
+type Role = (typeof ROLES)[number];
+
 const schema = z.object({
+  role: z.enum(ROLES, { required_error: "Choose a role" }),
   fullName: z.string().trim().min(2, "Min 2 characters").max(120),
   dateOfBirth: z.string().min(1, "Required"),
   gender: z.string().min(1, "Required"),
@@ -39,33 +43,43 @@ async function sha256(text: string) {
   return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+const ROLE_META: Record<Role, { title: string; desc: string }> = {
+  candidate: { title: "Candidate", desc: "Take exams, view admit cards & results" },
+  invigilator: { title: "Invigilator", desc: "Monitor live sessions & log incidents" },
+  admin: { title: "Admin", desc: "Manage exams, centers, candidates & reports" },
+  superadmin: { title: "Super Admin", desc: "Full platform control & audit log" },
+  institute: { title: "Institute", desc: "Run institute papers & rosters" },
+};
+
 function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [photo, setPhoto] = useState<string>("");
-  const form = useForm<FormData>({ resolver: zodResolver(schema), mode: "onBlur" });
-  const { register, handleSubmit, formState: { errors }, trigger, getValues, watch } = form;
+  const form = useForm<FormData>({ resolver: zodResolver(schema), mode: "onBlur", defaultValues: { role: "candidate" } });
+  const { register, handleSubmit, formState: { errors }, trigger, getValues, watch, setValue } = form;
   const aadhaar = watch("aadhaar") ?? "";
+  const role = (watch("role") ?? "candidate") as Role;
 
-  const STEPS = ["Personal", "Account", "Identity", "Face photo", "Review"];
+  const STEPS = ["Role", "Personal", "Account", "Identity", "Face photo", "Review"];
 
   const next = async () => {
     const fields: (keyof FormData)[][] = [
-      [],
+      ["role"],
       ["fullName", "dateOfBirth", "gender", "phone", "state"],
       ["email", "password", "confirmPassword"],
       ["aadhaar"],
       [],
+      [],
     ];
-    if (step === 4 && !photo) { toast.error("Please capture your face photo"); return; }
-    const ok = await trigger(fields[step]);
+    if (step === 5 && !photo) { toast.error("Please capture your face photo"); return; }
+    const ok = await trigger(fields[step - 1]);
     if (ok) setStep(step + 1);
   };
 
   const onSubmit = async (data: FormData) => {
-    if (!photo) { toast.error("Face photo is required"); setStep(4); return; }
+    if (!photo) { toast.error("Face photo is required"); setStep(5); return; }
     setLoading(true);
     const aadhaarHash = await sha256(data.aadhaar);
     const redirectUrl = `${window.location.origin}/verify-email`;
@@ -82,7 +96,6 @@ function RegisterPage() {
       toast.error(error.message);
       return;
     }
-    // Upload photo + update profile with extra fields
     if (result.user) {
       let photo_url: string | null = null;
       try {
@@ -102,6 +115,11 @@ function RegisterPage() {
         aadhaar_hash: aadhaarHash,
         photo_url,
       }).eq("id", result.user.id);
+
+      await supabase.from("user_roles").insert({
+        user_id: result.user.id,
+        role: data.role as any,
+      });
     }
     setLoading(false);
     setDone(true);
@@ -137,6 +155,30 @@ function RegisterPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           {step === 1 && (
+            <div className="space-y-3">
+              <Label className="text-base">I want to register as</Label>
+              <p className="text-xs text-muted-foreground">Choose the account type that matches your work. Staff roles still require approval at sign-in.</p>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {ROLES.map((r) => {
+                  const active = role === r;
+                  return (
+                    <button
+                      type="button"
+                      key={r}
+                      onClick={() => setValue("role", r, { shouldValidate: true })}
+                      className={`text-left rounded-lg border p-3 transition ${active ? "border-accent bg-accent/5 shadow-elegant" : "border-border hover:border-accent/40"}`}
+                    >
+                      <div className="font-bold text-sm">{ROLE_META[r].title}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{ROLE_META[r].desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.role && <p className="mt-1 text-sm text-destructive">{errors.role.message as string}</p>}
+            </div>
+          )}
+
+          {step === 2 && (
             <>
               <div>
                 <Label htmlFor="fullName">Full name</Label>
@@ -173,7 +215,7 @@ function RegisterPage() {
             </>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <>
               <div>
                 <Label htmlFor="email">Email</Label>
@@ -194,20 +236,18 @@ function RegisterPage() {
             </>
           )}
 
-          {step === 3 && (
-            <>
-              <div>
-                <Label htmlFor="aadhaar">Aadhaar number</Label>
-                <Input id="aadhaar" inputMode="numeric" maxLength={12} {...register("aadhaar")} aria-invalid={!!errors.aadhaar} />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Hashed on your device with SHA-256 before transmission. Last 4 visible: {aadhaar.length === 12 ? `XXXX-XXXX-${aadhaar.slice(-4)}` : "—"}
-                </p>
-                {errors.aadhaar && <p className="mt-1 text-sm text-destructive">{errors.aadhaar.message}</p>}
-              </div>
-            </>
+          {step === 4 && (
+            <div>
+              <Label htmlFor="aadhaar">Aadhaar number</Label>
+              <Input id="aadhaar" inputMode="numeric" maxLength={12} {...register("aadhaar")} aria-invalid={!!errors.aadhaar} />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Hashed on your device with SHA-256 before transmission. Last 4 visible: {aadhaar.length === 12 ? `XXXX-XXXX-${aadhaar.slice(-4)}` : "—"}
+              </p>
+              {errors.aadhaar && <p className="mt-1 text-sm text-destructive">{errors.aadhaar.message}</p>}
+            </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Camera className="h-5 w-5 text-accent" />
@@ -220,7 +260,7 @@ function RegisterPage() {
             </div>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <div className="space-y-2 text-sm">
               <div className="font-semibold text-base mb-2">Review your details</div>
               {photo && (
@@ -229,6 +269,7 @@ function RegisterPage() {
                 </div>
               )}
               {[
+                ["Role", getValues("role")],
                 ["Name", getValues("fullName")],
                 ["DOB", getValues("dateOfBirth")],
                 ["Gender", getValues("gender")],
@@ -238,7 +279,7 @@ function RegisterPage() {
                 ["Aadhaar", `XXXX-XXXX-${(getValues("aadhaar") ?? "").slice(-4)}`],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between border-b border-border/60 py-1.5">
-                  <span className="text-muted-foreground">{k}</span><span className="font-medium">{v}</span>
+                  <span className="text-muted-foreground">{k}</span><span className="font-medium capitalize">{v}</span>
                 </div>
               ))}
             </div>

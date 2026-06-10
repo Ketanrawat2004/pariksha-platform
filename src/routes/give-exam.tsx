@@ -15,7 +15,7 @@ export const Route = createFileRoute("/give-exam")({
   head: () => ({
     meta: [
       { title: "Give Exam — Pariksha" },
-      { name: "description", content: "Anonymous exam entry: verify your admit card and face-match to start." },
+      { name: "description", content: "Verify your name and admit card number, then face-match to start your exam." },
     ],
   }),
   errorComponent: ({ error }) => <div className="p-8 text-destructive">{error.message}</div>,
@@ -140,9 +140,9 @@ function PublicGiveExam() {
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Give Exam · Anonymous Entry</h1>
+                <h1 className="text-2xl font-bold">Give Exam · Identity Check</h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Enter the details from your admit card. We face-match your live photo against the photo you submitted at registration — no sign-in required.
+                  Enter the exact name and admit card number issued to you. Both must match our records before the live face-match begins.
                 </p>
               </div>
             </div>
