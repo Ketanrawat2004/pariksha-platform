@@ -219,3 +219,20 @@
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* === Exam paper leak-prevention === */
+.exam-shell, .exam-shell * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
+}
+.exam-shell input, .exam-shell textarea { -webkit-user-select: text !important; user-select: text !important; }
+.exam-shell img, .exam-shell svg { -webkit-user-drag: none !important; pointer-events: none; }
+@media print {
+  body { display: none !important; }
+}
+.exam-shell {
+  /* Best-effort screenshot deterrent on supported browsers (Brave/Chromium DRM media). */
+  -webkit-touch-callout: none;
+}

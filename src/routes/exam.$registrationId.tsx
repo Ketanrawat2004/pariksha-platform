@@ -12,6 +12,7 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import { Loader2, ShieldCheck, Camera, Maximize, AlertTriangle, Bookmark, ChevronLeft, ChevronRight, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { submitExam } from "@/lib/exam/submit.functions";
+import { ExamWatermark } from "@/components/exam/watermark";
 // Recharts is heavy (~300KB). Lazy so it never blocks initial exam paint.
 const SubmitChart = lazy(() => import("@/components/exam/submit-chart"));
 
@@ -218,6 +219,12 @@ function ExamPage() {
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key))) {
         e.preventDefault();
         void logEvent("suspicious_pattern", "high", { reason: "devtools_attempt" });
+      }
+      if (e.key === "PrintScreen" || (e.ctrlKey && e.key.toLowerCase() === "p")) {
+        e.preventDefault();
+        void logEvent("suspicious_pattern", "critical", { reason: "screenshot_or_print_attempt" });
+        toast.error("Screenshots / printing are disabled during the exam.");
+        try { navigator.clipboard.writeText(""); } catch {}
       }
     };
     document.addEventListener("visibilitychange", onVis);
@@ -512,7 +519,8 @@ function ExamPage() {
   ] : [];
 
   return (
-    <div className="min-h-dvh flex flex-col bg-secondary/40 select-none">
+    <div className="exam-shell min-h-dvh flex flex-col bg-secondary/40 select-none">
+      <ExamWatermark label={`${user?.email ?? "candidate"} · ${registrationId.slice(0, 8)} · ${new Date().toISOString().slice(0, 16)}`} />
       <header className="bg-background border-b border-border px-3 md:px-4 py-2.5 md:py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm gap-2">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <ParikshaLogo className="h-7 w-7 md:h-8 md:w-8 shrink-0" />
