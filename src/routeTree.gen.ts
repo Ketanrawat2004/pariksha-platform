@@ -11,10 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TrishieldVaultRouteImport } from './routes/trishield-vault'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapRouteImport } from './routes/sitemap'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GiveExamRouteImport } from './routes/give-exam'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -62,6 +64,11 @@ const TrishieldVaultRoute = TrishieldVaultRouteImport.update({
   path: '/trishield-vault',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -80,6 +87,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -274,10 +286,12 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/give-exam': typeof GiveExamRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap': typeof SitemapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -318,10 +332,12 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/give-exam': typeof GiveExamRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap': typeof SitemapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -363,10 +379,12 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/give-exam': typeof GiveExamRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap': typeof SitemapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trishield-vault': typeof TrishieldVaultRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/candidates': typeof AdminCandidatesRoute
@@ -409,10 +427,12 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/give-exam'
     | '/login'
+    | '/privacy'
     | '/register'
     | '/reset-password'
     | '/sitemap'
     | '/sitemap.xml'
+    | '/terms'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -453,10 +473,12 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/give-exam'
     | '/login'
+    | '/privacy'
     | '/register'
     | '/reset-password'
     | '/sitemap'
     | '/sitemap.xml'
+    | '/terms'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -497,10 +519,12 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/give-exam'
     | '/login'
+    | '/privacy'
     | '/register'
     | '/reset-password'
     | '/sitemap'
     | '/sitemap.xml'
+    | '/terms'
     | '/trishield-vault'
     | '/verify-email'
     | '/admin/candidates'
@@ -542,10 +566,12 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiveExamRoute: typeof GiveExamRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapRoute: typeof SitemapRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrishieldVaultRoute: typeof TrishieldVaultRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   AdminCandidatesRoute: typeof AdminCandidatesRoute
@@ -596,6 +622,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrishieldVaultRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -622,6 +655,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -886,10 +926,12 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   GiveExamRoute: GiveExamRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapRoute: SitemapRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrishieldVaultRoute: TrishieldVaultRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   AdminCandidatesRoute: AdminCandidatesRoute,
