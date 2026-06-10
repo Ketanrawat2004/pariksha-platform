@@ -72,6 +72,8 @@ function ExamPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const [camReady, setCamReady] = useState(false);
   const noFaceStreakRef = useRef(0);
+  const objectWarningRef = useRef(0);
+  const [warningBanner, setWarningBanner] = useState<string | null>(null);
 
   // Load registration + exam + questions (or generate demo)
   const { data: regData, isLoading } = useQuery({
@@ -304,19 +306,36 @@ function ExamPage() {
             }
 
             // Suspicious-object check (phone / book / laptop / etc.)
+            // AI/ML-driven two-strike rule: 1st detection → strict warning,
+            // 2nd detection → automatic submission.
             try {
               const detectFn = await objDetectPromise;
               if (detectFn) {
                 const obj = await detectFn(v);
                 if (obj) {
-                  toast.error(`Prohibited item detected (${obj.label}) — exam will end`);
-                  void logEvent("suspicious_pattern", "critical", {
-                    reason: "object_in_frame",
-                    label: obj.label,
-                    score: obj.score,
-                  });
-                  void handleFinalSubmit(`prohibited item: ${obj.label}`);
-                  return;
+                  objectWarningRef.current += 1;
+                  if (objectWarningRef.current === 1) {
+                    const msg = `STRICT WARNING: ${obj.label} detected in frame. Remove it immediately — next detection will auto-submit your exam.`;
+                    toast.error(msg, { duration: 8000 });
+                    setWarningBanner(msg);
+                    void logEvent("suspicious_pattern", "high", {
+                      reason: "object_in_frame_warning",
+                      label: obj.label,
+                      score: obj.score,
+                      strike: 1,
+                    });
+                    setTimeout(() => setWarningBanner(null), 10000);
+                  } else {
+                    toast.error(`Second violation (${obj.label}) — exam auto-submitting now`);
+                    void logEvent("suspicious_pattern", "critical", {
+                      reason: "object_in_frame_second_strike",
+                      label: obj.label,
+                      score: obj.score,
+                      strike: objectWarningRef.current,
+                    });
+                    void handleFinalSubmit(`repeated prohibited item: ${obj.label}`);
+                    return;
+                  }
                 }
               }
             } catch { /* object detector unavailable — keep face checks running */ }
