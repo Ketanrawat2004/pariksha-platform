@@ -287,20 +287,8 @@ function VaultPage() {
                     <div className="opacity-80">  metric: <span className="text-accent">{steps[step].stat}</span></div>
                   </div>
 
-                  {/* Step 5: real recent flags */}
-                  {step === 4 && stats?.recentFlags && stats.recentFlags.length > 0 && (
-                    <div className="mt-4 rounded-lg border border-warning/30 bg-warning/5 p-3 text-xs">
-                      <div className="font-bold mb-2 flex items-center gap-2"><Activity className="h-3 w-3" /> Live integrity feed</div>
-                      <ul className="space-y-1">
-                        {stats.recentFlags.map((f) => (
-                          <li key={f.id} className="flex items-center justify-between gap-2">
-                            <span className="font-mono">{f.event_type}</span>
-                            <Badge variant="outline" className="text-[10px]">{f.severity}</Badge>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {/* Step 5: integrity feed details are admin-only and not exposed publicly */}
+
 
                   <div className="mt-6">
                     <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
