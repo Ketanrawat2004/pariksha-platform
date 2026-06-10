@@ -2,23 +2,28 @@ import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Cron-callable cleanup: deletes session-recordings snapshots older than 90 days.
- * Wired via pg_cron + pg_net (set up separately).
+ * Authenticated with a dedicated server-only CRON_SECRET (never the public anon key).
  */
 export const Route = createFileRoute("/api/public/hooks/cleanup-snapshots")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Require the Supabase anon key in the `apikey` header — the canonical
-        // pattern for /api/public/* endpoints invoked by pg_cron + pg_net.
-        const apikey = request.headers.get("apikey") ?? "";
-        const expected = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
-        if (!expected || apikey !== expected) {
+        const provided = request.headers.get("x-cron-secret") ?? request.headers.get("apikey") ?? "";
+        const expected = process.env.CRON_SECRET ?? "";
+        if (!expected) {
+          return new Response("Server misconfigured: CRON_SECRET not set", { status: 500 });
+        }
+        // Constant-time compare
+        const a = new TextEncoder().encode(provided);
+        const b = new TextEncoder().encode(expected);
+        let mismatch = a.length ^ b.length;
+        for (let i = 0; i < Math.min(a.length, b.length); i++) mismatch |= a[i] ^ b[i];
+        if (mismatch !== 0) {
           return new Response("Unauthorized", { status: 401 });
         }
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
         let deleted = 0;
-        // Walk top-level party folders
         for (const party of ["institute", "admin", "superadmin"]) {
           const { data: examFolders } = await supabaseAdmin.storage.from("session-recordings").list(party, { limit: 1000 });
           for (const ex of examFolders ?? []) {
