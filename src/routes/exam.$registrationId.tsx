@@ -538,13 +538,28 @@ function ExamPage() {
         <aside className="space-y-3 lg:space-y-4 order-2 lg:order-1 lg:sticky lg:top-[64px] lg:self-start">
           {sections.length > 1 && (
             <Card className="p-2">
-              <div className="flex gap-1 overflow-x-auto scrollbar-thin">
-                {sections.map((s) => (
-                  <button key={s} onClick={() => { setActiveSection(s); setCurrent(0); }}
-                    className={`px-3 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition-colors ${activeSection === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
-                    {s}
-                  </button>
-                ))}
+              <div
+                className="grid gap-1.5"
+                style={{ gridTemplateColumns: `repeat(${Math.min(sections.length, 3)}, minmax(0, 1fr))` }}
+              >
+                {sections.map((s) => {
+                  const idx = sections.indexOf(s);
+                  const done = idx < sections.indexOf(activeSection);
+                  const active = s === activeSection;
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => { setActiveSection(s); setCurrent(0); }}
+                      className={`px-2 py-2 rounded text-[11px] sm:text-xs font-semibold leading-tight text-center transition-colors break-words ${
+                        active ? "bg-primary text-primary-foreground"
+                        : done ? "bg-success/10 text-success"
+                        : "text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
               </div>
             </Card>
           )}
@@ -568,13 +583,41 @@ function ExamPage() {
               })}
             </div>
           </Card>
+          {isDemo && (
+            <Card className="p-3 space-y-2 border-dashed">
+              <div className="text-[11px] font-bold text-muted-foreground uppercase">Demo: simulate proctor events</div>
+              <div className="grid grid-cols-3 gap-1.5">
+                <Button size="sm" variant="outline" className="text-[10px] h-8" onClick={() => { simulateRef.current.object = 1; toast.info("Sim: phone next tick"); }}>📱 Phone</Button>
+                <Button size="sm" variant="outline" className="text-[10px] h-8" onClick={() => { simulateRef.current.noFace = 1; toast.info("Sim: no face next tick"); }}>🙈 Hide face</Button>
+                <Button size="sm" variant="outline" className="text-[10px] h-8" onClick={() => { simulateRef.current.dark = 1; toast.info("Sim: dark frame next tick"); }}>🌑 Dark</Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground">Click twice within 3s to trigger second-strike auto-submit.</p>
+            </Card>
+          )}
         </aside>
 
         <main className="order-1 lg:order-2 min-w-0">
-          {q && (
+          {q && (() => {
+            const isLastInSection = current >= sectionQuestions.length - 1;
+            const sectionIdx = sections.indexOf(activeSection);
+            const isLastSection = sectionIdx >= sections.length - 1;
+            const isFinalQuestion = isLastInSection && isLastSection;
+            const handleSaveNext = () => {
+              saveAnswer(q.id, answers[q.id]?.selected ?? null, answers[q.id]?.marked ?? false);
+              if (isFinalQuestion) { setConfirmSubmit(true); return; }
+              if (isLastInSection) {
+                const nextSection = sections[sectionIdx + 1];
+                setActiveSection(nextSection);
+                setCurrent(0);
+                toast.success(`Moving to: ${nextSection}`);
+                return;
+              }
+              setCurrent((c) => c + 1);
+            };
+            return (
             <Card key={q.id} className="p-4 md:p-8 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
-                <div className="text-xs md:text-sm text-muted-foreground">Question <span className="font-bold text-foreground">{current + 1}</span> of {sectionQuestions.length}</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Question <span className="font-bold text-foreground">{current + 1}</span> of {sectionQuestions.length} · <span className="text-accent">{activeSection}</span></div>
                 <div className="flex gap-2 text-xs">
                   <span className="rounded bg-success/10 text-success px-2 py-1 font-semibold">+{q.marks}</span>
                   <span className="rounded bg-destructive/10 text-destructive px-2 py-1 font-semibold">−1</span>
@@ -602,16 +645,26 @@ function ExamPage() {
                   <Bookmark className={`h-4 w-4 mr-1 ${answers[q.id]?.marked ? "fill-warning text-warning" : ""}`} /> Mark
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setAnswer(null)}>Clear</Button>
-                <div className="ml-auto">
-                  <Button size="sm" onClick={() => { saveAnswer(q.id, answers[q.id]?.selected ?? null, answers[q.id]?.marked ?? false); setCurrent((c) => Math.min(sectionQuestions.length - 1, c + 1)); }}>
-                    <Save className="h-4 w-4 mr-1" /> Save & Next <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
+                <div className="ml-auto flex gap-2">
+                  {isFinalQuestion ? (
+                    <Button size="sm" variant="destructive" onClick={handleSaveNext}>
+                      <Save className="h-4 w-4 mr-1" /> Finish & Submit
+                    </Button>
+                  ) : (
+                    <Button size="sm" onClick={handleSaveNext}>
+                      <Save className="h-4 w-4 mr-1" />
+                      {isLastInSection ? "Save & Next Section" : "Save & Next"}
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>
-          )}
+            );
+          })()}
         </main>
       </div>
+
 
       {/* Persistent live camera preview (proctor watching) */}
       <div className="fixed bottom-3 right-3 z-30 w-24 sm:w-32 lg:w-40 rounded-lg overflow-hidden border-2 border-accent shadow-elegant bg-foreground/10">
