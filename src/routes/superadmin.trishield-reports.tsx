@@ -137,7 +137,7 @@ function ReportDetailDialog({ report, onClose }: { report: Report; onClose: () =
 
           <div className="border-t pt-3">
             <h4 className="font-semibold mb-2">Snapshots captured</h4>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               <StatBox label="Institute" value={report.institute_snapshot_count} />
               <StatBox label="Admin" value={report.admin_snapshot_count} />
               <StatBox label="SuperAdmin" value={report.superadmin_snapshot_count} />
