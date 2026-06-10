@@ -76,7 +76,11 @@ It is also live, today. Five roles work, Razorpay processes real test-mode payme
 
 ## Try it in 10 seconds (five roles, one password)
 
+![Login page — one-click demo cards for all five roles](./screenshots/Screenshot_2026-06-10_152452.png)
+*Login — the **DEMO · ONE-CLICK SIGN IN** panel auto-fills credentials for any of the five roles. Password for every demo account: `Demo@1234`.*
+
 Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app/login). There are five one-click demo cards on the login page — click a role, the form auto-fills, you're in. The password for every account is `Demo@1234`.
+
 
 | Role | Email | What you'll land in |
 |------|-------|----------------------|
@@ -167,13 +171,17 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 ## TriShield Vault — the core innovation
 
+![TriShield Vault — the anti-leak engine, live](./screenshots/trishield-vault-hero.png)
+*TriShield Vault — the anti-leak engine. Live counters for questions sealed, candidates, integrity events and signed results, with a 60-second playable demo of the full paper lifecycle.*
+
 ![TriShield Vault — 6-step anti-leak flow](./screenshots/trishield-vault-demo.png)
-*TriShield Vault — 6-step paper lifecycle: Paper Authored → SHA-256 Sealed → AES-256 Encrypted → Time-Locked → Live Anomaly Watch → Verified Delivery*
+*The 6-step lifecycle: **Paper Authored → SHA-256 Sealed → AES-256-GCM Encrypted → Time-Locked → Live Anomaly Watch → Verified Delivery.** Each step shows the real cryptographic primitive, the on-chain-style status and the metric (e.g. "10 questions sealed", "VERIFIED").*
 
 ![TriShield 24×7 Threat Intelligence](./screenshots/Screenshot_2026-06-10_151025.png)
-*TriShield AI threat intelligence — live threat radar, cryptographic activity stream, SHA-256 seal verifications, Ed25519 signature chain, AES-256-GCM key rotations*
+*The Vault is awake — 24×7 ML anomaly detection. Threat Radar (global), live Cryptographic Activity Stream (SHA-256 seal verifications, Ed25519 audit signatures, AES-256-GCM key rotations), plus active-seal / rotation / replication / anomaly counters.*
 
 This is the concept that does not exist anywhere else.
+
 
 ### The three-fragment key system
 
