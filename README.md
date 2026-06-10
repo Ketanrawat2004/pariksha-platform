@@ -488,22 +488,17 @@ Three honest reasons, not a pitch deck:
 
 ---
 
-## About the creator
+## About me
 
-**Ketan Rawat**
-Final Year B.Tech, Electronics and Communication Engineering
-National Institute of Technology, Jamshedpur
+I'm **Ketan Rawat**, final year B.Tech ECE at NIT Jamshedpur. Pariksha is a solo build — design, schema, RLS, crypto, the lot. The TriShield Vault concept (three-party Shamir custody + time-locked decryption + continuous webcam presence for every critical paper action) is original to this project. It is a direct response to NEET 2024 and 2026, not a fork of any existing exam platform.
 
 [GitHub](https://github.com/Ketanrawat2004) · [LinkedIn](https://www.linkedin.com/in/ketan-rawat-97a8aa2a0/) · [Live Platform](https://pariksha-platform.lovable.app)
 
-The TriShield Vault concept — three-party cryptographic paper custody with Shamir's Secret Sharing, time-locked decryption, and continuous webcam presence verification for all critical paper actions — was conceived as a direct response to the NEET 2024 and NEET 2026 paper leak crises. It is not derived from, copied from, or based on any existing examination platform's architecture.
-
 ---
 
-*Built for FAR AWAY Hackathon 2026 · Examinations Theme*
-
+*Built for FAR AWAY Hackathon 2026 · Examinations Theme.*
 *Every mark, earned.*
 
 ---
 
-*If you are a student affected by the NEET 2026 cancellation and are struggling — iCall: 9152987821 (free, confidential)*
+> If you are a student affected by the NEET 2026 cancellation and you're struggling — **iCall: 9152987821** (free, confidential). Please call.
