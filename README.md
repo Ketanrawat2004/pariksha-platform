@@ -486,6 +486,37 @@ The platform runs on Lovable Cloud's PostgreSQL infrastructure with horizontal a
 
 ---
 
+## The small things that show this is built for real users
+
+Cryptography is the headline, but a national exam platform also has to be usable by a 17-year-old on a budget Android in a Tier-3 town and by a faculty member who has never used a SaaS dashboard. Two pieces I am quietly proud of:
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### PariBot — the in-app guide
+
+![PariBot — the in-app AI assistant](./screenshots/paribot-chatbot.png)
+
+A floating chatbot powered by **Lovable AI Gateway** that already knows the platform — it answers "what is TriShield Vault", "how do I run the demo exam", "give me the institute login" without anyone hand-writing a single FAQ. Streams in markdown. Lives on every page.
+
+</td>
+<td width="50%" valign="top">
+
+### Accessibility, taken seriously
+
+![Accessibility panel — theme, text size, contrast, motion, screen reader](./screenshots/accessibility-panel.png)
+
+A floating accessibility FAB on every screen: light/dark theme, three text sizes, high-contrast mode, dyslexia-friendly font, reduce-motion, underline-links, large cursor, and a screen-reader read-aloud toggle. India's exam-takers include students with visual and reading disabilities — the platform should not be the obstacle.
+
+</td>
+</tr>
+</table>
+
+---
+
+
+
 ## Why I think this deserves a serious look
 
 Three honest reasons, not a pitch deck:
