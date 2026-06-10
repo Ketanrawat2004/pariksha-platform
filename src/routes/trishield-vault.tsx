@@ -398,18 +398,21 @@ function ThreatIntelligencePanel({ stats }: { stats: VaultStats | undefined }) {
               <h3 className="font-bold">Threat Radar</h3>
               <Badge variant="outline" className="ml-auto text-[10px]">global</Badge>
             </div>
-            <div className="relative h-44 flex items-center justify-center">
+            <div className="relative h-44 flex items-center justify-center overflow-hidden">
               <div
                 className="absolute inset-4 rounded-full border-2 border-accent/30"
                 style={{ boxShadow: `0 0 ${radarGlow}px hsl(var(--accent) / 0.35)` }}
               />
               <div className="absolute inset-10 rounded-full border border-accent/20" />
               <div className="absolute inset-16 rounded-full border border-accent/10" />
+              {/* sweep line: rotate a 0×0 pivot at the exact center, then draw the line upward from it */}
               <div
-                className="absolute left-1/2 top-1/2 h-20 w-[2px] -translate-x-1/2 -translate-y-full origin-bottom bg-gradient-to-t from-accent to-transparent"
-                style={{ transform: `translate(-50%, -100%) rotate(${pulse * 3.6}deg)` }}
-              />
-              <div className="relative text-center">
+                className="absolute left-1/2 top-1/2 h-0 w-0 pointer-events-none"
+                style={{ transform: `rotate(${pulse * 3.6}deg)`, transition: "transform 1.4s linear" }}
+              >
+                <div className="absolute bottom-0 -left-px h-[70px] w-[2px] bg-gradient-to-t from-accent via-accent/60 to-transparent" />
+              </div>
+              <div className="relative text-center rounded-lg bg-background/70 backdrop-blur px-4 py-2 border border-accent/10">
                 <div className="text-3xl font-extrabold tabular-nums">{threatScore}</div>
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">threat score</div>
               </div>
