@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { AccessibilityFab } from "@/components/a11y/accessibility-fab";
 
 
 function NotFoundComponent() {
@@ -129,6 +130,7 @@ function RootComponent() {
           Skip to main content
         </a>
         <Outlet />
+        <AccessibilityFab />
         <Toaster richColors position="top-right" />
       </AuthProvider>
     </QueryClientProvider>

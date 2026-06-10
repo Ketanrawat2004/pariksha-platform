@@ -564,10 +564,19 @@ function ExamPage() {
             </Card>
           )}
           <Card className="p-4">
-            <div className="grid grid-cols-3 gap-2 text-center text-xs mb-3">
-              <div className="rounded bg-success/10 text-success p-2 font-bold">{answered}<div className="font-normal">Answered</div></div>
-              <div className="rounded bg-muted text-muted-foreground p-2 font-bold">{unanswered}<div className="font-normal">Unanswered</div></div>
-              <div className="rounded bg-warning/10 text-warning p-2 font-bold">{marked}<div className="font-normal">Marked</div></div>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              <div className="rounded-md bg-success/10 text-success px-2 py-2.5 flex flex-col items-center justify-center text-center min-w-0">
+                <div className="text-lg font-bold leading-none tabular-nums">{answered}</div>
+                <div className="text-[10px] uppercase tracking-wide mt-1 leading-tight">Answered</div>
+              </div>
+              <div className="rounded-md bg-muted text-muted-foreground px-2 py-2.5 flex flex-col items-center justify-center text-center min-w-0">
+                <div className="text-lg font-bold leading-none tabular-nums">{unanswered}</div>
+                <div className="text-[10px] uppercase tracking-wide mt-1 leading-tight">Unanswered</div>
+              </div>
+              <div className="rounded-md bg-warning/10 text-warning px-2 py-2.5 flex flex-col items-center justify-center text-center min-w-0">
+                <div className="text-lg font-bold leading-none tabular-nums">{marked}</div>
+                <div className="text-[10px] uppercase tracking-wide mt-1 leading-tight">Marked</div>
+              </div>
             </div>
             <div className="grid grid-cols-8 sm:grid-cols-10 lg:grid-cols-5 gap-1.5">
               {sectionQuestions.map((sq, i) => {

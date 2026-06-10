@@ -147,10 +147,11 @@ function RegisterPage() {
         photo_url,
       }).eq("id", result.user.id);
 
-      await supabase.from("user_roles").insert({
-        user_id: result.user.id,
-        role: data.role as any,
+      const { error: roleErr } = await supabase.rpc("assign_signup_role" as any, {
+        _role: data.role as any,
+        _staff_code: data.role === "candidate" ? null : (data.staffCode ?? null),
       });
+      if (roleErr) throw roleErr;
     }
     setLoading(false);
     setDone(true);

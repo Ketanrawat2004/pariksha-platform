@@ -1083,6 +1083,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_signup_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _staff_code?: string
+        }
+        Returns: undefined
+      }
       check_rate_limit: {
         Args: { _key: string; _max: number; _window_seconds: number }
         Returns: boolean
