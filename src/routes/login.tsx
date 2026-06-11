@@ -13,6 +13,7 @@ import { lovable } from "@/integrations/lovable";
 import { defaultLandingFor, type AppRole } from "@/lib/auth/auth-context";
 import { toast } from "sonner";
 import { ParikshaLogo } from "@/components/pariksha-logo";
+import { SupportContactForm } from "@/components/support-contact-form";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -148,15 +149,8 @@ function LoginPage() {
             </details>
           </div>
 
-          <div className="max-w-md rounded-xl border border-white/10 bg-white/5 backdrop-blur p-4 text-sm">
-            <div className="font-semibold mb-1">Need help signing in?</div>
-            <p className="text-primary-foreground/75 text-xs mb-3">Our support desk responds within 1 business hour on exam days.</p>
-            <div className="flex flex-wrap gap-2 text-xs">
-              <a href="mailto:support@pariksha.in" className="rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5">✉ support@pariksha.in</a>
-              <Link to="/status" className="rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5">● Status</Link>
-              <Link to="/about" className="rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5">About</Link>
-            </div>
-          </div>
+          <SupportContactForm />
+
         </div>
 
         <div className="space-y-2">
