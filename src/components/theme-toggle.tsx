@@ -24,12 +24,10 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   useEffect(() => {
     const stored = readPrefs();
+    // First-time visitors always land in light mode; only respect an explicit
+    // saved preference on return visits. System dark-mode is ignored by design.
     const initial: "light" | "dark" =
-      stored.theme === "dark" || stored.theme === "light"
-        ? stored.theme
-        : window.matchMedia?.("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
+      stored.theme === "dark" || stored.theme === "light" ? stored.theme : "light";
     setTheme(initial);
     applyTheme(initial);
     setReady(true);
