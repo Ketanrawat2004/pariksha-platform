@@ -19,6 +19,7 @@ export function SiteFooter() {
             <li><Link to="/about" className="hover:text-foreground">About</Link></li>
             <li><a href="/#features" className="hover:text-foreground">Features</a></li>
             <li><a href="/#how" className="hover:text-foreground">How it works</a></li>
+            <li><Link to="/status" className="hover:text-foreground">System Status</Link></li>
           </ul>
         </div>
         <div>
