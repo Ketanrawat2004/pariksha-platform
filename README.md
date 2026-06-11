@@ -11,7 +11,7 @@
 🌐 **[pariksha-platform.lovable.app](https://pariksha-platform.lovable.app)**
 
 [![Live Platform](https://img.shields.io/badge/Live%20Platform-pariksha--platform.lovable.app-DC2626?style=for-the-badge&logo=vercel&logoColor=white)](https://pariksha-platform.lovable.app/)
-[![FAR AWAY Hackathon](https://img.shields.io/badge/FAR%20AWAY%20Hackathon-2026%20·%20Examinations%20Theme-0A0F2C?style=for-the-badge)](https://faraway.dev)
+[![FAR AWAY Hackathon](https://img.shields.io/badge/FAR%20AWAY%20Hackathon-2026%20·%20Examinations%20Theme-0A0F2C?style=for-the-badge)](https://unstop.com/hackathons/far-away-zuup-1677472)
 [![Built by](https://img.shields.io/badge/Built%20by-Ketan%20Rawat%20·%20NIT%20Jamshedpur-1d4ed8?style=for-the-badge)](https://github.com/Ketanrawat2004)
 [![GitHub](https://img.shields.io/badge/GitHub-Ketanrawat2004-181717?style=flat-square&logo=github)](https://github.com/Ketanrawat2004/pariksha-platform)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Ketan%20Rawat-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ketan-rawat-97a8aa2a0/)
@@ -536,6 +536,7 @@ I'm **Ketan Rawat**, final year B.Tech ECE at NIT Jamshedpur. Pariksha is a solo
 
 *Built for FAR AWAY Hackathon 2026 · Examinations Theme.*
 *Every mark, earned.*
+Still working on this project to fill the loop hole of this paper leak system
 
 ---
 
