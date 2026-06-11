@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ProtectedShell } from "@/components/protected-shell";
 import { StaffWatchBanner } from "@/components/trishield/staff-watch-banner";
 import { EditRequestsInbox } from "@/components/admin/edit-requests-inbox";
 import { ActivityReportButton } from "@/components/activity-report-button";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({ meta: [
@@ -18,7 +20,12 @@ export const Route = createFileRoute("/admin/dashboard")({
           <h1 className="text-3xl font-bold">Admin dashboard</h1>
           <p className="text-muted-foreground mt-1">Approve paper edit requests from institutes and monitor TriShield activity.</p>
         </div>
-        <ActivityReportButton role="admin" />
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/admin/incidents"><AlertTriangle className="h-4 w-4 mr-1" /> Incidents</Link>
+          </Button>
+          <ActivityReportButton role="admin" />
+        </div>
       </div>
       <EditRequestsInbox />
     </ProtectedShell>
