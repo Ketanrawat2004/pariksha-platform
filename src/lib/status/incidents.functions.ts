@@ -70,7 +70,13 @@ export const updateIncident = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      title?: string;
+      severity?: string;
+      summary?: string;
+      status?: string;
+      resolved_at?: string | null;
+    } = {};
     if (data.title !== undefined) patch.title = data.title;
     if (data.severity !== undefined) patch.severity = data.severity;
     if (data.summary !== undefined) patch.summary = data.summary;
@@ -78,7 +84,7 @@ export const updateIncident = createServerFn({ method: "POST" })
       patch.status = data.status;
       patch.resolved_at = data.status === "resolved" ? new Date().toISOString() : null;
     }
-    const { data: row, error } = await context.supabase
+    const { data: row, error } = await (context.supabase as any)
       .from("incidents")
       .update(patch)
       .eq("id", data.id)
