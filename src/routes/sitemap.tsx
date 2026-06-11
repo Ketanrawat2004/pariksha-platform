@@ -28,6 +28,7 @@ const sections: Section[] = [
       { to: "/", label: "Home", desc: "Landing, features, exam mode, how it works." },
       { to: "/about", label: "About", desc: "Mission, hackathon context, NEET-UG 2026 leak study, tech stack." },
       { to: "/trishield-vault", label: "TriShield Vault", desc: "6-step interactive demo of the secure paper vault." },
+      { to: "/status", label: "System Status", desc: "Live uptime, p95 latency, and incident history." },
     ],
   },
   {
