@@ -536,6 +536,7 @@ I'm **Ketan Rawat**, final year B.Tech ECE at NIT Jamshedpur. Pariksha is a solo
 
 *Built for FAR AWAY Hackathon 2026 · Examinations Theme.*
 *Every mark, earned.*
+
 Still working on this project to fill the loop hole of this paper leak system
 
 ---
