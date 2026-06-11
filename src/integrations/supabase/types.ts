@@ -245,6 +245,45 @@ export type Database = {
           },
         ]
       }
+      incidents: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          resolved_at: string | null
+          severity: string
+          started_at: string
+          status: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          resolved_at?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          summary?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          resolved_at?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integrity_events: {
         Row: {
           auto_resolved: boolean
@@ -861,6 +900,69 @@ export type Database = {
           signed_in_at?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      status_pings: {
+        Row: {
+          component: string
+          created_at: string
+          id: string
+          latency_ms: number
+          ok: boolean
+        }
+        Insert: {
+          component?: string
+          created_at?: string
+          id?: string
+          latency_ms: number
+          ok?: boolean
+        }
+        Update: {
+          component?: string
+          created_at?: string
+          id?: string
+          latency_ms?: number
+          ok?: boolean
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          case_ref: string
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          case_ref: string
+          created_at?: string
+          created_by?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          case_ref?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string
+          subject?: string
+          updated_at?: string
         }
         Relationships: []
       }
