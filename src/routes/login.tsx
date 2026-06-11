@@ -125,6 +125,38 @@ function LoginPage() {
           <blockquote className="border-l-2 border-accent/60 pl-4 text-sm italic text-primary-foreground/80 max-w-md">
             "The first platform where the paper literally cannot be read before exam start — not by policy, by mathematics."
           </blockquote>
+
+          <div className="max-w-md pt-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-accent mb-2">Quick FAQ</div>
+            <details className="group rounded-lg border border-white/10 bg-white/5 backdrop-blur p-3 mb-2">
+              <summary className="cursor-pointer text-sm font-medium list-none flex justify-between items-center">
+                Is the demo data real? <span className="text-primary-foreground/60 group-open:rotate-180 transition">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-primary-foreground/75">No. Demo accounts use synthetic candidates, papers, and centres. Nothing connects to a live examination body.</p>
+            </details>
+            <details className="group rounded-lg border border-white/10 bg-white/5 backdrop-blur p-3 mb-2">
+              <summary className="cursor-pointer text-sm font-medium list-none flex justify-between items-center">
+                Can I bring my own examination body? <span className="text-primary-foreground/60 group-open:rotate-180 transition">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-primary-foreground/75">Yes — institutes self-onboard, publish papers into TriShield Vault, and run live invigilation. Request access via support.</p>
+            </details>
+            <details className="group rounded-lg border border-white/10 bg-white/5 backdrop-blur p-3">
+              <summary className="cursor-pointer text-sm font-medium list-none flex justify-between items-center">
+                What happens if my webcam fails mid-exam? <span className="text-primary-foreground/60 group-open:rotate-180 transition">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-primary-foreground/75">Integrity scoring gracefully falls back to behavioural signals. Invigilators are paged automatically and can re-verify you via the live console.</p>
+            </details>
+          </div>
+
+          <div className="max-w-md rounded-xl border border-white/10 bg-white/5 backdrop-blur p-4 text-sm">
+            <div className="font-semibold mb-1">Need help signing in?</div>
+            <p className="text-primary-foreground/75 text-xs mb-3">Our support desk responds within 1 business hour on exam days.</p>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <a href="mailto:support@pariksha.in" className="rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5">✉ support@pariksha.in</a>
+              <Link to="/status" className="rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5">● Status</Link>
+              <Link to="/about" className="rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5">About</Link>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-2">
