@@ -1,9 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 type StartResult =
   | { ok: true; registrationId: string }
   | { ok: false; reason: string };
+
+const StartPaperInput = z.object({ paperRegistrationId: z.string().uuid() });
 
 /**
  * Returns a structured result instead of throwing for expected
@@ -12,7 +15,7 @@ type StartResult =
  */
 export const startPaperExam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { paperRegistrationId: string }) => d)
+  .inputValidator((d: unknown) => StartPaperInput.parse(d))
   .handler(async ({ data, context }): Promise<StartResult> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const userId = context.userId;
