@@ -47,10 +47,12 @@ import { Route as CandidateBillingRouteImport } from './routes/candidate.billing
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminIntegrityRouteImport } from './routes/admin.integrity'
+import { Route as AdminIncidentsRouteImport } from './routes/admin.incidents'
 import { Route as AdminExamsRouteImport } from './routes/admin.exams'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCentersRouteImport } from './routes/admin.centers'
 import { Route as AdminCandidatesRouteImport } from './routes/admin.candidates'
+import { Route as ApiPublicPingRouteImport } from './routes/api/public/ping'
 import { Route as ApiPublicGiveExamVerifyRouteImport } from './routes/api/public/give-exam-verify'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksCleanupSnapshotsRouteImport } from './routes/api/public/hooks/cleanup-snapshots'
@@ -247,6 +249,11 @@ const AdminIntegrityRoute = AdminIntegrityRouteImport.update({
   path: '/admin/integrity',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIncidentsRoute = AdminIncidentsRouteImport.update({
+  id: '/admin/incidents',
+  path: '/admin/incidents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminExamsRoute = AdminExamsRouteImport.update({
   id: '/admin/exams',
   path: '/admin/exams',
@@ -265,6 +272,11 @@ const AdminCentersRoute = AdminCentersRouteImport.update({
 const AdminCandidatesRoute = AdminCandidatesRouteImport.update({
   id: '/admin/candidates',
   path: '/admin/candidates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPingRoute = ApiPublicPingRouteImport.update({
+  id: '/api/public/ping',
+  path: '/api/public/ping',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicGiveExamVerifyRoute = ApiPublicGiveExamVerifyRouteImport.update({
@@ -305,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/admin/centers': typeof AdminCentersRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/exams': typeof AdminExamsRoute
+  '/admin/incidents': typeof AdminIncidentsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/chat': typeof ApiChatRoute
@@ -329,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/system': typeof SuperadminSystemRoute
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
+  '/api/public/ping': typeof ApiPublicPingRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -352,6 +366,7 @@ export interface FileRoutesByTo {
   '/admin/centers': typeof AdminCentersRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/exams': typeof AdminExamsRoute
+  '/admin/incidents': typeof AdminIncidentsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/chat': typeof ApiChatRoute
@@ -376,6 +391,7 @@ export interface FileRoutesByTo {
   '/superadmin/system': typeof SuperadminSystemRoute
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
+  '/api/public/ping': typeof ApiPublicPingRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -400,6 +416,7 @@ export interface FileRoutesById {
   '/admin/centers': typeof AdminCentersRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/exams': typeof AdminExamsRoute
+  '/admin/incidents': typeof AdminIncidentsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/chat': typeof ApiChatRoute
@@ -424,6 +441,7 @@ export interface FileRoutesById {
   '/superadmin/system': typeof SuperadminSystemRoute
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
+  '/api/public/ping': typeof ApiPublicPingRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -449,6 +467,7 @@ export interface FileRouteTypes {
     | '/admin/centers'
     | '/admin/dashboard'
     | '/admin/exams'
+    | '/admin/incidents'
     | '/admin/integrity'
     | '/admin/reports'
     | '/api/chat'
@@ -473,6 +492,7 @@ export interface FileRouteTypes {
     | '/superadmin/system'
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
+    | '/api/public/ping'
     | '/api/public/hooks/cleanup-snapshots'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -496,6 +516,7 @@ export interface FileRouteTypes {
     | '/admin/centers'
     | '/admin/dashboard'
     | '/admin/exams'
+    | '/admin/incidents'
     | '/admin/integrity'
     | '/admin/reports'
     | '/api/chat'
@@ -520,6 +541,7 @@ export interface FileRouteTypes {
     | '/superadmin/system'
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
+    | '/api/public/ping'
     | '/api/public/hooks/cleanup-snapshots'
     | '/api/public/payments/webhook'
   id:
@@ -543,6 +565,7 @@ export interface FileRouteTypes {
     | '/admin/centers'
     | '/admin/dashboard'
     | '/admin/exams'
+    | '/admin/incidents'
     | '/admin/integrity'
     | '/admin/reports'
     | '/api/chat'
@@ -567,6 +590,7 @@ export interface FileRouteTypes {
     | '/superadmin/system'
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
+    | '/api/public/ping'
     | '/api/public/hooks/cleanup-snapshots'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -591,6 +615,7 @@ export interface RootRouteChildren {
   AdminCentersRoute: typeof AdminCentersRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminExamsRoute: typeof AdminExamsRoute
+  AdminIncidentsRoute: typeof AdminIncidentsRoute
   AdminIntegrityRoute: typeof AdminIntegrityRoute
   AdminReportsRoute: typeof AdminReportsRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -615,6 +640,7 @@ export interface RootRouteChildren {
   SuperadminSystemRoute: typeof SuperadminSystemRoute
   SuperadminTrishieldReportsRoute: typeof SuperadminTrishieldReportsRoute
   ApiPublicGiveExamVerifyRoute: typeof ApiPublicGiveExamVerifyRoute
+  ApiPublicPingRoute: typeof ApiPublicPingRoute
   ApiPublicHooksCleanupSnapshotsRoute: typeof ApiPublicHooksCleanupSnapshotsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -887,6 +913,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIntegrityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/incidents': {
+      id: '/admin/incidents'
+      path: '/admin/incidents'
+      fullPath: '/admin/incidents'
+      preLoaderRoute: typeof AdminIncidentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/exams': {
       id: '/admin/exams'
       path: '/admin/exams'
@@ -913,6 +946,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/candidates'
       fullPath: '/admin/candidates'
       preLoaderRoute: typeof AdminCandidatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/ping': {
+      id: '/api/public/ping'
+      path: '/api/public/ping'
+      fullPath: '/api/public/ping'
+      preLoaderRoute: typeof ApiPublicPingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/give-exam-verify': {
@@ -959,6 +999,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCentersRoute: AdminCentersRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminExamsRoute: AdminExamsRoute,
+  AdminIncidentsRoute: AdminIncidentsRoute,
   AdminIntegrityRoute: AdminIntegrityRoute,
   AdminReportsRoute: AdminReportsRoute,
   ApiChatRoute: ApiChatRoute,
@@ -983,6 +1024,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminSystemRoute: SuperadminSystemRoute,
   SuperadminTrishieldReportsRoute: SuperadminTrishieldReportsRoute,
   ApiPublicGiveExamVerifyRoute: ApiPublicGiveExamVerifyRoute,
+  ApiPublicPingRoute: ApiPublicPingRoute,
   ApiPublicHooksCleanupSnapshotsRoute: ApiPublicHooksCleanupSnapshotsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }

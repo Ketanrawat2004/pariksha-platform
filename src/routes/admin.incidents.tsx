@@ -45,9 +45,14 @@ const schema = z.object({
   title: z.string().trim().min(1, "Title required").max(200),
   severity: z.enum(["minor", "major", "critical"]),
   status: z.enum(["investigating", "identified", "monitoring", "resolved"]),
-  summary: z.string().trim().max(4000).default(""),
+  summary: z.string().trim().max(4000).optional().default(""),
 });
-type FormData = z.infer<typeof schema>;
+type FormData = {
+  title: string;
+  severity: "minor" | "major" | "critical";
+  status: "investigating" | "identified" | "monitoring" | "resolved";
+  summary?: string;
+};
 
 type Incident = {
   id: string;
@@ -82,7 +87,7 @@ function IncidentsAdmin() {
   const onCreate = async (data: FormData) => {
     setCreating(true);
     try {
-      await createIncident({ data });
+      await createIncident({ data: { ...data, summary: data.summary ?? "" } });
       toast.success("Incident created");
       reset({ severity: "minor", status: "investigating", summary: "", title: "" });
       qc.invalidateQueries({ queryKey: ["admin-incidents"] });
