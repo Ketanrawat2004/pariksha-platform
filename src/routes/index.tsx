@@ -123,8 +123,24 @@ function LandingPage() {
                 <div className="mt-2 text-sm text-muted-foreground">Paper leaks since launch</div>
               </Card>
             </div>
+
+            {/* At a glance — quick facts */}
+            <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto text-left">
+              {[
+                { k: "AES-256-GCM", v: "Question encryption at rest & in flight" },
+                { k: "SHA-256", v: "Paper integrity hash, verified on every render" },
+                { k: "3-of-3", v: "TriShield Shamir secret sharing for unlock" },
+                { k: "12 languages", v: "Hindi, English & 10 regional scripts" },
+              ].map((f) => (
+                <Card key={f.k} className="p-4">
+                  <div className="text-sm font-bold text-foreground">{f.k}</div>
+                  <div className="mt-1 text-xs text-muted-foreground leading-relaxed">{f.v}</div>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
+
 
         {/* Features */}
         <section id="features" className="py-20 bg-card">

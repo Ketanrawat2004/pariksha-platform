@@ -6,6 +6,34 @@ type CheckoutSessionResult = { clientSecret: string } | { error: string };
 type PortalSessionResult = { url: string } | { error: string };
 type DeleteAccountResult = { ok: true } | { error: string };
 
+/**
+ * Anti-open-redirect guard. The Stripe checkout / billing portal `return_url`
+ * is rendered after a real payment flow on stripe.com, so an attacker-supplied
+ * URL would be a high-trust phishing vector. Allow only same-origin URLs that
+ * we control.
+ */
+const ALLOWED_RETURN_ORIGINS = new Set<string>([
+  "https://pariksha-platform.lovable.app",
+  "http://localhost:8080",
+  "http://localhost:5173",
+]);
+function assertSafeReturnUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error("Invalid returnUrl");
+  }
+  const ok =
+    ALLOWED_RETURN_ORIGINS.has(parsed.origin) ||
+    /^https:\/\/[a-z0-9-]+\.lovable\.app$/i.test(parsed.origin) ||
+    /^https:\/\/[a-z0-9-]+\.lovableproject\.com$/i.test(parsed.origin);
+  if (!ok) throw new Error("returnUrl origin is not allowed");
+  return parsed.toString();
+}
+
+
 async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
   options: { email?: string; userId?: string; name?: string },
@@ -47,7 +75,9 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     environment: StripeEnv;
   }) => {
     if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
-    return data;
+    const safeReturn = assertSafeReturnUrl(data.returnUrl);
+    if (!safeReturn) throw new Error("returnUrl is required");
+    return { ...data, returnUrl: safeReturn };
   })
   .handler(async ({ data, context }): Promise<CheckoutSessionResult> => {
     try {
@@ -110,7 +140,10 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
 export const createPortalSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { returnUrl?: string; environment: StripeEnv }) => data)
+  .inputValidator((data: { returnUrl?: string; environment: StripeEnv }) => ({
+    ...data,
+    returnUrl: assertSafeReturnUrl(data.returnUrl),
+  }))
   .handler(async ({ data, context }): Promise<PortalSessionResult> => {
     const { supabase, userId } = context;
     const { data: pay } = await supabase
