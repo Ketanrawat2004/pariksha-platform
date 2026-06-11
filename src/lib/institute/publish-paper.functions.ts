@@ -1,5 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const PublishPaperInput = z.object({ paperSubmissionId: z.string().uuid() });
 
 /**
  * Publishes a paper_submission as a live exam, inserts questions, auto-registers
@@ -9,7 +12,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  */
 export const publishPaperAsExam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { paperSubmissionId: string }) => data)
+  .inputValidator((data: unknown) => PublishPaperInput.parse(data))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const userId = context.userId;
