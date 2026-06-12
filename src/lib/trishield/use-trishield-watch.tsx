@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
+import { registerCameraStream, unregisterCameraStream, stopAllCameraStreams } from "@/lib/trishield/camera-registry";
 
 export type WatchParty = "institute" | "admin" | "superadmin";
 
@@ -77,6 +78,7 @@ export function useTriShieldWatch(opts: InitOptions) {
         video: { width: 480, height: 360, facingMode: "user" },
         audio: false,
       });
+      registerCameraStream(s);
       setStream(s);
       setGranted(true);
       setDenied(false);
@@ -86,6 +88,18 @@ export function useTriShieldWatch(opts: InitOptions) {
       setError(e?.message ?? "Camera permission denied");
     }
   }, []);
+
+  // If the caller disables the hook (drawer closed, navigation), stop tracks immediately.
+  useEffect(() => {
+    if (opts.enabled) return;
+    if (stream) {
+      stream.getTracks().forEach((t) => t.stop());
+      unregisterCameraStream(stream);
+      setStream(null);
+      setGranted(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opts.enabled]);
 
   // Auto-request when enabled
   useEffect(() => {
@@ -248,7 +262,7 @@ export function useTriShieldWatch(opts: InitOptions) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") {
-        stream?.getTracks().forEach((t) => t.stop());
+        stopAllCameraStreams();
         setStream(null);
         setGranted(false);
         if (intervalRef.current) window.clearInterval(intervalRef.current);
@@ -261,7 +275,10 @@ export function useTriShieldWatch(opts: InitOptions) {
   // Clean up on unmount: stop tracks + mark session ended (institute only)
   useEffect(() => {
     return () => {
-      stream?.getTracks().forEach((t) => t.stop());
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop());
+        unregisterCameraStream(stream);
+      }
       if (intervalRef.current) window.clearInterval(intervalRef.current);
       const sid = sessionIdRef.current;
       const party = partyRef.current;

@@ -33,6 +33,9 @@ export function SiteFooter() {
           </ul>
         </div>
       </div>
+      <div className="border-t border-border/60 px-4 py-3 text-center text-[11px] leading-relaxed text-muted-foreground/80">
+        If you are a student affected by the NEET 2026 cancellation and you're struggling, iCall offers free, confidential support: <a href="tel:+919152987821" className="underline underline-offset-2 hover:text-foreground">9152987821</a>. Please call.
+      </div>
       <div className="border-t border-border/60 py-4 px-4 text-center text-xs text-muted-foreground">© 2026 Pariksha. Built for FAR AWAY Hackathon · All marks, earned.</div>
     </footer>
   );
