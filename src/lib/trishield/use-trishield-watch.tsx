@@ -262,7 +262,7 @@ export function useTriShieldWatch(opts: InitOptions) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") {
-        stream?.getTracks().forEach((t) => t.stop());
+        stopAllCameraStreams();
         setStream(null);
         setGranted(false);
         if (intervalRef.current) window.clearInterval(intervalRef.current);
@@ -275,7 +275,10 @@ export function useTriShieldWatch(opts: InitOptions) {
   // Clean up on unmount: stop tracks + mark session ended (institute only)
   useEffect(() => {
     return () => {
-      stream?.getTracks().forEach((t) => t.stop());
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop());
+        unregisterCameraStream(stream);
+      }
       if (intervalRef.current) window.clearInterval(intervalRef.current);
       const sid = sessionIdRef.current;
       const party = partyRef.current;
