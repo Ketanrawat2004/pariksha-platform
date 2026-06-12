@@ -14,9 +14,14 @@ export const Route = createFileRoute("/api/public/hooks/security-rescan")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const provided = request.headers.get("x-cron-secret") ?? "";
-        const expected = process.env.CRON_SECRET ?? "";
-        if (!expected) return new Response("CRON_SECRET not configured", { status: 500 });
+        // pg_cron passes the Supabase publishable key as `apikey`; that's the
+        // documented shared-secret pattern for /api/public/* cron endpoints.
+        const provided = request.headers.get("apikey") ?? request.headers.get("x-cron-secret") ?? "";
+        const expected =
+          process.env.SUPABASE_PUBLISHABLE_KEY ??
+          process.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
+          "";
+        if (!expected) return new Response("Supabase key not configured", { status: 500 });
         const a = new TextEncoder().encode(provided);
         const b = new TextEncoder().encode(expected);
         let m = a.length ^ b.length;
