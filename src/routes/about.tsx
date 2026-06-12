@@ -9,7 +9,7 @@ import { ParikshaLogo } from "@/components/pariksha-logo";
 import {
   Shield, Eye, Lock, Globe, ArrowRight, Sparkles,
   AlertTriangle, Lightbulb, Rocket, GraduationCap, Code2, Database,
-  Cpu, Layers, TrendingUp, Heart,
+  Cpu, Layers, TrendingUp, Heart, Download, PlayCircle, Presentation,
 } from "lucide-react";
 
 // Deferred below-the-fold sections — split into a separate chunk and mounted
@@ -277,6 +277,82 @@ function AboutPage() {
                   <div className="mt-2 text-sm text-primary-foreground/80">{s.l}</div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* HACKATHON DECK + LIVE DEMO */}
+        <section className="py-16 md:py-20 bg-card">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="text-center mb-10">
+              <Badge className="mb-3 bg-accent text-accent-foreground"><Presentation className="h-3 w-3 mr-1" /> FAR AWAY Hackathon · Submission kit</Badge>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Hackathon deck &amp; live demo.</h2>
+              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+                Everything the judges need — a 14-slide deck themed to this site, plus a one-click way to open the live walkthrough.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="relative overflow-hidden p-6 md:p-8 bg-gradient-hero text-primary-foreground border-0">
+                <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-accent/30 blur-3xl" />
+                <Badge className="bg-white/15 text-primary-foreground border-white/20 mb-4"><Presentation className="h-3 w-3 mr-1" /> Presentation · PPTX · 14 slides</Badge>
+                <h3 className="text-2xl font-bold leading-tight">Pariksha — Every mark, earned.</h3>
+                <p className="mt-3 text-sm text-primary-foreground/85">
+                  Problem · Solution · Key features · Tech stack · Architecture · Demo · Future scope.
+                  Themed in the site's navy + crimson palette with real product screenshots embedded inside.
+                </p>
+                <ul className="mt-4 grid grid-cols-2 gap-2 text-xs text-primary-foreground/80">
+                  <li>· 16:9 widescreen</li>
+                  <li>· Editable in PowerPoint / Keynote / Slides</li>
+                  <li>· Real screenshots embedded</li>
+                  <li>· Demo placeholder slide</li>
+                </ul>
+                <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                  <Button asChild size="lg" variant="secondary" className="shadow-elegant">
+                    <a href="/pariksha-far-away-hackathon.pptx" download>
+                      <Download className="mr-2 h-4 w-4" /> Download .pptx
+                    </a>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="border-white/30 bg-white/5 text-primary-foreground hover:bg-white/10">
+                    <a href="/pariksha-far-away-hackathon.pptx" target="_blank" rel="noopener noreferrer">
+                      Open in new tab
+                    </a>
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="relative overflow-hidden p-6 md:p-8">
+                <Badge variant="outline" className="mb-4 border-accent/40 text-accent"><PlayCircle className="h-3 w-3 mr-1" /> Live demo</Badge>
+                <h3 className="text-2xl font-bold leading-tight">See it run end-to-end.</h3>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Jump straight into the live site as any of the five roles — Superadmin, Admin, Invigilator, Candidate, or Institute. Demo password is <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">Demo@1234</code>.
+                </p>
+
+                {/* Demo video frame — replace src with an embedded link later */}
+                <div className="mt-5 relative aspect-video rounded-xl bg-gradient-to-br from-primary to-primary-glow border border-border overflow-hidden group">
+                  <div className="absolute inset-0 grid place-items-center">
+                    <Link
+                      to="/login"
+                      aria-label="Open live demo"
+                      className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-elegant transition group-hover:scale-110"
+                    >
+                      <PlayCircle className="h-10 w-10" />
+                    </Link>
+                  </div>
+                  <div className="absolute bottom-3 left-3 right-3 text-[11px] uppercase tracking-wider text-primary-foreground/80 font-semibold">
+                    Demo walkthrough · embed video here
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                  <Button asChild size="lg" className="shadow-elegant">
+                    <Link to="/login"><PlayCircle className="mr-2 h-4 w-4" /> Launch live demo</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline">
+                    <Link to="/trishield-vault">Explore TriShield Vault</Link>
+                  </Button>
+                </div>
+              </Card>
             </div>
           </div>
         </section>
