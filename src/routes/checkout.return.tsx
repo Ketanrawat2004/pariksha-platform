@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { reconcileCheckoutSession } from "@/utils/payments.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 export const Route = createFileRoute("/checkout/return")({
   head: () => ({ meta: [{ title: "Payment — Pariksha" }] }),
@@ -23,6 +25,7 @@ function ReturnPage() {
     let cancelled = false;
     let attempts = 0;
     const poll = async () => {
+      if (cancelled) return;
       attempts += 1;
       const { data } = await supabase
         .from("payments")
@@ -32,7 +35,25 @@ function ReturnPage() {
       if (cancelled) return;
       if (data?.status === "paid") { setStatus("paid"); return; }
       if (data?.status === "failed") { setStatus("failed"); return; }
-      if (attempts < 20) setTimeout(poll, 1500);
+
+      // After ~3s, stop waiting on the webhook and reconcile against Stripe directly.
+      if (attempts === 2 || attempts === 6 || attempts === 12) {
+        try {
+          const res = await reconcileCheckoutSession({
+            data: { sessionId: session_id, environment: getStripeEnvironment() },
+          });
+          if (cancelled) return;
+          if ("status" in res) {
+            if (res.status === "paid") { setStatus("paid"); return; }
+            if (res.status === "failed") { setStatus("failed"); return; }
+          }
+        } catch {
+          // ignore — keep polling
+        }
+      }
+
+      if (attempts < 30) setTimeout(poll, 1500);
+      else setStatus("failed");
     };
     poll();
     return () => { cancelled = true; };

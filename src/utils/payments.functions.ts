@@ -180,3 +180,117 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       return { error: e?.message ?? "Failed to delete account" };
     }
   });
+
+/**
+ * Active reconciliation fallback. The return page polls the local `payments`
+ * row, which is normally flipped to `paid` by the Stripe webhook. When the
+ * webhook is delayed (network, retries, async payment methods) this server
+ * function queries Stripe directly for the checkout session and, if paid,
+ * applies the same side-effects the webhook would — so the candidate does
+ * not stare at "Confirming payment…" indefinitely.
+ */
+type ReconcileResult = { status: "paid" | "pending" | "failed" } | { error: string };
+
+export const reconcileCheckoutSession = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { sessionId: string; environment: StripeEnv }) => {
+    if (!/^[a-zA-Z0-9_-]+$/.test(data.sessionId)) throw new Error("Invalid sessionId");
+    return data;
+  })
+  .handler(async ({ data, context }): Promise<ReconcileResult> => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const sb = supabaseAdmin as any;
+
+      // Only allow the buyer (or admin) to reconcile their own session.
+      const { data: pay } = await sb
+        .from("payments")
+        .select("id, user_id, status, exam_id, paper_submission_id, candidate_full_name, candidate_dob, candidate_phone")
+        .eq("stripe_session_id", data.sessionId)
+        .eq("environment", data.environment)
+        .maybeSingle();
+      if (!pay) return { error: "Payment record not found" };
+      if (pay.user_id !== context.userId) return { error: "Forbidden" };
+      if (pay.status === "paid") return { status: "paid" };
+      if (pay.status === "failed") return { status: "failed" };
+
+      const stripe = createStripeClient(data.environment);
+      const session = await stripe.checkout.sessions.retrieve(data.sessionId);
+      const paymentStatus = session.payment_status;
+
+      if (paymentStatus !== "paid" && paymentStatus !== "no_payment_required") {
+        return { status: "pending" };
+      }
+
+      const paymentIntentId = typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent?.id ?? null;
+
+      // Atomic claim — only flip pending→paid so the webhook can't double-process.
+      const { data: claimed } = await sb
+        .from("payments")
+        .update({
+          status: "paid",
+          stripe_payment_intent_id: paymentIntentId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", pay.id)
+        .eq("status", "pending")
+        .select("id")
+        .maybeSingle();
+      if (!claimed) return { status: "paid" }; // webhook beat us — already done
+
+      const userId = pay.user_id;
+      const admit = `PRK-${Math.random().toString(36).slice(2, 12).toUpperCase()}`;
+
+      if (pay.paper_submission_id) {
+        const { data: existing } = await sb
+          .from("paper_registrations")
+          .select("id, admit_card_number")
+          .eq("candidate_id", userId)
+          .eq("paper_submission_id", pay.paper_submission_id)
+          .maybeSingle();
+        if (!existing) {
+          await sb.from("paper_registrations").insert({
+            candidate_id: userId,
+            paper_submission_id: pay.paper_submission_id,
+            full_name: pay.candidate_full_name ?? "",
+            date_of_birth: pay.candidate_dob ?? null,
+            phone: pay.candidate_phone ?? null,
+            paid: true,
+            cancelled: false,
+            payment_id: pay.id,
+            admit_released: true,
+            admit_card_number: admit,
+          });
+        } else {
+          const upd: any = { paid: true, cancelled: false, payment_id: pay.id, admit_released: true };
+          if (!existing.admit_card_number) upd.admit_card_number = admit;
+          await sb.from("paper_registrations").update(upd).eq("id", existing.id);
+        }
+      } else if (pay.exam_id) {
+        const { data: existing } = await sb
+          .from("registrations")
+          .select("id")
+          .eq("candidate_id", userId)
+          .eq("exam_id", pay.exam_id)
+          .maybeSingle();
+        if (!existing) {
+          await sb.from("registrations").insert({
+            candidate_id: userId,
+            exam_id: pay.exam_id,
+            admit_card_number: admit,
+            status: "confirmed",
+            paid: true,
+            payment_id: pay.id,
+          });
+        } else {
+          await sb.from("registrations").update({ paid: true, payment_id: pay.id }).eq("id", existing.id);
+        }
+      }
+
+      return { status: "paid" };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
