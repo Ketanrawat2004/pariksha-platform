@@ -200,6 +200,7 @@ function InstitutePage() {
   }
 
   return (
+    <TooltipProvider>
     <div className="container mx-auto py-8 px-4 animate-fade-up space-y-6">
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
