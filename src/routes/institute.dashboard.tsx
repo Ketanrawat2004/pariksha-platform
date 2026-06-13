@@ -381,6 +381,7 @@ function InstitutePage() {
         </DialogContent>
       </Dialog>
     </div>
+    </TooltipProvider>
   );
 }
 
