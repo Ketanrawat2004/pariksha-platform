@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import demoVideo from "@/assets/pariksha-demo.mp4.asset.json";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Card } from "@/components/ui/card";
@@ -86,6 +87,15 @@ const stats = [
 ];
 
 function AboutPage() {
+  const [demoPlaying, setDemoPlaying] = useState(false);
+  const demoVideoRef = useRef<HTMLVideoElement | null>(null);
+  const handlePlayDemo = () => {
+    setDemoPlaying(true);
+    // play after render
+    requestAnimationFrame(() => {
+      demoVideoRef.current?.play().catch(() => { /* ignore autoplay errors */ });
+    });
+  };
   return (
     <div className="flex min-h-dvh flex-col">
       <SiteHeader />
@@ -330,18 +340,32 @@ function AboutPage() {
                 </p>
 
                 <div className="mt-5 relative aspect-video rounded-xl bg-gradient-to-br from-primary to-primary-glow border border-border overflow-hidden group">
-                  <div className="absolute inset-0 grid place-items-center">
-                    <Link
-                      to="/login"
-                      aria-label="Open live demo"
-                      className="inline-flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-elegant transition group-hover:scale-110"
-                    >
-                      <PlayCircle className="h-8 w-8 sm:h-10 sm:w-10" />
-                    </Link>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 text-[10px] sm:text-[11px] uppercase tracking-wider text-primary-foreground/80 font-semibold">
-                    Demo walkthrough · embed video here
-                  </div>
+                  {demoPlaying ? (
+                    <video
+                      ref={demoVideoRef}
+                      src={demoVideo.url}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="absolute inset-0 h-full w-full bg-black object-contain"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 grid place-items-center">
+                        <button
+                          type="button"
+                          onClick={handlePlayDemo}
+                          aria-label="Play demo video"
+                          className="inline-flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-elegant transition group-hover:scale-110 cursor-pointer"
+                        >
+                          <PlayCircle className="h-8 w-8 sm:h-10 sm:w-10" />
+                        </button>
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3 text-[10px] sm:text-[11px] uppercase tracking-wider text-primary-foreground/80 font-semibold">
+                        Demo walkthrough · click play to watch
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="mt-auto pt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
