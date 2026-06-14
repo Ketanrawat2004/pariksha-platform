@@ -58,6 +58,7 @@ import { Route as ApiPublicGiveExamVerifyRouteImport } from './routes/api/public
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksSecurityRescanRouteImport } from './routes/api/public/hooks/security-rescan'
 import { Route as ApiPublicHooksCleanupSnapshotsRouteImport } from './routes/api/public/hooks/cleanup-snapshots'
+import { Route as ApiPublicDeckPdfRouteImport } from './routes/api/public/deck.pdf'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -310,6 +311,11 @@ const ApiPublicHooksCleanupSnapshotsRoute =
     path: '/api/public/hooks/cleanup-snapshots',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicDeckPdfRoute = ApiPublicDeckPdfRouteImport.update({
+  id: '/api/public/deck/pdf',
+  path: '/api/public/deck/pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -358,6 +364,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/ping': typeof ApiPublicPingRoute
+  '/api/public/deck/pdf': typeof ApiPublicDeckPdfRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
   '/api/public/hooks/security-rescan': typeof ApiPublicHooksSecurityRescanRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -409,6 +416,7 @@ export interface FileRoutesByTo {
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/ping': typeof ApiPublicPingRoute
+  '/api/public/deck/pdf': typeof ApiPublicDeckPdfRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
   '/api/public/hooks/security-rescan': typeof ApiPublicHooksSecurityRescanRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -461,6 +469,7 @@ export interface FileRoutesById {
   '/superadmin/trishield-reports': typeof SuperadminTrishieldReportsRoute
   '/api/public/give-exam-verify': typeof ApiPublicGiveExamVerifyRoute
   '/api/public/ping': typeof ApiPublicPingRoute
+  '/api/public/deck/pdf': typeof ApiPublicDeckPdfRoute
   '/api/public/hooks/cleanup-snapshots': typeof ApiPublicHooksCleanupSnapshotsRoute
   '/api/public/hooks/security-rescan': typeof ApiPublicHooksSecurityRescanRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -514,6 +523,7 @@ export interface FileRouteTypes {
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
     | '/api/public/ping'
+    | '/api/public/deck/pdf'
     | '/api/public/hooks/cleanup-snapshots'
     | '/api/public/hooks/security-rescan'
     | '/api/public/payments/webhook'
@@ -565,6 +575,7 @@ export interface FileRouteTypes {
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
     | '/api/public/ping'
+    | '/api/public/deck/pdf'
     | '/api/public/hooks/cleanup-snapshots'
     | '/api/public/hooks/security-rescan'
     | '/api/public/payments/webhook'
@@ -616,6 +627,7 @@ export interface FileRouteTypes {
     | '/superadmin/trishield-reports'
     | '/api/public/give-exam-verify'
     | '/api/public/ping'
+    | '/api/public/deck/pdf'
     | '/api/public/hooks/cleanup-snapshots'
     | '/api/public/hooks/security-rescan'
     | '/api/public/payments/webhook'
@@ -668,6 +680,7 @@ export interface RootRouteChildren {
   SuperadminTrishieldReportsRoute: typeof SuperadminTrishieldReportsRoute
   ApiPublicGiveExamVerifyRoute: typeof ApiPublicGiveExamVerifyRoute
   ApiPublicPingRoute: typeof ApiPublicPingRoute
+  ApiPublicDeckPdfRoute: typeof ApiPublicDeckPdfRoute
   ApiPublicHooksCleanupSnapshotsRoute: typeof ApiPublicHooksCleanupSnapshotsRoute
   ApiPublicHooksSecurityRescanRoute: typeof ApiPublicHooksSecurityRescanRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -1018,6 +1031,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksCleanupSnapshotsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/deck/pdf': {
+      id: '/api/public/deck/pdf'
+      path: '/api/public/deck/pdf'
+      fullPath: '/api/public/deck/pdf'
+      preLoaderRoute: typeof ApiPublicDeckPdfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1068,6 +1088,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminTrishieldReportsRoute: SuperadminTrishieldReportsRoute,
   ApiPublicGiveExamVerifyRoute: ApiPublicGiveExamVerifyRoute,
   ApiPublicPingRoute: ApiPublicPingRoute,
+  ApiPublicDeckPdfRoute: ApiPublicDeckPdfRoute,
   ApiPublicHooksCleanupSnapshotsRoute: ApiPublicHooksCleanupSnapshotsRoute,
   ApiPublicHooksSecurityRescanRoute: ApiPublicHooksSecurityRescanRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
