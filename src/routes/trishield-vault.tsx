@@ -366,7 +366,7 @@ function ThreatIntelligencePanel({ stats }: { stats: VaultStats | undefined }) {
   const radarGlow = 30 + (pulse % 50);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-background via-secondary/40 to-background">
+    <section className="py-14 bg-gradient-to-br from-background via-secondary/40 to-background sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-bold text-accent mb-3">
@@ -381,10 +381,10 @@ function ThreatIntelligencePanel({ stats }: { stats: VaultStats | undefined }) {
         <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
           {/* Threat radar */}
           <Card className="p-6 relative overflow-hidden bg-gradient-to-br from-primary/[0.04] to-accent/[0.06] border-accent/20">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-4 sm:flex">
               <Radar className="h-5 w-5 text-accent" />
-              <h3 className="font-bold">Threat Radar</h3>
-              <Badge variant="outline" className="ml-auto text-[10px]">global</Badge>
+              <h3 className="min-w-0 truncate font-bold">Threat Radar</h3>
+              <Badge variant="outline" className="col-start-2 row-start-1 text-[10px] sm:ml-auto">global</Badge>
             </div>
             <div className="relative h-44 flex items-center justify-center overflow-hidden">
               <div
@@ -412,10 +412,10 @@ function ThreatIntelligencePanel({ stats }: { stats: VaultStats | undefined }) {
 
           {/* Live crypto log */}
           <Card className="p-6 lg:col-span-2 bg-foreground text-background overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-4 sm:flex">
               <Terminal className="h-5 w-5 text-success" />
-              <h3 className="font-bold text-background">Cryptographic Activity Stream</h3>
-              <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-success">
+              <h3 className="min-w-0 truncate font-bold text-background">Cryptographic Activity Stream</h3>
+              <span className="col-start-2 row-start-1 inline-flex items-center gap-1 text-[10px] text-success sm:ml-auto">
                 <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full rounded-full bg-success animate-ping opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-success" /></span>
                 streaming
               </span>
