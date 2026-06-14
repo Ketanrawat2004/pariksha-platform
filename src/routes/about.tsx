@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import demoVideo from "@/assets/pariksha-demo.mp4.asset.json";
+import deckPptx from "@/assets/Pariksha_FINAL.pptx.asset.json";
+import deckPdf from "@/assets/Pariksha_FINAL.pdf.asset.json";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Card } from "@/components/ui/card";
@@ -302,10 +304,10 @@ function AboutPage() {
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 items-stretch">
-              <Card className="relative overflow-hidden p-6 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col h-full">
+            <div className="grid gap-6 md:grid-cols-2 items-start">
+              <Card className="relative overflow-hidden p-6 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col">
                 <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
-                <div className="relative flex flex-col flex-1">
+                <div className="relative flex flex-col">
                   <Badge className="self-start bg-white/15 text-primary-foreground border-white/20 mb-4"><Presentation className="h-3 w-3 mr-1" /> Presentation · PPTX · 16 slides</Badge>
                   <h3 className="text-xl sm:text-2xl font-bold leading-tight">Pariksha — Every mark, earned.</h3>
                   <p className="mt-3 text-sm text-primary-foreground/85">
@@ -317,20 +319,21 @@ function AboutPage() {
                     <li>· PDF preview for instant viewing</li>
                     <li>· Mapped to FAR AWAY judging rubric</li>
                   </ul>
-                  <div className="mt-auto pt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button asChild size="lg" variant="secondary" className="shadow-elegant w-full">
-                      <a href="/pariksha-far-away-hackathon.pptx" download>
+                      <a href={deckPptx.url} download="Pariksha_FINAL.pptx">
                         <Download className="mr-2 h-4 w-4" /> Download .pptx
                       </a>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full border-white/30 bg-white/5 text-primary-foreground hover:bg-white/10">
-                      <a href="/pariksha-far-away-hackathon.pdf" target="_blank" rel="noopener noreferrer">
+                      <a href={deckPdf.url} target="_blank" rel="noopener noreferrer">
                         Open PDF in new tab
                       </a>
                     </Button>
                   </div>
                 </div>
               </Card>
+
 
               <Card className="relative overflow-hidden p-6 sm:p-8 flex flex-col h-full">
                 <Badge variant="outline" className="self-start mb-4 border-accent/40 text-accent"><PlayCircle className="h-3 w-3 mr-1" /> Live demo</Badge>
