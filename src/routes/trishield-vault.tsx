@@ -381,10 +381,10 @@ function ThreatIntelligencePanel({ stats }: { stats: VaultStats | undefined }) {
         <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
           {/* Threat radar */}
           <Card className="p-6 relative overflow-hidden bg-gradient-to-br from-primary/[0.04] to-accent/[0.06] border-accent/20">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-4 sm:flex">
+            <div className="flex min-w-0 items-center gap-2 mb-4">
               <Radar className="h-5 w-5 text-accent" />
-              <h3 className="min-w-0 truncate font-bold">Threat Radar</h3>
-              <Badge variant="outline" className="col-start-2 row-start-1 text-[10px] sm:ml-auto">global</Badge>
+              <h3 className="min-w-0 flex-1 truncate font-bold">Threat Radar</h3>
+              <Badge variant="outline" className="shrink-0 text-[10px]">global</Badge>
             </div>
             <div className="relative h-44 flex items-center justify-center overflow-hidden">
               <div
@@ -412,10 +412,10 @@ function ThreatIntelligencePanel({ stats }: { stats: VaultStats | undefined }) {
 
           {/* Live crypto log */}
           <Card className="p-6 lg:col-span-2 bg-foreground text-background overflow-hidden">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-4 sm:flex">
+            <div className="flex min-w-0 items-center gap-2 mb-4">
               <Terminal className="h-5 w-5 text-success" />
-              <h3 className="min-w-0 truncate font-bold text-background">Cryptographic Activity Stream</h3>
-              <span className="col-start-2 row-start-1 inline-flex items-center gap-1 text-[10px] text-success sm:ml-auto">
+              <h3 className="min-w-0 flex-1 truncate font-bold text-background">Cryptographic Activity Stream</h3>
+              <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-success">
                 <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full rounded-full bg-success animate-ping opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-success" /></span>
                 streaming
               </span>
