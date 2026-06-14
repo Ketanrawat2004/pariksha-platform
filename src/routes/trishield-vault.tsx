@@ -214,7 +214,7 @@ function VaultPage() {
             {exam && (
               <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-sm sm:flex sm:flex-wrap">
                 <Badge className="bg-accent text-accent-foreground">Live demo using</Badge>
-                <span className="min-w-0 truncate font-semibold sm:truncate-none">{exam.title}</span>
+                <span className="min-w-0 truncate font-semibold">{exam.title}</span>
                 <span className="col-span-2 min-w-0 text-muted-foreground sm:col-span-1">· {exam.subject ?? ""} · {exam.examDate} {exam.startTime?.slice(0,5)}</span>
                 <Badge variant="outline" className="col-span-2 font-mono text-[10px] sm:col-span-1 sm:ml-auto">paper {exam.paperHash.slice(0,14)}…</Badge>
               </div>
