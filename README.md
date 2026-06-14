@@ -352,7 +352,7 @@ After the exam, results evaluate automatically. The student gets their score, se
 | Signatures | Ed25519 | Certificate signing and independent verification |
 | Biometric | face-api.js (TensorFlow.js) | TinyFaceDetector + FaceLandmark68 + FaceRecognition128 |
 | Webcam | getUserMedia API | Registration photo + LiveWatch session capture |
-| Payments | Razorpay test mode | Category-based fee collection |
+| Payments | Stripe test mode | Category-based fee collection |
 | PDF | jsPDF + html2canvas | Certificates and admit cards |
 | QR | qrcode (npm) | Admit card and certificate verification QR |
 | Charts | Recharts | Integrity dashboards, result analytics |
