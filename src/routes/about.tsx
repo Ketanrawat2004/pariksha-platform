@@ -301,12 +301,12 @@ function AboutPage() {
               <Badge className="mb-3 bg-accent text-accent-foreground"><Presentation className="h-3 w-3 mr-1" /> FAR AWAY Hackathon · Submission kit</Badge>
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight">Hackathon deck &amp; live demo.</h2>
               <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
-                Everything the judges need — a 16-slide deck themed to this site, plus a one-click way to open the live walkthrough.
+                Everything the judges need — a 15-slide deck themed to this site, plus a one-click way to open the live walkthrough.
               </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 items-stretch">
-              <Card className="relative overflow-hidden p-6 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col h-full">
+              <Card className="relative overflow-hidden p-5 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col h-full">
                 <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
                 <div className="relative flex flex-col h-full">
                   <Badge className="self-start bg-white/15 text-primary-foreground border-white/20 mb-4"><Presentation className="h-3 w-3 mr-1" /> Presentation · PPTX · 15 slides</Badge>
@@ -320,28 +320,28 @@ function AboutPage() {
                     <li>· PDF preview for instant viewing</li>
                     <li>· Mapped to FAR AWAY judging rubric</li>
                   </ul>
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Button asChild size="lg" variant="secondary" className="shadow-elegant w-full">
+                  <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Button asChild size="lg" variant="secondary" className="h-auto w-full whitespace-normal py-3 shadow-elegant">
                       <a href={deckPptx.url} download="Pariksha_FINAL.pptx">
                         <Download className="mr-2 h-4 w-4" /> Download .pptx
                       </a>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full border-white/30 bg-white/5 text-primary-foreground hover:bg-white/10">
-                      <a href="/api/public/deck/pdf" target="_blank" rel="noopener noreferrer">
+                    <Button asChild size="lg" variant="outline" className="h-auto w-full whitespace-normal border-white/30 bg-white/5 py-3 text-primary-foreground hover:bg-white/10">
+                      <a href={deckPdf.url} target="_blank" rel="noopener noreferrer" type="application/pdf">
                         Open PDF in new tab
                       </a>
                     </Button>
                   </div>
-                  <div className="mt-auto pt-6 grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-lg bg-white/10 border border-white/15 p-3">
+                  <div className="mt-auto grid grid-cols-3 gap-2 pt-6 text-center">
+                    <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">15</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">Slides</div>
                     </div>
-                    <div className="rounded-lg bg-white/10 border border-white/15 p-3">
+                    <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">16:9</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">Widescreen</div>
                     </div>
-                    <div className="rounded-lg bg-white/10 border border-white/15 p-3">
+                    <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">PDF</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">+ PPTX</div>
                     </div>
@@ -351,7 +351,7 @@ function AboutPage() {
 
 
 
-              <Card className="relative overflow-hidden p-6 sm:p-8 flex flex-col h-full">
+              <Card className="relative overflow-hidden p-5 sm:p-8 flex flex-col h-full">
                 <Badge variant="outline" className="self-start mb-4 border-accent/40 text-accent"><PlayCircle className="h-3 w-3 mr-1" /> Live demo</Badge>
                 <h3 className="text-xl sm:text-2xl font-bold leading-tight">See it run end-to-end.</h3>
                 <p className="mt-3 text-sm text-muted-foreground">
@@ -387,11 +387,11 @@ function AboutPage() {
                   )}
                 </div>
 
-                <div className="mt-auto pt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button asChild size="lg" className="shadow-elegant w-full">
+                <div className="mt-auto grid grid-cols-1 gap-3 pt-6 sm:grid-cols-2">
+                  <Button asChild size="lg" className="h-auto w-full whitespace-normal py-3 shadow-elegant">
                     <Link to="/login"><PlayCircle className="mr-2 h-4 w-4" /> Launch live demo</Link>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="w-full">
+                  <Button asChild size="lg" variant="outline" className="h-auto w-full whitespace-normal py-3">
                     <Link to="/trishield-vault">Explore TriShield Vault</Link>
                   </Button>
                 </div>
