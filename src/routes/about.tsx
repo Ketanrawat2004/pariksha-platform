@@ -308,7 +308,7 @@ function AboutPage() {
               <Card className="relative overflow-hidden p-6 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col h-full">
                 <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
                 <div className="relative flex flex-col h-full">
-                  <Badge className="self-start bg-white/15 text-primary-foreground border-white/20 mb-4"><Presentation className="h-3 w-3 mr-1" /> Presentation · PPTX · 16 slides</Badge>
+                  <Badge className="self-start bg-white/15 text-primary-foreground border-white/20 mb-4"><Presentation className="h-3 w-3 mr-1" /> Presentation · PPTX · 15 slides</Badge>
                   <h3 className="text-xl sm:text-2xl font-bold leading-tight">Pariksha — Every mark, earned.</h3>
                   <p className="mt-3 text-sm text-primary-foreground/85">
                     Problem · Solution · TriShield Vault · Bio-Lock · Architecture · Performance · Security · Roles · Judging rubric · Roadmap · Demo · Team. Clean white theme with crimson accents — judge-friendly, projector-friendly, print-friendly.
