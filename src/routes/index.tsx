@@ -75,14 +75,14 @@ function LandingPage() {
         {/* Hero */}
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-hero opacity-[0.03] pointer-events-none" />
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 py-20 md:py-32 text-center">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 py-14 sm:py-20 md:py-32 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6 animate-fade-up">
               <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
               Live · 2.4M candidates protected today
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight animate-fade-up">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold animate-fade-up">
               <span className="text-gradient-hero">Pariksha</span>
-              <span className="block mt-3 text-3xl md:text-5xl text-foreground">
+              <span className="block mt-3 text-2xl sm:text-3xl md:text-5xl text-foreground">
                 Every mark,{" "}
                 <span className="relative inline-block">
                   earned
@@ -94,20 +94,20 @@ function LandingPage() {
             <p className="mt-8 mx-auto max-w-2xl text-lg text-muted-foreground animate-fade-up" style={{ animationDelay: "0.1s" }}>
               India's national examination integrity platform. Cryptographic anti-leak, AI proxy detection, and real-time monitoring — built for the scale of a billion.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              <Button size="lg" asChild className="bg-accent hover:bg-accent/90 shadow-elegant">
+            <div className="mt-10 flex flex-col items-stretch justify-center gap-3 animate-fade-up sm:flex-row sm:items-center" style={{ animationDelay: "0.2s" }}>
+              <Button size="lg" asChild className="h-auto w-full whitespace-normal bg-accent py-3 shadow-elegant hover:bg-accent/90 sm:w-auto">
                 <Link to="/give-exam"><PlayCircle className="mr-2 h-5 w-5" /> Give Exam</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto">
                 <Link to="/register">Register as Candidate <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
-              <Button size="lg" variant="ghost" asChild>
+              <Button size="lg" variant="ghost" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto">
                 <Link to="/login">Institution Login</Link>
               </Button>
             </div>
 
             {/* Counters */}
-            <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="mt-14 grid grid-cols-1 gap-4 max-w-4xl mx-auto sm:mt-20 sm:grid-cols-3 sm:gap-6">
               <Card className="p-6 shadow-elegant">
                 <div className="text-4xl font-extrabold text-gradient-hero">
                   {(candidates / 1_000_000).toFixed(1)}M+
@@ -125,7 +125,7 @@ function LandingPage() {
             </div>
 
             {/* At a glance — quick facts */}
-            <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto text-left">
+            <div className="mt-10 grid grid-cols-1 gap-3 max-w-4xl mx-auto text-left sm:grid-cols-2 md:grid-cols-4">
               {[
                 { k: "AES-256-GCM", v: "Question encryption at rest & in flight" },
                 { k: "SHA-256", v: "Paper integrity hash, verified on every render" },
