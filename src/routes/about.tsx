@@ -87,6 +87,15 @@ const stats = [
 ];
 
 function AboutPage() {
+  const [demoPlaying, setDemoPlaying] = useState(false);
+  const demoVideoRef = useRef<HTMLVideoElement | null>(null);
+  const handlePlayDemo = () => {
+    setDemoPlaying(true);
+    // play after render
+    requestAnimationFrame(() => {
+      demoVideoRef.current?.play().catch(() => { /* ignore autoplay errors */ });
+    });
+  };
   return (
     <div className="flex min-h-dvh flex-col">
       <SiteHeader />
