@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import demoVideo from "@/assets/pariksha-demo.mp4.asset.json";
 import deckPptx from "@/assets/Pariksha_FINAL.pptx.asset.json";
-import deckPdf from "@/assets/Pariksha_FINAL.pdf.asset.json";
+
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -320,18 +320,14 @@ function AboutPage() {
                     <li>· PDF preview for instant viewing</li>
                     <li>· Mapped to FAR AWAY judging rubric</li>
                   </ul>
-                  <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="mt-5">
                     <Button asChild size="lg" variant="secondary" className="h-auto w-full whitespace-normal py-3 shadow-elegant">
                       <a href={deckPptx.url} download="Pariksha_FINAL.pptx">
                         <Download className="mr-2 h-4 w-4" /> Download .pptx
                       </a>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="h-auto w-full whitespace-normal border-white/30 bg-white/5 py-3 text-primary-foreground hover:bg-white/10">
-                      <a href={deckPdf.url} target="_blank" rel="noopener noreferrer" type="application/pdf">
-                        Open PDF in new tab
-                      </a>
-                    </Button>
                   </div>
+
                   <div className="mt-auto grid grid-cols-3 gap-2 pt-6 text-center">
                     <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">15</div>
