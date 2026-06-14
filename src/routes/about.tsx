@@ -366,7 +366,7 @@ function AboutPage() {
                       controls
                       autoPlay
                       playsInline
-                      className="absolute inset-0 h-full w-full bg-black object-contain"
+                      className="absolute inset-0 h-full w-full bg-foreground object-contain"
                     />
                   ) : (
                     <>
