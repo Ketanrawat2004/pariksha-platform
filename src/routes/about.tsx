@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import demoVideo from "@/assets/pariksha-demo.mp4.asset.json";
 import deckPptx from "@/assets/Pariksha_FINAL.pptx.asset.json";
+import deckPdf from "@/assets/Pariksha_FINAL.pdf.asset.json";
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -112,7 +113,7 @@ function AboutPage() {
           <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-accent/30 blur-3xl pointer-events-none animate-pulse" />
           <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary-glow/30 blur-3xl pointer-events-none" />
 
-          <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-20 md:py-28 text-center">
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-14 sm:py-20 md:py-28 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-4 py-1.5 text-xs font-medium mb-8 animate-fade-in">
               <Sparkles className="h-3.5 w-3.5 text-accent" /> About Pariksha · परीक्षा
             </div>
@@ -125,26 +126,26 @@ function AboutPage() {
                 </div>
               </div>
             </div>
-            <h1 className="text-4xl md:text-7xl font-extrabold tracking-[-0.02em] leading-[1.05] animate-fade-up">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05] animate-fade-up">
               India's exams,{" "}
               <span className="bg-gradient-to-r from-accent via-yellow-200 to-accent bg-clip-text text-transparent">re-earned</span>.
             </h1>
             <p className="mt-6 mx-auto max-w-2xl text-lg md:text-xl text-primary-foreground/85 animate-fade-up [animation-delay:80ms]">
               A generation of students should never again wake up to a leaked paper.
-              <span className="block mt-2 font-bold text-white">Pariksha exists to make that headline impossible.</span>
+              <span className="block mt-2 font-bold text-primary-foreground">Pariksha exists to make that headline impossible.</span>
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-up [animation-delay:160ms]">
-              <Button size="lg" variant="secondary" asChild className="shadow-elegant"><Link to="/trishield-vault">Explore TriShield Vault <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
-              <Button size="lg" variant="outline" asChild className="border-white/30 bg-white/5 text-primary-foreground hover:bg-white/10"><Link to="/login">Try the live demo</Link></Button>
+              <Button size="lg" variant="secondary" asChild className="h-auto w-full whitespace-normal py-3 shadow-elegant sm:w-auto"><Link to="/trishield-vault">Explore TriShield Vault <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+              <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal border-white/30 bg-white/5 py-3 text-primary-foreground hover:bg-white/10 sm:w-auto"><Link to="/login">Try the live demo</Link></Button>
             </div>
 
             {/* Founder strip */}
             <div className="mt-10 mx-auto max-w-2xl rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-4 text-left animate-fade-up [animation-delay:240ms]">
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground font-extrabold text-lg">KR</div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-primary-foreground/70">Built by</div>
-                  <div className="font-bold">Ketan Rawat <span className="font-normal text-primary-foreground/70">— Final-year B.Tech ECE, NIT Jamshedpur</span></div>
+                  <div className="font-bold">Ketan Rawat <span className="block font-normal text-primary-foreground/70 sm:inline">— Final-year B.Tech ECE, NIT Jamshedpur</span></div>
                 </div>
                 <Badge className="bg-white/15 text-primary-foreground border-white/20 hidden sm:inline-flex"><GraduationCap className="h-3 w-3 mr-1" /> 2026</Badge>
               </div>
@@ -300,12 +301,12 @@ function AboutPage() {
               <Badge className="mb-3 bg-accent text-accent-foreground"><Presentation className="h-3 w-3 mr-1" /> FAR AWAY Hackathon · Submission kit</Badge>
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight">Hackathon deck &amp; live demo.</h2>
               <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
-                Everything the judges need — a 16-slide deck themed to this site, plus a one-click way to open the live walkthrough.
+                Everything the judges need — a 15-slide deck themed to this site, plus a one-click way to open the live walkthrough.
               </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 items-stretch">
-              <Card className="relative overflow-hidden p-6 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col h-full">
+              <Card className="relative overflow-hidden p-5 sm:p-8 bg-gradient-hero text-primary-foreground border-0 flex flex-col h-full">
                 <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
                 <div className="relative flex flex-col h-full">
                   <Badge className="self-start bg-white/15 text-primary-foreground border-white/20 mb-4"><Presentation className="h-3 w-3 mr-1" /> Presentation · PPTX · 15 slides</Badge>
@@ -319,28 +320,28 @@ function AboutPage() {
                     <li>· PDF preview for instant viewing</li>
                     <li>· Mapped to FAR AWAY judging rubric</li>
                   </ul>
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Button asChild size="lg" variant="secondary" className="shadow-elegant w-full">
+                  <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Button asChild size="lg" variant="secondary" className="h-auto w-full whitespace-normal py-3 shadow-elegant">
                       <a href={deckPptx.url} download="Pariksha_FINAL.pptx">
                         <Download className="mr-2 h-4 w-4" /> Download .pptx
                       </a>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="w-full border-white/30 bg-white/5 text-primary-foreground hover:bg-white/10">
-                      <a href="/api/public/deck/pdf" target="_blank" rel="noopener noreferrer">
+                    <Button asChild size="lg" variant="outline" className="h-auto w-full whitespace-normal border-white/30 bg-white/5 py-3 text-primary-foreground hover:bg-white/10">
+                      <a href={deckPdf.url} target="_blank" rel="noopener noreferrer" type="application/pdf">
                         Open PDF in new tab
                       </a>
                     </Button>
                   </div>
-                  <div className="mt-auto pt-6 grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-lg bg-white/10 border border-white/15 p-3">
+                  <div className="mt-auto grid grid-cols-3 gap-2 pt-6 text-center">
+                    <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">15</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">Slides</div>
                     </div>
-                    <div className="rounded-lg bg-white/10 border border-white/15 p-3">
+                    <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">16:9</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">Widescreen</div>
                     </div>
-                    <div className="rounded-lg bg-white/10 border border-white/15 p-3">
+                    <div className="rounded-lg bg-white/10 border border-white/15 p-2 sm:p-3">
                       <div className="text-lg font-extrabold">PDF</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">+ PPTX</div>
                     </div>
@@ -350,7 +351,7 @@ function AboutPage() {
 
 
 
-              <Card className="relative overflow-hidden p-6 sm:p-8 flex flex-col h-full">
+              <Card className="relative overflow-hidden p-5 sm:p-8 flex flex-col h-full">
                 <Badge variant="outline" className="self-start mb-4 border-accent/40 text-accent"><PlayCircle className="h-3 w-3 mr-1" /> Live demo</Badge>
                 <h3 className="text-xl sm:text-2xl font-bold leading-tight">See it run end-to-end.</h3>
                 <p className="mt-3 text-sm text-muted-foreground">
@@ -365,7 +366,7 @@ function AboutPage() {
                       controls
                       autoPlay
                       playsInline
-                      className="absolute inset-0 h-full w-full bg-black object-contain"
+                      className="absolute inset-0 h-full w-full bg-foreground object-contain"
                     />
                   ) : (
                     <>
@@ -386,11 +387,11 @@ function AboutPage() {
                   )}
                 </div>
 
-                <div className="mt-auto pt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button asChild size="lg" className="shadow-elegant w-full">
+                <div className="mt-auto grid grid-cols-1 gap-3 pt-6 sm:grid-cols-2">
+                  <Button asChild size="lg" className="h-auto w-full whitespace-normal py-3 shadow-elegant">
                     <Link to="/login"><PlayCircle className="mr-2 h-4 w-4" /> Launch live demo</Link>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="w-full">
+                  <Button asChild size="lg" variant="outline" className="h-auto w-full whitespace-normal py-3">
                     <Link to="/trishield-vault">Explore TriShield Vault</Link>
                   </Button>
                 </div>

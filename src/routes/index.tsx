@@ -75,14 +75,14 @@ function LandingPage() {
         {/* Hero */}
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-hero opacity-[0.03] pointer-events-none" />
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 py-20 md:py-32 text-center">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 py-14 sm:py-20 md:py-32 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6 animate-fade-up">
               <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
               Live · 2.4M candidates protected today
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight animate-fade-up">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold animate-fade-up">
               <span className="text-gradient-hero">Pariksha</span>
-              <span className="block mt-3 text-3xl md:text-5xl text-foreground">
+              <span className="block mt-3 text-2xl sm:text-3xl md:text-5xl text-foreground">
                 Every mark,{" "}
                 <span className="relative inline-block">
                   earned
@@ -94,20 +94,20 @@ function LandingPage() {
             <p className="mt-8 mx-auto max-w-2xl text-lg text-muted-foreground animate-fade-up" style={{ animationDelay: "0.1s" }}>
               India's national examination integrity platform. Cryptographic anti-leak, AI proxy detection, and real-time monitoring — built for the scale of a billion.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              <Button size="lg" asChild className="bg-accent hover:bg-accent/90 shadow-elegant">
+            <div className="mt-10 flex flex-col items-stretch justify-center gap-3 animate-fade-up sm:flex-row sm:items-center" style={{ animationDelay: "0.2s" }}>
+              <Button size="lg" asChild className="h-auto w-full whitespace-normal bg-accent py-3 shadow-elegant hover:bg-accent/90 sm:w-auto">
                 <Link to="/give-exam"><PlayCircle className="mr-2 h-5 w-5" /> Give Exam</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto">
                 <Link to="/register">Register as Candidate <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
-              <Button size="lg" variant="ghost" asChild>
+              <Button size="lg" variant="ghost" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto">
                 <Link to="/login">Institution Login</Link>
               </Button>
             </div>
 
             {/* Counters */}
-            <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="mt-14 grid grid-cols-1 gap-4 max-w-4xl mx-auto sm:mt-20 sm:grid-cols-3 sm:gap-6">
               <Card className="p-6 shadow-elegant">
                 <div className="text-4xl font-extrabold text-gradient-hero">
                   {(candidates / 1_000_000).toFixed(1)}M+
@@ -125,7 +125,7 @@ function LandingPage() {
             </div>
 
             {/* At a glance — quick facts */}
-            <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto text-left">
+            <div className="mt-10 grid grid-cols-1 gap-3 max-w-4xl mx-auto text-left sm:grid-cols-2 md:grid-cols-4">
               {[
                 { k: "AES-256-GCM", v: "Question encryption at rest & in flight" },
                 { k: "SHA-256", v: "Paper integrity hash, verified on every render" },
@@ -143,7 +143,7 @@ function LandingPage() {
 
 
         {/* Features */}
-        <section id="features" className="py-20 bg-card">
+        <section id="features" className="py-14 bg-card sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold">Six pillars of exam integrity</h2>
@@ -164,7 +164,7 @@ function LandingPage() {
         </section>
 
         {/* Exam Mode */}
-        <section id="exam-mode" className="py-20">
+        <section id="exam-mode" className="py-14 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent mb-3">
@@ -189,13 +189,13 @@ function LandingPage() {
                     <ShieldCheck className="h-3 w-3" /> LOCKED
                   </span>
                 </div>
-                <div className="grid gap-0 sm:grid-cols-[1fr,180px]">
+                <div className="grid gap-0 sm:grid-cols-[minmax(0,1fr)_180px]">
                   <div className="p-5">
                     <div className="text-xs text-muted-foreground">Question 14 / 60</div>
                     <h3 className="mt-1 font-bold">If the SHA-256 hash of a question paper changes after publication, the platform should…</h3>
                     <ul className="mt-4 space-y-2 text-sm">
                       {["Auto-cancel the exam center-wide","Notify only the proctor","Suspend the candidate's session","Flag the paper as tampered and freeze results"].map((o, i) => (
-                        <li key={i} className={`rounded-lg border px-3 py-2 ${i===3?"border-accent bg-accent/10":"border-border"}`}>
+                        <li key={i} className={`rounded-lg border px-3 py-2 break-words ${i===3?"border-accent bg-accent/10":"border-border"}`}>
                           <span className="mr-2 font-mono text-xs text-muted-foreground">{String.fromCharCode(65+i)}.</span>{o}
                         </li>
                       ))}
@@ -241,14 +241,14 @@ function LandingPage() {
                     </div>
                   </Card>
                 ))}
-                <Button asChild className="mt-1 bg-accent hover:bg-accent/90"><Link to="/give-exam"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
+                <Button asChild className="mt-1 h-auto whitespace-normal bg-accent py-3 hover:bg-accent/90"><Link to="/give-exam"><PlayCircle className="mr-2 h-4 w-4" /> Give Exam</Link></Button>
               </div>
             </div>
           </div>
         </section>
 
         {/* How it works */}
-        <section id="how" className="py-20">
+        <section id="how" className="py-14 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold">From sign-up to certificate</h2>
@@ -280,7 +280,7 @@ function LandingPage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-20 bg-card">
+        <section className="py-14 bg-card sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold">Trusted by examining bodies</h2>
@@ -298,13 +298,13 @@ function LandingPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20">
+        <section className="py-14 sm:py-20">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
             <h2 className="text-3xl md:text-5xl font-bold">Stop the cheating. Start the trust.</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">Join the institutions building India's next generation of fair, verifiable examinations.</p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button size="lg" asChild className="shadow-elegant"><Link to="/register">Register as Candidate</Link></Button>
-              <Button size="lg" variant="outline" asChild><Link to="/login">Institution Login</Link></Button>
+            <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+              <Button size="lg" asChild className="h-auto w-full whitespace-normal py-3 shadow-elegant sm:w-auto"><Link to="/register">Register as Candidate</Link></Button>
+              <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto"><Link to="/login">Institution Login</Link></Button>
             </div>
           </div>
         </section>
