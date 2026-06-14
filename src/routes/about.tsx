@@ -326,7 +326,7 @@ function AboutPage() {
                       </a>
                     </Button>
                     <Button asChild size="lg" variant="outline" className="w-full border-white/30 bg-white/5 text-primary-foreground hover:bg-white/10">
-                      <a href={deckPdf.url} target="_blank" rel="noopener noreferrer" type="application/pdf">
+                      <a href="/api/public/deck/pdf" target="_blank" rel="noopener noreferrer">
                         Open PDF in new tab
                       </a>
                     </Button>
