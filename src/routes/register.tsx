@@ -211,17 +211,11 @@ function RegisterPage() {
                 <div className="mt-4 rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
                   <div className="text-sm font-bold">Staff access code required</div>
                   <p className="text-xs text-muted-foreground">
-                    Non-candidate roles need an authorisation code. Codes are issued per role; candidates do not need one.
+                    Non-candidate roles need an authorisation code issued by Pariksha. If you don't have one, contact your administrator. Candidates do not need a code.
                   </p>
-                  <ul className="text-xs grid sm:grid-cols-2 gap-1.5">
-                    <li><b>Invigilator:</b> <code className="font-mono">INVIG-2026</code></li>
-                    <li><b>Admin:</b> <code className="font-mono">ADMIN-2026</code></li>
-                    <li><b>Super Admin:</b> <code className="font-mono">SUPER-2026</code></li>
-                    <li><b>Institute:</b> <code className="font-mono">INST-2026</code></li>
-                  </ul>
                   <div>
-                    <Label htmlFor="staffCode">Enter the code for "{ROLE_META[role].title}"</Label>
-                    <Input id="staffCode" {...register("staffCode")} placeholder="e.g. ADMIN-2026" aria-invalid={!!errors.staffCode} />
+                    <Label htmlFor="staffCode">Enter your access code for "{ROLE_META[role].title}"</Label>
+                    <Input id="staffCode" {...register("staffCode")} placeholder="Enter the code you were issued" aria-invalid={!!errors.staffCode} autoComplete="off" />
                     {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
                   </div>
                 </div>
