@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type StatusMetrics = {
   uptimePct: number;
@@ -102,6 +103,7 @@ export const getStatusMetrics = createServerFn({ method: "GET" }).handler(
 );
 
 export const recordPing = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
     z
       .object({

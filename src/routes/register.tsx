@@ -31,14 +31,6 @@ export const Route = createFileRoute("/register")({
 const ROLES = ["candidate", "invigilator", "admin", "superadmin", "institute"] as const;
 type Role = (typeof ROLES)[number];
 
-// Staff access codes — shown on the page; required for any non-candidate role.
-const STAFF_CODES: Record<Exclude<Role, "candidate">, string> = {
-  invigilator: "INVIG-2026",
-  admin: "ADMIN-2026",
-  superadmin: "SUPER-2026",
-  institute: "INST-2026",
-};
-
 const schema = z.object({
   role: z.enum(ROLES, { required_error: "Choose a role" }),
   fullName: z.string().trim().min(2, "Min 2 characters").max(120),
@@ -54,9 +46,8 @@ const schema = z.object({
 })
   .refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] })
   .refine(
-    (d) => d.role === "candidate" ||
-      (d.staffCode != null && STAFF_CODES[d.role as Exclude<Role, "candidate">] === d.staffCode.trim().toUpperCase()),
-    { message: "Invalid access code for the selected role", path: ["staffCode"] },
+    (d) => d.role === "candidate" || (d.staffCode != null && d.staffCode.trim().length > 0),
+    { message: "Access code is required for staff roles", path: ["staffCode"] },
   );
 
 type FormData = z.infer<typeof schema>;
@@ -98,16 +89,13 @@ function RegisterPage() {
       [],
     ];
     if (step === 1) {
-      // Manually enforce staff-code rule before allowing step 2 (schema refine
-      // runs only on full submit, not on per-field trigger()).
       const r = getValues("role") as Role | undefined;
       if (!r) { toast.error("Select a role to continue"); return; }
       if (r !== "candidate") {
-        const code = (getValues("staffCode") ?? "").trim().toUpperCase();
-        const expected = STAFF_CODES[r as Exclude<Role, "candidate">];
-        if (code !== expected) {
-          form.setError("staffCode", { message: "Invalid access code for the selected role" });
-          toast.error("Enter the correct staff access code to continue");
+        const code = (getValues("staffCode") ?? "").trim();
+        if (!code) {
+          form.setError("staffCode", { message: "Access code is required for staff roles" });
+          toast.error("Enter your staff access code to continue");
           return;
         }
       }
@@ -223,17 +211,11 @@ function RegisterPage() {
                 <div className="mt-4 rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
                   <div className="text-sm font-bold">Staff access code required</div>
                   <p className="text-xs text-muted-foreground">
-                    Non-candidate roles need an authorisation code. Codes are issued per role; candidates do not need one.
+                    Non-candidate roles need an authorisation code issued by Pariksha. If you don't have one, contact your administrator. Candidates do not need a code.
                   </p>
-                  <ul className="text-xs grid sm:grid-cols-2 gap-1.5">
-                    <li><b>Invigilator:</b> <code className="font-mono">INVIG-2026</code></li>
-                    <li><b>Admin:</b> <code className="font-mono">ADMIN-2026</code></li>
-                    <li><b>Super Admin:</b> <code className="font-mono">SUPER-2026</code></li>
-                    <li><b>Institute:</b> <code className="font-mono">INST-2026</code></li>
-                  </ul>
                   <div>
-                    <Label htmlFor="staffCode">Enter the code for "{ROLE_META[role].title}"</Label>
-                    <Input id="staffCode" {...register("staffCode")} placeholder="e.g. ADMIN-2026" aria-invalid={!!errors.staffCode} />
+                    <Label htmlFor="staffCode">Enter your access code for "{ROLE_META[role].title}"</Label>
+                    <Input id="staffCode" {...register("staffCode")} placeholder="Enter the code you were issued" aria-invalid={!!errors.staffCode} autoComplete="off" />
                     {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
                   </div>
                 </div>
