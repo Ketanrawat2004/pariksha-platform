@@ -333,7 +333,7 @@ function AboutPage() {
                   </div>
                   <div className="mt-auto pt-6 grid grid-cols-3 gap-2 text-center">
                     <div className="rounded-lg bg-white/10 border border-white/15 p-3">
-                      <div className="text-lg font-extrabold">16</div>
+                      <div className="text-lg font-extrabold">15</div>
                       <div className="text-[10px] uppercase tracking-wider text-primary-foreground/70">Slides</div>
                     </div>
                     <div className="rounded-lg bg-white/10 border border-white/15 p-3">
