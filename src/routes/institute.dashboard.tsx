@@ -201,20 +201,20 @@ function InstitutePage() {
 
   return (
     <TooltipProvider>
-    <div className="container mx-auto py-8 px-4 animate-fade-up space-y-6">
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-        <div>
+    <div className="container mx-auto py-6 sm:py-8 px-4 animate-fade-up space-y-6">
+      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="min-w-0">
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-accent uppercase tracking-wider mb-1">
             <Building2 className="h-3.5 w-3.5" /> Institute workspace
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Paper Builder & Schedule Lock</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight break-words">Paper Builder & Schedule Lock</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Create papers, lock the schedule with teacher authentication, and publish exams to candidates.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full md:w-auto">
           <ActivityReportButton role="institute" />
-          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant">
+          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" /> New Paper
           </Button>
         </div>
