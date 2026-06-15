@@ -130,6 +130,15 @@ function CodingExamPage() {
 
   useEffect(() => () => { proctorStreamRef.current?.getTracks().forEach((t) => t.stop()); }, []);
 
+  // Re-attach the live stream whenever the video element remounts (e.g. intro → PIP)
+  useEffect(() => {
+    const v = proctorVideoRef.current;
+    if (v && proctorStreamRef.current && v.srcObject !== proctorStreamRef.current) {
+      v.srcObject = proctorStreamRef.current;
+      void v.play().catch(() => {});
+    }
+  });
+
   // timer
   useEffect(() => {
     if (phase === "intro" || phase === "done") return;
