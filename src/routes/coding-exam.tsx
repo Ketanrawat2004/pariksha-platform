@@ -427,29 +427,42 @@ function CodingExamPage() {
     const pct = totalQ ? Math.round((totalScore / totalQ) * 100) : 0;
     const grade = pct >= 80 ? "Excellent" : pct >= 60 ? "Good" : pct >= 40 ? "Pass" : "Needs work";
     return (
-      <div className="container mx-auto py-8 px-4 max-w-2xl animate-fade-up">
-        <Card className="p-6 sm:p-8 space-y-5">
-          <div className="text-center space-y-2">
-            <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
-            <h1 className="text-2xl font-bold">Scorecard</h1>
-            <p className="text-muted-foreground text-sm">{grade}</p>
+      <PersistDemoResult
+        userKey={user?.id ?? user?.email ?? "anon"}
+        dsa={dsaScore}
+        dsaTotal={DSA_QUESTIONS.length}
+        code={codeScore}
+        codeTotal={PROBLEMS.length}
+        pct={pct}
+        grade={grade}
+        warnings={warnings}
+      >
+        <div className="min-h-dvh bg-slate-950 text-slate-100">
+          <div className="container mx-auto py-8 px-4 max-w-2xl animate-fade-up">
+            <Card className="p-6 sm:p-8 space-y-5 bg-slate-900 border-slate-800 text-slate-100">
+              <div className="text-center space-y-2">
+                <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
+                <h1 className="text-2xl font-bold">Scorecard</h1>
+                <p className="text-slate-400 text-sm">{grade}</p>
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="rounded-lg border border-slate-700 p-3"><div className="text-xs text-slate-400">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
+                <div className="rounded-lg border border-slate-700 p-3"><div className="text-xs text-slate-400">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
+                <div className="rounded-lg border border-accent/40 p-3 bg-accent/10"><div className="text-xs text-slate-300">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
+              </div>
+              {warnings > 0 && (
+                <div className="text-xs rounded border border-destructive/40 bg-destructive/10 p-2 text-destructive text-center">
+                  {warnings} proctoring warning{warnings === 1 ? "" : "s"} recorded during this session.
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Link to="/candidate/results"><Button variant="outline" className="w-full sm:w-auto border-slate-700 text-slate-200 hover:bg-slate-800">View in Results</Button></Link>
+                <Link to="/candidate/dashboard"><Button className="w-full sm:w-auto">Back to dashboard</Button></Link>
+              </div>
+            </Card>
           </div>
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
-            <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
-            <div className="rounded-lg border p-3 bg-accent/5 border-accent/30"><div className="text-xs text-muted-foreground">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
-          </div>
-          {warnings > 0 && (
-            <div className="text-xs rounded border border-destructive/40 bg-destructive/5 p-2 text-destructive text-center">
-              {warnings} proctoring warning{warnings === 1 ? "" : "s"} recorded during this session.
-            </div>
-          )}
-          <div className="flex flex-col sm:flex-row gap-2 justify-center">
-            <Link to="/candidate/dashboard"><Button variant="outline" className="w-full sm:w-auto">Back to dashboard</Button></Link>
-            <Link to="/candidate/exams"><Button className="w-full sm:w-auto">My exams</Button></Link>
-          </div>
-        </Card>
-      </div>
+        </div>
+      </PersistDemoResult>
     );
   }
 
