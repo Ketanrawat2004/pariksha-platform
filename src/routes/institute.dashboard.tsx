@@ -224,8 +224,8 @@ function InstitutePage() {
             Create papers, lock the schedule with teacher authentication, and publish exams to candidates.
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full md:w-auto">
-          <ActivityReportButton role="institute" />
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="w-full sm:w-auto"><ActivityReportButton role="institute" /></div>
           <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" /> New Paper
           </Button>
