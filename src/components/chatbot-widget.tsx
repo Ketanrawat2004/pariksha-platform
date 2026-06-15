@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,13 @@ export function ChatbotWidget() {
   });
   const busy = status === "submitted" || status === "streaming";
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("chatbot-open", open);
+    return () => document.documentElement.classList.remove("chatbot-open");
+  }, [open]);
+
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed inset-x-3 bottom-3 z-[80] flex justify-end sm:inset-x-auto sm:right-4 sm:bottom-4">
       {!open && (
         <Button
           size="lg"
@@ -30,7 +35,7 @@ export function ChatbotWidget() {
       )}
 
       {open && (
-        <Card className="w-[92vw] max-w-sm h-[32rem] flex flex-col shadow-2xl animate-fade-in overflow-hidden">
+        <Card className="h-[min(32rem,calc(100dvh-1.5rem))] w-full max-w-sm flex flex-col shadow-2xl animate-fade-in overflow-hidden sm:w-[24rem]">
           <header className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary to-accent text-primary-foreground">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />

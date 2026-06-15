@@ -66,6 +66,13 @@ const ROLE_META: Record<Role, { title: string; desc: string }> = {
   institute: { title: "Institute", desc: "Run institute papers & rosters" },
 };
 
+const STAFF_DEMO_CODES: Partial<Record<Role, { code?: string; note: string }>> = {
+  invigilator: { code: "PRK-INVIG-9F4K2-2026", note: "Use this demo access code to continue as an invigilator." },
+  institute: { code: "PRK-INST-7H2M8-2026", note: "Use this demo access code to continue as an institute." },
+  admin: { note: "Admin accounts are approval-only. Use the Admin demo sign-in on the login page." },
+  superadmin: { note: "Super Admin accounts are approval-only. Use the Superadmin demo sign-in on the login page." },
+};
+
 function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -91,6 +98,10 @@ function RegisterPage() {
     if (step === 1) {
       const r = getValues("role") as Role | undefined;
       if (!r) { toast.error("Select a role to continue"); return; }
+      if (r === "admin" || r === "superadmin") {
+        toast.error(`${ROLE_META[r].title} registration is approval-only. Use demo sign-in on the login page.`);
+        return;
+      }
       if (r !== "candidate") {
         const code = (getValues("staffCode") ?? "").trim();
         if (!code) {
@@ -109,49 +120,46 @@ function RegisterPage() {
   const onSubmit = async (data: FormData) => {
     if (!photo) { toast.error("Face photo is required"); setStep(5); return; }
     setLoading(true);
-    const aadhaarHash = await sha256(data.aadhaar);
-    const redirectUrl = `${window.location.origin}/verify-email`;
-    const { data: result, error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: { full_name: data.fullName },
-      },
-    });
-    if (error) {
-      setLoading(false);
-      toast.error(error.message);
-      return;
-    }
-    if (result.user) {
-      let photo_url: string | null = null;
-      try {
-        const path = `candidates/${result.user.id}/profile.jpg`;
-        const blob = dataUrlToBlob(photo);
-        const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: true });
-        if (!upErr) {
-          photo_url = supabase.storage.from("face-photos").getPublicUrl(path).data.publicUrl;
-        }
-      } catch { /* ignore */ }
-
-      await supabase.from("profiles").update({
-        phone: data.phone,
-        date_of_birth: data.dateOfBirth,
-        gender: data.gender,
-        state: data.state,
-        aadhaar_hash: aadhaarHash,
-        photo_url,
-      }).eq("id", result.user.id);
-
-      const { error: roleErr } = await supabase.rpc("assign_signup_role" as any, {
-        _role: data.role as any,
-        _staff_code: data.role === "candidate" ? null : (data.staffCode ?? null),
+    try {
+      const aadhaarHash = await sha256(data.aadhaar);
+      const redirectUrl = `${window.location.origin}/verify-email`;
+      const { data: result, error } = await supabase.auth.signUp({
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: data.fullName.trim(),
+            phone: data.phone.trim(),
+            date_of_birth: data.dateOfBirth,
+            gender: data.gender,
+            state: data.state.trim(),
+            aadhaar_hash: aadhaarHash,
+            registration_role: data.role,
+            staff_code: data.role === "candidate" ? null : (data.staffCode ?? "").trim().toUpperCase(),
+          },
+        },
       });
-      if (roleErr) throw roleErr;
+      if (error) throw error;
+
+      if (result.session && result.user) {
+        try {
+          const path = `${result.user.id}/profile.jpg`;
+          const blob = dataUrlToBlob(photo);
+          const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: true });
+          if (!upErr) {
+            const photo_url = supabase.storage.from("face-photos").getPublicUrl(path).data.publicUrl;
+            await supabase.from("profiles").update({ photo_url }).eq("id", result.user.id);
+          }
+        } catch { /* photo upload can be completed after verification */ }
+      }
+      toast.success("Verification email sent");
+      setDone(true);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Could not create account. Please check your details and try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    setDone(true);
   };
 
   if (done) {
