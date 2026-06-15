@@ -22,6 +22,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as GiveExamRouteImport } from './routes/give-exam'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ExamEntryRouteImport } from './routes/exam-entry'
+import { Route as CodingExamRouteImport } from './routes/coding-exam'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuperadminTrishieldReportsRouteImport } from './routes/superadmin.trishield-reports'
@@ -123,6 +124,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const ExamEntryRoute = ExamEntryRouteImport.update({
   id: '/exam-entry',
   path: '/exam-entry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CodingExamRoute = CodingExamRouteImport.update({
+  id: '/coding-exam',
+  path: '/coding-exam',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -320,6 +326,7 @@ const ApiPublicDeckPdfRoute = ApiPublicDeckPdfRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/coding-exam': typeof CodingExamRoute
   '/exam-entry': typeof ExamEntryRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/give-exam': typeof GiveExamRoute
@@ -372,6 +379,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/coding-exam': typeof CodingExamRoute
   '/exam-entry': typeof ExamEntryRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/give-exam': typeof GiveExamRoute
@@ -425,6 +433,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/coding-exam': typeof CodingExamRoute
   '/exam-entry': typeof ExamEntryRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/give-exam': typeof GiveExamRoute
@@ -479,6 +488,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/coding-exam'
     | '/exam-entry'
     | '/forgot-password'
     | '/give-exam'
@@ -531,6 +541,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/coding-exam'
     | '/exam-entry'
     | '/forgot-password'
     | '/give-exam'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/coding-exam'
     | '/exam-entry'
     | '/forgot-password'
     | '/give-exam'
@@ -636,6 +648,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CodingExamRoute: typeof CodingExamRoute
   ExamEntryRoute: typeof ExamEntryRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiveExamRoute: typeof GiveExamRoute
@@ -777,6 +790,13 @@ declare module '@tanstack/react-router' {
       path: '/exam-entry'
       fullPath: '/exam-entry'
       preLoaderRoute: typeof ExamEntryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coding-exam': {
+      id: '/coding-exam'
+      path: '/coding-exam'
+      fullPath: '/coding-exam'
+      preLoaderRoute: typeof CodingExamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1044,6 +1064,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CodingExamRoute: CodingExamRoute,
   ExamEntryRoute: ExamEntryRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GiveExamRoute: GiveExamRoute,

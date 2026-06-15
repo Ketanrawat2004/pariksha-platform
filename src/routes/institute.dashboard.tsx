@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   Building2, FileText, Plus, Lock, Camera, Pencil, Send, ShieldCheck,
-  CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library,
+  CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library, Code2, Play,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FaceCapture } from "@/components/face-capture";
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/institute/dashboard")({
 });
 
 type Question = { id: string; text: string; options: string[]; correct: number; marks: number };
-type Template = { name: string; subject: string; description: string; durationMinutes: number; questions: Question[] };
+type Template = { name: string; subject: string; description: string; durationMinutes: number; questions: Question[]; kind?: "coding" };
 
 const TEMPLATES: Template[] = [
   {
@@ -78,7 +78,19 @@ const TEMPLATES: Template[] = [
       { id: "q1", text: "Find the odd one: 2, 3, 5, 7, 9", options: ["2", "3", "7", "9"], correct: 3, marks: 2 },
     ],
   },
+  {
+    name: "DSA + Coding Round",
+    subject: "Computer Science",
+    description: "Two-phase: DSA MCQs then live coding problems with in-browser workspace & compiler. Launches in the secured coding-exam page.",
+    durationMinutes: 30,
+    kind: "coding",
+    questions: [
+      { id: "q1", text: "Time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"], correct: 1, marks: 2 },
+      { id: "q2", text: "Stack follows which order?", options: ["FIFO", "LIFO", "Random", "Priority"], correct: 1, marks: 2 },
+    ],
+  },
 ];
+
 
 async function sha256(text: string) {
   const buf = new TextEncoder().encode(text);
@@ -201,20 +213,20 @@ function InstitutePage() {
 
   return (
     <TooltipProvider>
-    <div className="container mx-auto py-8 px-4 animate-fade-up space-y-6">
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-        <div>
+    <div className="container mx-auto py-6 sm:py-8 px-4 animate-fade-up space-y-6">
+      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="min-w-0">
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-accent uppercase tracking-wider mb-1">
             <Building2 className="h-3.5 w-3.5" /> Institute workspace
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Paper Builder & Schedule Lock</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight break-words">Paper Builder & Schedule Lock</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Create papers, lock the schedule with teacher authentication, and publish exams to candidates.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full md:w-auto">
           <ActivityReportButton role="institute" />
-          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant">
+          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" /> New Paper
           </Button>
         </div>
@@ -331,19 +343,30 @@ function InstitutePage() {
           ))}
         </TabsContent>
 
-        <TabsContent value="templates" className="mt-6 grid gap-4 md:grid-cols-3">
+        <TabsContent value="templates" className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TEMPLATES.map((t) => (
-            <Card key={t.name} className="p-5 hover:shadow-elegant transition">
-              <Library className="h-6 w-6 text-accent mb-2" />
+            <Card key={t.name} className="p-5 hover:shadow-elegant transition flex flex-col">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                {t.kind === "coding" ? <Code2 className="h-6 w-6 text-accent" /> : <Library className="h-6 w-6 text-accent" />}
+                {t.kind === "coding" && <Badge variant="secondary" className="text-[10px]">Coding</Badge>}
+              </div>
               <h3 className="font-bold">{t.name}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{t.description}</p>
+              <p className="text-xs text-muted-foreground mt-1 flex-1">{t.description}</p>
               <div className="mt-2 text-xs text-muted-foreground">{t.questions.length} questions · {t.durationMinutes} min</div>
-              <Button size="sm" className="mt-3 w-full" onClick={() => {
-                setEditing({ blank: true, template: t });
-                setTab("editor");
-              }}>
-                <Plus className="h-4 w-4 mr-1" /> Use template
-              </Button>
+              {t.kind === "coding" ? (
+                <Link to="/coding-exam" className="mt-3">
+                  <Button size="sm" className="w-full bg-accent hover:bg-accent/90">
+                    <Play className="h-4 w-4 mr-1" /> Open coding exam
+                  </Button>
+                </Link>
+              ) : (
+                <Button size="sm" className="mt-3 w-full" onClick={() => {
+                  setEditing({ blank: true, template: t });
+                  setTab("editor");
+                }}>
+                  <Plus className="h-4 w-4 mr-1" /> Use template
+                </Button>
+              )}
             </Card>
           ))}
         </TabsContent>
