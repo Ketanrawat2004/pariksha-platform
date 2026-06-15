@@ -23,6 +23,10 @@ export const Route = createFileRoute("/candidate/results")({
 
 function ResultsList() {
   const { user } = useAuth();
+  const [demoResults, setDemoResults] = useState<DemoCodingResult[]>([]);
+  useEffect(() => {
+    setDemoResults(readDemoCodingResults(user?.id ?? user?.email ?? "anon"));
+  }, [user]);
   const { data, isLoading } = useQuery({
     queryKey: ["my-results", user?.id],
     queryFn: async () => {
@@ -44,6 +48,32 @@ function ResultsList() {
           Scores, ranks and verifiable certificates for every exam you've taken.
         </p>
       </div>
+
+      {demoResults.length > 0 && (
+        <div className="grid gap-4">
+          {demoResults.map((r) => (
+            <Card key={r.id} className="p-6 animate-fade-in border-accent/30">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Code2 className="h-5 w-5 text-accent" />
+                    <h2 className="text-xl font-bold">{r.title}</h2>
+                    <span className="rounded-full text-xs font-bold px-2 py-0.5 bg-accent/10 text-accent">DEMO</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">Taken {new Date(r.takenAt).toLocaleString()} · Grade: {r.grade}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                    <Stat icon={<Award className="h-4 w-4" />} label="DSA" value={`${r.dsa}/${r.dsaTotal}`} />
+                    <Stat icon={<Code2 className="h-4 w-4" />} label="Coding" value={`${r.code}/${r.codeTotal}`} />
+                    <Stat icon={<TrendingUp className="h-4 w-4" />} label="Overall" value={`${r.pct}%`} />
+                    <Stat icon={<AlertTriangle className="h-4 w-4" />} label="Warnings" value={String(r.warnings)} />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
 
       {isLoading && (
         <div className="grid gap-4">
