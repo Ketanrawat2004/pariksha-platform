@@ -86,7 +86,7 @@ Open [pariksha-platform.lovable.app/login](https://pariksha-platform.lovable.app
 
 | Role | Email | What you'll land in |
 |------|-------|----------------------|
-| 🟣 **Superadmin** | `super@pariksha.in` | National overview, LiveWatch archive, the full immutable audit log, halt-session button |
+| 🟣  **Superadmin** | `super@pariksha.in` | National overview, LiveWatch archive, the full immutable audit log, halt-session button |
 | 🔵 **Admin** | `admin@pariksha.in` | Integrity dashboard, TriShield edit approvals, results management |
 | 🟠 **Invigilator** | `invig@pariksha.in` | Live candidate grid, attendance, incident log |
 | 🟢 **Candidate** | `candidate@pariksha.in` | Active exams, admit card, results, downloadable signed certificate |
