@@ -223,6 +223,11 @@
   pointer-events: none;
   transform: translateY(0.5rem) scale(0.96);
 }
+body:has([data-chatbot-panel="open"]) .accessibility-fab {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.5rem) scale(0.96);
+}
 :focus-visible {
   outline: 3px solid var(--color-ring);
   outline-offset: 2px;

@@ -35,7 +35,7 @@ export function ChatbotWidget() {
       )}
 
       {open && (
-        <Card className="h-[min(32rem,calc(100dvh-1.5rem))] w-full max-w-sm flex flex-col shadow-2xl animate-fade-in overflow-hidden sm:w-[24rem]">
+        <Card data-chatbot-panel="open" className="h-[min(32rem,calc(100dvh-1.5rem))] w-full max-w-sm flex flex-col shadow-2xl animate-fade-in overflow-hidden sm:w-[24rem]">
           <header className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary to-accent text-primary-foreground">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
