@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Award, Download, TrendingUp, Trophy, FileX } from "lucide-react";
+import { Award, Download, TrendingUp, Trophy, FileX, Code2, AlertTriangle } from "lucide-react";
 import { downloadCertificate } from "@/lib/pdf/certificate";
 import { toast } from "sonner";
+import { readDemoCodingResults, type DemoCodingResult } from "@/routes/coding-exam";
 
 export const Route = createFileRoute("/candidate/results")({
   head: () => ({ meta: [{ title: "Results — Pariksha" }] }),
