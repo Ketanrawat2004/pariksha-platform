@@ -62,6 +62,24 @@ export type Database = {
           },
         ]
       }
+      app_config: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -1367,6 +1385,10 @@ export type Database = {
           pass_fail: boolean
           percentage: number
         }[]
+      }
+      verify_staff_code: {
+        Args: { _code: string; _role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
       }
     }
     Enums: {
