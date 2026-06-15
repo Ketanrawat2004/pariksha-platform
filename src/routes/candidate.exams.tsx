@@ -115,6 +115,7 @@ function PaperCard({
 
   const startsAt = new Date(`${paper.exam_date}T${paper.start_time ?? "00:00:00"}`);
   const canGiveExam = !!myReg?.admit_released && !!myReg?.paid && !myReg?.cancelled;
+  const isCodingPaper = /dsa|coding/i.test(`${paper.subject ?? ""} ${paper.title ?? ""}`);
 
   async function giveExam() {
     if (!myReg) return;
@@ -122,7 +123,11 @@ function PaperCard({
     try {
       const res = await runStart({ data: { paperRegistrationId: myReg.id } });
       if (!res.ok) { toast.error(res.reason); return; }
-      navigate({ to: "/exam/$registrationId", params: { registrationId: res.registrationId } });
+      if (isCodingPaper) {
+        navigate({ to: "/coding-exam", search: { reg: res.registrationId } as any });
+      } else {
+        navigate({ to: "/exam/$registrationId", params: { registrationId: res.registrationId } });
+      }
     } catch (e: any) {
       toast.error(e?.message ?? "Could not start exam");
     } finally {
