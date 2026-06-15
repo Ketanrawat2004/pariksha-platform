@@ -29,17 +29,15 @@ export interface VaultStats {
 export const getVaultStats = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-  // Pick the most relevant exam (live > scheduled > most recent)
+  // Public endpoint: only return PUBLISHED/LIVE exam metadata. Never expose drafts.
   const { data: exams } = await supabaseAdmin
     .from("exams")
     .select("id, title, subject, status, exam_date, start_time, paper_hash, duration_minutes, total_marks")
+    .eq("status", "live")
     .order("exam_date", { ascending: false })
     .limit(5);
-  const exam =
-    exams?.find((e) => e.status === "live") ??
-    exams?.find((e) => e.status === "draft") ??
-    exams?.[0] ??
-    null;
+  const exam = exams?.[0] ?? null;
+
 
   const [qRes, rRes, sRes, subRes, iRes, resRes, cRes] = await Promise.all([
     exam ? supabaseAdmin.from("questions").select("id", { count: "exact", head: true }).eq("exam_id", exam.id) : null,
