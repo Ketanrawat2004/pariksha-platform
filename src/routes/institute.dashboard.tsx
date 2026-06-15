@@ -353,20 +353,12 @@ function InstitutePage() {
               <h3 className="font-bold">{t.name}</h3>
               <p className="text-xs text-muted-foreground mt-1 flex-1">{t.description}</p>
               <div className="mt-2 text-xs text-muted-foreground">{t.questions.length} questions · {t.durationMinutes} min</div>
-              {t.kind === "coding" ? (
-                <Link to="/coding-exam" className="mt-3">
-                  <Button size="sm" className="w-full bg-accent hover:bg-accent/90">
-                    <Play className="h-4 w-4 mr-1" /> Open coding exam
-                  </Button>
-                </Link>
-              ) : (
-                <Button size="sm" className="mt-3 w-full" onClick={() => {
-                  setEditing({ blank: true, template: t });
-                  setTab("editor");
-                }}>
-                  <Plus className="h-4 w-4 mr-1" /> Use template
-                </Button>
-              )}
+              <Button size="sm" className="mt-3 w-full" onClick={() => {
+                setEditing({ blank: true, template: t });
+                setTab("editor");
+              }}>
+                <Plus className="h-4 w-4 mr-1" /> Use template
+              </Button>
             </Card>
           ))}
         </TabsContent>
