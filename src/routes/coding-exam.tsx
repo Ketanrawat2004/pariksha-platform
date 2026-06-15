@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { ExamWatermark } from "@/components/exam/watermark";
 import { useAuth } from "@/lib/auth/auth-context";
-import { ProtectedShell } from "@/components/protected-shell";
+import { useNavigate } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import {
   ArrowLeft, ArrowRight, Code2, Play, ShieldCheck, Timer, Send,
   CheckCircle2, XCircle, BookOpen, Maximize2, AlertTriangle, Lock,
@@ -20,12 +21,29 @@ export const Route = createFileRoute("/coding-exam")({
     { name: "description", content: "Secured DSA + coding examination with built-in workspace and multi-language compiler." },
     { name: "robots", content: "noindex, nofollow" },
   ] }),
-  component: () => (
-    <ProtectedShell requireRoles={["candidate", "institute", "admin", "superadmin"]}>
-      <CodingExamPage />
-    </ProtectedShell>
-  ),
+  component: SecuredCodingExamRoute,
 });
+
+function SecuredCodingExamRoute() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!loading && !user) navigate({ to: "/login" });
+  }, [loading, user, navigate]);
+  // Hide global accessibility FAB while this secured exam is mounted
+  useEffect(() => {
+    document.body.setAttribute("data-secured-exam", "true");
+    return () => { document.body.removeAttribute("data-secured-exam"); };
+  }, []);
+  if (loading || !user) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-slate-950 text-slate-300">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
+  return <CodingExamPage />;
+}
 
 // --- DSA MCQs ---
 type Mcq = { id: string; q: string; options: string[]; correct: number };
@@ -409,29 +427,42 @@ function CodingExamPage() {
     const pct = totalQ ? Math.round((totalScore / totalQ) * 100) : 0;
     const grade = pct >= 80 ? "Excellent" : pct >= 60 ? "Good" : pct >= 40 ? "Pass" : "Needs work";
     return (
-      <div className="container mx-auto py-8 px-4 max-w-2xl animate-fade-up">
-        <Card className="p-6 sm:p-8 space-y-5">
-          <div className="text-center space-y-2">
-            <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
-            <h1 className="text-2xl font-bold">Scorecard</h1>
-            <p className="text-muted-foreground text-sm">{grade}</p>
+      <PersistDemoResult
+        userKey={user?.id ?? user?.email ?? "anon"}
+        dsa={dsaScore}
+        dsaTotal={DSA_QUESTIONS.length}
+        code={codeScore}
+        codeTotal={PROBLEMS.length}
+        pct={pct}
+        grade={grade}
+        warnings={warnings}
+      >
+        <div className="min-h-dvh bg-slate-950 text-slate-100">
+          <div className="container mx-auto py-8 px-4 max-w-2xl animate-fade-up">
+            <Card className="p-6 sm:p-8 space-y-5 bg-slate-900 border-slate-800 text-slate-100">
+              <div className="text-center space-y-2">
+                <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
+                <h1 className="text-2xl font-bold">Scorecard</h1>
+                <p className="text-slate-400 text-sm">{grade}</p>
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="rounded-lg border border-slate-700 p-3"><div className="text-xs text-slate-400">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
+                <div className="rounded-lg border border-slate-700 p-3"><div className="text-xs text-slate-400">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
+                <div className="rounded-lg border border-accent/40 p-3 bg-accent/10"><div className="text-xs text-slate-300">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
+              </div>
+              {warnings > 0 && (
+                <div className="text-xs rounded border border-destructive/40 bg-destructive/10 p-2 text-destructive text-center">
+                  {warnings} proctoring warning{warnings === 1 ? "" : "s"} recorded during this session.
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Link to="/candidate/results"><Button variant="outline" className="w-full sm:w-auto border-slate-700 text-slate-200 hover:bg-slate-800">View in Results</Button></Link>
+                <Link to="/candidate/dashboard"><Button className="w-full sm:w-auto">Back to dashboard</Button></Link>
+              </div>
+            </Card>
           </div>
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
-            <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
-            <div className="rounded-lg border p-3 bg-accent/5 border-accent/30"><div className="text-xs text-muted-foreground">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
-          </div>
-          {warnings > 0 && (
-            <div className="text-xs rounded border border-destructive/40 bg-destructive/5 p-2 text-destructive text-center">
-              {warnings} proctoring warning{warnings === 1 ? "" : "s"} recorded during this session.
-            </div>
-          )}
-          <div className="flex flex-col sm:flex-row gap-2 justify-center">
-            <Link to="/candidate/dashboard"><Button variant="outline" className="w-full sm:w-auto">Back to dashboard</Button></Link>
-            <Link to="/candidate/exams"><Button className="w-full sm:w-auto">My exams</Button></Link>
-          </div>
-        </Card>
-      </div>
+        </div>
+      </PersistDemoResult>
     );
   }
 
@@ -604,4 +635,55 @@ function CodingExamPage() {
       </div>
     </div>
   );
+}
+
+// --- Demo result persistence (localStorage) ---
+const DEMO_RESULTS_KEY = "pariksha:demo-coding-results";
+export type DemoCodingResult = {
+  id: string;
+  userKey: string;
+  title: string;
+  dsa: number; dsaTotal: number;
+  code: number; codeTotal: number;
+  pct: number;
+  grade: string;
+  warnings: number;
+  takenAt: string;
+};
+export function readDemoCodingResults(userKey: string): DemoCodingResult[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(DEMO_RESULTS_KEY);
+    const all: DemoCodingResult[] = raw ? JSON.parse(raw) : [];
+    return all.filter((r) => r.userKey === userKey).sort((a, b) => b.takenAt.localeCompare(a.takenAt));
+  } catch { return []; }
+}
+
+function PersistDemoResult(props: {
+  children: React.ReactNode;
+  userKey: string;
+  dsa: number; dsaTotal: number;
+  code: number; codeTotal: number;
+  pct: number; grade: string; warnings: number;
+}) {
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    try {
+      const raw = localStorage.getItem(DEMO_RESULTS_KEY);
+      const all: DemoCodingResult[] = raw ? JSON.parse(raw) : [];
+      all.push({
+        id: `demo-${Date.now()}`,
+        userKey: props.userKey,
+        title: "DSA + Coding (Demo)",
+        dsa: props.dsa, dsaTotal: props.dsaTotal,
+        code: props.code, codeTotal: props.codeTotal,
+        pct: props.pct, grade: props.grade, warnings: props.warnings,
+        takenAt: new Date().toISOString(),
+      });
+      localStorage.setItem(DEMO_RESULTS_KEY, JSON.stringify(all));
+    } catch {}
+  }, [props.userKey, props.dsa, props.dsaTotal, props.code, props.codeTotal, props.pct, props.grade, props.warnings]);
+  return <>{props.children}</>;
 }

@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { ProtectedShell } from "@/components/protected-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Award, Download, TrendingUp, Trophy, FileX } from "lucide-react";
+import { Award, Download, TrendingUp, Trophy, FileX, Code2, AlertTriangle } from "lucide-react";
 import { downloadCertificate } from "@/lib/pdf/certificate";
 import { toast } from "sonner";
+import { readDemoCodingResults, type DemoCodingResult } from "@/routes/coding-exam";
 
 export const Route = createFileRoute("/candidate/results")({
   head: () => ({ meta: [{ title: "Results — Pariksha" }] }),
@@ -21,6 +23,10 @@ export const Route = createFileRoute("/candidate/results")({
 
 function ResultsList() {
   const { user } = useAuth();
+  const [demoResults, setDemoResults] = useState<DemoCodingResult[]>([]);
+  useEffect(() => {
+    setDemoResults(readDemoCodingResults(user?.id ?? user?.email ?? "anon"));
+  }, [user]);
   const { data, isLoading } = useQuery({
     queryKey: ["my-results", user?.id],
     queryFn: async () => {
@@ -43,6 +49,32 @@ function ResultsList() {
         </p>
       </div>
 
+      {demoResults.length > 0 && (
+        <div className="grid gap-4">
+          {demoResults.map((r) => (
+            <Card key={r.id} className="p-6 animate-fade-in border-accent/30">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Code2 className="h-5 w-5 text-accent" />
+                    <h2 className="text-xl font-bold">{r.title}</h2>
+                    <span className="rounded-full text-xs font-bold px-2 py-0.5 bg-accent/10 text-accent">DEMO</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">Taken {new Date(r.takenAt).toLocaleString()} · Grade: {r.grade}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                    <Stat icon={<Award className="h-4 w-4" />} label="DSA" value={`${r.dsa}/${r.dsaTotal}`} />
+                    <Stat icon={<Code2 className="h-4 w-4" />} label="Coding" value={`${r.code}/${r.codeTotal}`} />
+                    <Stat icon={<TrendingUp className="h-4 w-4" />} label="Overall" value={`${r.pct}%`} />
+                    <Stat icon={<AlertTriangle className="h-4 w-4" />} label="Warnings" value={String(r.warnings)} />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+
       {isLoading && (
         <div className="grid gap-4">
           {[0, 1].map((i) => (
@@ -51,7 +83,7 @@ function ResultsList() {
         </div>
       )}
 
-      {data && data.length === 0 && (
+      {data && data.length === 0 && demoResults.length === 0 && (
         <Card className="p-12 text-center border-dashed">
           <FileX className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
           <p className="text-muted-foreground">

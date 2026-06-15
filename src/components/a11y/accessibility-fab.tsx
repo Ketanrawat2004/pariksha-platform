@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouterState } from "@tanstack/react-router";
 import { Accessibility, Sun, Moon, Type, Contrast, MousePointer2, Sparkles, RotateCcw, X, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -49,6 +50,7 @@ function apply(p: Prefs) {
 }
 
 export function AccessibilityFab() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
@@ -107,6 +109,7 @@ export function AccessibilityFab() {
   }, []);
 
   if (!ready) return null;
+  if (pathname?.startsWith("/coding-exam") || pathname?.startsWith("/exam-secured") || pathname?.startsWith("/secure-exam")) return null;
 
   return (
     <>
