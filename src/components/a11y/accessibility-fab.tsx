@@ -109,7 +109,7 @@ export function AccessibilityFab() {
   }, []);
 
   if (!ready) return null;
-  if (typeof document !== "undefined" && document.body?.getAttribute("data-secured-exam") === "true") return null;
+  if (pathname?.startsWith("/coding-exam") || pathname?.startsWith("/exam-secured") || pathname?.startsWith("/secure-exam")) return null;
 
   return (
     <>
