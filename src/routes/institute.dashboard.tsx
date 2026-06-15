@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   Building2, FileText, Plus, Lock, Camera, Pencil, Send, ShieldCheck,
-  CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library, Code2, Play,
+  CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library, Code2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FaceCapture } from "@/components/face-capture";
@@ -224,8 +224,8 @@ function InstitutePage() {
             Create papers, lock the schedule with teacher authentication, and publish exams to candidates.
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full md:w-auto">
-          <ActivityReportButton role="institute" />
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="w-full sm:w-auto"><ActivityReportButton role="institute" /></div>
           <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" /> New Paper
           </Button>
@@ -353,20 +353,12 @@ function InstitutePage() {
               <h3 className="font-bold">{t.name}</h3>
               <p className="text-xs text-muted-foreground mt-1 flex-1">{t.description}</p>
               <div className="mt-2 text-xs text-muted-foreground">{t.questions.length} questions · {t.durationMinutes} min</div>
-              {t.kind === "coding" ? (
-                <Link to="/coding-exam" className="mt-3">
-                  <Button size="sm" className="w-full bg-accent hover:bg-accent/90">
-                    <Play className="h-4 w-4 mr-1" /> Open coding exam
-                  </Button>
-                </Link>
-              ) : (
-                <Button size="sm" className="mt-3 w-full" onClick={() => {
-                  setEditing({ blank: true, template: t });
-                  setTab("editor");
-                }}>
-                  <Plus className="h-4 w-4 mr-1" /> Use template
-                </Button>
-              )}
+              <Button size="sm" className="mt-3 w-full" onClick={() => {
+                setEditing({ blank: true, template: t });
+                setTab("editor");
+              }}>
+                <Plus className="h-4 w-4 mr-1" /> Use template
+              </Button>
             </Card>
           ))}
         </TabsContent>
