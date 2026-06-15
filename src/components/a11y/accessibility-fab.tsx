@@ -107,6 +107,7 @@ export function AccessibilityFab() {
   }, []);
 
   if (!ready) return null;
+  if (typeof document !== "undefined" && document.body?.getAttribute("data-secured-exam") === "true") return null;
 
   return (
     <>
