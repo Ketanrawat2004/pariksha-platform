@@ -83,7 +83,7 @@ function ResultsList() {
         </div>
       )}
 
-      {data && data.length === 0 && (
+      {data && data.length === 0 && demoResults.length === 0 && (
         <Card className="p-12 text-center border-dashed">
           <FileX className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
           <p className="text-muted-foreground">
