@@ -66,9 +66,11 @@ const ROLE_META: Record<Role, { title: string; desc: string }> = {
   institute: { title: "Institute", desc: "Run institute papers & rosters" },
 };
 
-const STAFF_DEMO_CODES: Partial<Record<Role, { code?: string; note: string }>> = {
-  invigilator: { code: "PRK-INVIG-9F4K2-2026", note: "Use this demo access code to continue as an invigilator." },
-  institute: { code: "PRK-INST-7H2M8-2026", note: "Use this demo access code to continue as an institute." },
+// Staff access codes are NEVER embedded in the client bundle. Staff must obtain
+// codes through an authorised out-of-band channel from Pariksha administrators.
+const STAFF_DEMO_CODES: Partial<Record<Role, { note: string }>> = {
+  invigilator: { note: "Invigilator codes are issued out-of-band by Pariksha. Contact your administrator to obtain a code." },
+  institute: { note: "Institute codes are issued out-of-band by Pariksha. Contact your administrator to obtain a code." },
   admin: { note: "Admin accounts are approval-only. Use the Admin demo sign-in on the login page." },
   superadmin: { note: "Super Admin accounts are approval-only. Use the Superadmin demo sign-in on the login page." },
 };
