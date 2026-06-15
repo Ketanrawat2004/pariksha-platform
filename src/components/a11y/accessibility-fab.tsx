@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouterState } from "@tanstack/react-router";
 import { Accessibility, Sun, Moon, Type, Contrast, MousePointer2, Sparkles, RotateCcw, X, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
