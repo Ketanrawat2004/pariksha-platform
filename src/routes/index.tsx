@@ -141,6 +141,17 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* TriShield demo prerequisite note */}
+        <section aria-label="TriShield demo prerequisite" className="px-4 sm:px-6">
+          <div className="mx-auto max-w-5xl -mt-4 sm:-mt-6">
+            <div className="rounded-xl border border-border bg-muted/40 px-4 py-3 sm:px-5 sm:py-4 flex items-start gap-3">
+              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 text-accent shrink-0" aria-hidden />
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                <span className="font-semibold text-foreground">Trying TriShield Vault?</span> The lock-and-publish flow is a 3-of-3 quorum. To see it end-to-end in the demo, sign in on three separate devices/browsers — one as <span className="font-medium text-foreground">Institute</span>, one as <span className="font-medium text-foreground">Admin</span>, and one as <span className="font-medium text-foreground">Super Admin</span> — and join the same TriShield LiveWatch session. Without all three present, the institute cannot lock or publish the paper to candidates.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Features */}
         <section id="features" className="py-14 bg-card sm:py-20">
