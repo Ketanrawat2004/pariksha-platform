@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   Building2, FileText, Plus, Lock, Camera, Pencil, Send, ShieldCheck,
-  CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library,
+  CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library, Code2, Play,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FaceCapture } from "@/components/face-capture";
