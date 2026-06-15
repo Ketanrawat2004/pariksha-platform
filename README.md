@@ -76,6 +76,8 @@ It is also live, today. Five roles work, Razorpay processes real test-mode payme
 
 ## Try it in 10 seconds (five roles, one password)
 
+Trying TriShield Vault? The lock-and-publish flow is a 3-of-3 quorum. To see it end-to-end in the demo, sign in on three separate devices/browsers — one as Institute, one as Admin, and one as Super Admin — and join the same TriShield LiveWatch session. Without all three present, the institute cannot lock or publish the paper to candidates.
+
 ![Login page — one-click demo cards for all five roles](./screenshots/Screenshot_2026-06-10_152452.png)
 *Login — the **DEMO · ONE-CLICK SIGN IN** panel auto-fills credentials for any of the five roles. Password for every demo account: `Demo@1234`.*
 
