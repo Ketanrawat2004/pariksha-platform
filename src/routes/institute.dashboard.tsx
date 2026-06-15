@@ -343,19 +343,30 @@ function InstitutePage() {
           ))}
         </TabsContent>
 
-        <TabsContent value="templates" className="mt-6 grid gap-4 md:grid-cols-3">
+        <TabsContent value="templates" className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TEMPLATES.map((t) => (
-            <Card key={t.name} className="p-5 hover:shadow-elegant transition">
-              <Library className="h-6 w-6 text-accent mb-2" />
+            <Card key={t.name} className="p-5 hover:shadow-elegant transition flex flex-col">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                {t.kind === "coding" ? <Code2 className="h-6 w-6 text-accent" /> : <Library className="h-6 w-6 text-accent" />}
+                {t.kind === "coding" && <Badge variant="secondary" className="text-[10px]">Coding</Badge>}
+              </div>
               <h3 className="font-bold">{t.name}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{t.description}</p>
+              <p className="text-xs text-muted-foreground mt-1 flex-1">{t.description}</p>
               <div className="mt-2 text-xs text-muted-foreground">{t.questions.length} questions · {t.durationMinutes} min</div>
-              <Button size="sm" className="mt-3 w-full" onClick={() => {
-                setEditing({ blank: true, template: t });
-                setTab("editor");
-              }}>
-                <Plus className="h-4 w-4 mr-1" /> Use template
-              </Button>
+              {t.kind === "coding" ? (
+                <Link to="/coding-exam" className="mt-3">
+                  <Button size="sm" className="w-full bg-accent hover:bg-accent/90">
+                    <Play className="h-4 w-4 mr-1" /> Open coding exam
+                  </Button>
+                </Link>
+              ) : (
+                <Button size="sm" className="mt-3 w-full" onClick={() => {
+                  setEditing({ blank: true, template: t });
+                  setTab("editor");
+                }}>
+                  <Plus className="h-4 w-4 mr-1" /> Use template
+                </Button>
+              )}
             </Card>
           ))}
         </TabsContent>
