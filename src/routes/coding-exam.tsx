@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { ExamWatermark } from "@/components/exam/watermark";
 import { useAuth } from "@/lib/auth/auth-context";
-import { ProtectedShell } from "@/components/protected-shell";
+import { useNavigate } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import {
   ArrowLeft, ArrowRight, Code2, Play, ShieldCheck, Timer, Send,
   CheckCircle2, XCircle, BookOpen, Maximize2, AlertTriangle, Lock,
@@ -20,12 +21,29 @@ export const Route = createFileRoute("/coding-exam")({
     { name: "description", content: "Secured DSA + coding examination with built-in workspace and multi-language compiler." },
     { name: "robots", content: "noindex, nofollow" },
   ] }),
-  component: () => (
-    <ProtectedShell requireRoles={["candidate", "institute", "admin", "superadmin"]}>
-      <CodingExamPage />
-    </ProtectedShell>
-  ),
+  component: SecuredCodingExamRoute,
 });
+
+function SecuredCodingExamRoute() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!loading && !user) navigate({ to: "/login" });
+  }, [loading, user, navigate]);
+  // Hide global accessibility FAB while this secured exam is mounted
+  useEffect(() => {
+    document.body.setAttribute("data-secured-exam", "true");
+    return () => { document.body.removeAttribute("data-secured-exam"); };
+  }, []);
+  if (loading || !user) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-slate-950 text-slate-300">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
+  return <CodingExamPage />;
+}
 
 // --- DSA MCQs ---
 type Mcq = { id: string; q: string; options: string[]; correct: number };
