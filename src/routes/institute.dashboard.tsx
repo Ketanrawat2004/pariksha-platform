@@ -49,6 +49,36 @@ export const Route = createFileRoute("/institute/dashboard")({
 type Question = { id: string; text: string; options: string[]; correct: number; marks: number };
 type Template = { name: string; subject: string; description: string; durationMinutes: number; questions: Question[]; kind?: "coding" };
 
+// Pre-made DSA MCQ bank used when "Add question" is clicked on a coding paper
+const DSA_MCQ_BANK: Omit<Question, "id">[] = [
+  { text: "Time complexity of binary search on a sorted array of n elements?", options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"], correct: 1, marks: 2 },
+  { text: "Which data structure uses LIFO order?", options: ["Queue", "Stack", "Deque", "Heap"], correct: 1, marks: 2 },
+  { text: "Best-case time complexity of QuickSort?", options: ["O(n²)", "O(n log n)", "O(n)", "O(log n)"], correct: 1, marks: 2 },
+  { text: "Which traversal of a BST yields sorted output?", options: ["Preorder", "Inorder", "Postorder", "Level-order"], correct: 1, marks: 2 },
+  { text: "Hash map average lookup complexity?", options: ["O(log n)", "O(n)", "O(1)", "O(n log n)"], correct: 2, marks: 2 },
+  { text: "Worst-case complexity of insertion in a singly linked list (at tail, no tail pointer)?", options: ["O(1)", "O(log n)", "O(n)", "O(n²)"], correct: 2, marks: 2 },
+  { text: "Which algorithm is used to find shortest paths from a single source on a weighted graph with non-negative edges?", options: ["Bellman-Ford", "Dijkstra", "Floyd-Warshall", "Kruskal"], correct: 1, marks: 2 },
+  { text: "Heap-sort overall time complexity?", options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"], correct: 1, marks: 2 },
+  { text: "Which is NOT a stable sort?", options: ["Merge sort", "Bubble sort", "QuickSort", "Insertion sort"], correct: 2, marks: 2 },
+  { text: "DFS uses which data structure (iteratively)?", options: ["Queue", "Stack", "Priority queue", "Set"], correct: 1, marks: 2 },
+  { text: "Trie is best used for?", options: ["Range queries", "Prefix lookups", "Disjoint sets", "Shortest paths"], correct: 1, marks: 2 },
+  { text: "Number of edges in a tree with n nodes?", options: ["n", "n-1", "n+1", "2n"], correct: 1, marks: 2 },
+];
+
+// Coding problem bank — generated WITHOUT explicit answers; institute fills tests during review
+const CODING_PROBLEM_BANK: { title: string; description: string }[] = [
+  { title: "Two Sum", description: "Given an array of integers nums and an integer target, return the indices [i, j] of the two numbers such that they add up to target. Assume exactly one solution exists and you may not use the same element twice." },
+  { title: "Reverse a String", description: "Return the reverse of the given string s without using the built-in String.reverse. Write the loop yourself. Handle empty strings and single characters." },
+  { title: "Valid Parentheses", description: "Given a string containing only '(){}[]', determine if the input is valid. Open brackets must be closed by the same type and in the correct order." },
+  { title: "Maximum Subarray", description: "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return the sum (Kadane's algorithm)." },
+  { title: "Merge Two Sorted Lists", description: "You are given the heads of two sorted linked lists list1 and list2. Merge them into a single sorted list by splicing the nodes of the first two lists. Return the head of the merged list." },
+  { title: "FizzBuzz", description: "Print numbers from 1 to n. For multiples of 3 print 'Fizz', for multiples of 5 print 'Buzz', for multiples of both print 'FizzBuzz'. Return the result as an array of strings." },
+  { title: "Palindrome Check", description: "Given a string s, return true if it reads the same backwards as forwards considering only alphanumeric characters and ignoring case." },
+  { title: "First Non-Repeating Character", description: "Given a string s, return the index of the first non-repeating character. If it does not exist, return -1." },
+  { title: "Binary Tree Level Order Traversal", description: "Given the root of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level)." },
+  { title: "Climbing Stairs", description: "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb either 1 or 2 steps. In how many distinct ways can you climb to the top?" },
+];
+
 const TEMPLATES: Template[] = [
   {
     name: "NEET-UG Mock · Physics",
