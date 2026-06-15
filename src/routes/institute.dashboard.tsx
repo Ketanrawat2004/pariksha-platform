@@ -551,9 +551,18 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-bold">Questions ({questions.length})</h3>
-          <Button size="sm" variant="outline" onClick={addQ}><Plus className="h-4 w-4 mr-1" />Add question</Button>
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <h3 className="font-bold">Questions ({questions.length}){isCodingPaper && <span className="ml-2 text-xs font-normal text-accent">DSA + Coding</span>}</h3>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={addQ}>
+              <Plus className="h-4 w-4 mr-1" />{isCodingPaper ? "Add DSA question" : "Add question"}
+            </Button>
+            {isCodingPaper && (
+              <Button size="sm" variant="outline" onClick={addCodingQ} className="border-accent text-accent hover:bg-accent/10">
+                <Code2 className="h-4 w-4 mr-1" />Add coding question
+              </Button>
+            )}
+          </div>
         </div>
         <div className="space-y-3">
           {questions.map((q, i) => (
