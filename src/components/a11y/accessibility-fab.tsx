@@ -50,6 +50,7 @@ function apply(p: Prefs) {
 }
 
 export function AccessibilityFab() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
