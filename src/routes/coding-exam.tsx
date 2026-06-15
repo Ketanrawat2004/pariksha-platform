@@ -197,6 +197,7 @@ function CodingExamPage() {
   const secs = String(secondsLeft % 60).padStart(2, "0");
 
   if (phase === "intro") {
+    const dsaPct = DSA_QUESTIONS.length ? Math.round((dsaScore / DSA_QUESTIONS.length) * 100) : 0;
     return (
       <div className="container mx-auto py-8 px-4 max-w-3xl animate-fade-up">
         <Link to="/candidate/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -204,33 +205,77 @@ function CodingExamPage() {
         </Link>
         <Card className="p-6 sm:p-8 space-y-5">
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-accent uppercase tracking-wider">
-            <Code2 className="h-3.5 w-3.5" /> DSA + Coding round
+            <Code2 className="h-3.5 w-3.5" /> DSA + Coding round · Demo
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold">DSA &amp; Coding Examination</h1>
           <p className="text-muted-foreground">
-            This is a two-phase secured exam: first {DSA_QUESTIONS.length} multiple-choice DSA questions, then {PROBLEMS.length} live coding problems with an in-browser workspace and compiler. Total time: {TOTAL_MINUTES} minutes.
+            Two-phase secured exam: {DSA_QUESTIONS.length} multiple-choice DSA questions, then {PROBLEMS.length} live coding problems with an in-browser workspace and compiler. Total time: {TOTAL_MINUTES} minutes.
           </p>
           <ul className="text-sm space-y-2">
             <li className="flex items-start gap-2"><ShieldCheck className="h-4 w-4 text-success mt-0.5" /> Right-click, copy & tab-switch are monitored.</li>
             <li className="flex items-start gap-2"><Timer className="h-4 w-4 text-primary mt-0.5" /> One shared timer for both phases.</li>
-            <li className="flex items-start gap-2"><Code2 className="h-4 w-4 text-accent mt-0.5" /> Code runs against hidden + visible test cases.</li>
+            <li className="flex items-start gap-2"><Code2 className="h-4 w-4 text-accent mt-0.5" /> Code runs against visible test cases.</li>
           </ul>
-          <Button size="lg" className="w-full sm:w-auto" onClick={() => setPhase("dsa")}>
+
+          <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <ShieldCheck className="h-4 w-4 text-accent" /> AI Proctoring · Live camera required
+            </div>
+            <div className="grid sm:grid-cols-[180px_1fr] gap-3 items-start">
+              <div className="aspect-video w-full sm:w-[180px] rounded-md overflow-hidden bg-black/70 grid place-items-center text-xs text-white/60">
+                <video ref={proctorVideoRef} className={`w-full h-full object-cover ${cameraReady ? "" : "hidden"}`} muted playsInline />
+                {!cameraReady && <span>Camera off</span>}
+              </div>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <p>Enable your camera so the AI proctor can monitor your presence during the exam. If your face is not visible for an extended period the exam will be auto-submitted.</p>
+                {cameraError && <p className="text-destructive">{cameraError}</p>}
+                {!cameraReady ? (
+                  <Button size="sm" onClick={enableCamera}><ShieldCheck className="h-4 w-4 mr-1" />Enable camera & AI proctor</Button>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-success font-medium"><CheckCircle2 className="h-3.5 w-3.5" /> Camera live</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Button size="lg" className="w-full sm:w-auto" disabled={!cameraReady} onClick={() => setPhase("dsa")}>
             Start exam <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          {!cameraReady && <p className="text-xs text-muted-foreground">Enable the camera to unlock the Start button.</p>}
+          {/* Pre-existing-score hint hidden — placeholder used to keep dsaPct referenced */}
+          <span className="sr-only">{dsaPct}</span>
         </Card>
       </div>
     );
   }
 
   if (phase === "done") {
+    const totalQ = DSA_QUESTIONS.length + PROBLEMS.length;
+    const totalScore = dsaScore + codeScore;
+    const pct = totalQ ? Math.round((totalScore / totalQ) * 100) : 0;
+    const grade = pct >= 80 ? "Excellent" : pct >= 60 ? "Good" : pct >= 40 ? "Pass" : "Needs work";
     return (
       <div className="container mx-auto py-8 px-4 max-w-2xl animate-fade-up">
-        <Card className="p-8 text-center space-y-4">
-          <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
-          <h1 className="text-2xl font-bold">Submitted</h1>
-          <p className="text-muted-foreground">DSA: <strong>{dsaScore}/{DSA_QUESTIONS.length}</strong> · Coding: <strong>{codeScore}/{PROBLEMS.length}</strong> fully solved</p>
-          <Link to="/candidate/dashboard"><Button>Back to dashboard</Button></Link>
+        <Card className="p-6 sm:p-8 space-y-5">
+          <div className="text-center space-y-2">
+            <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
+            <h1 className="text-2xl font-bold">Scorecard</h1>
+            <p className="text-muted-foreground text-sm">Demo result · {grade}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
+            <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
+            <div className="rounded-lg border p-3 bg-accent/5 border-accent/30"><div className="text-xs text-muted-foreground">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
+          </div>
+          {proctorAlerts > 0 && (
+            <div className="text-xs rounded border border-destructive/40 bg-destructive/5 p-2 text-destructive text-center">
+              {proctorAlerts} proctoring alert{proctorAlerts === 1 ? "" : "s"} recorded during this session.
+            </div>
+          )}
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            <Link to="/candidate/dashboard"><Button variant="outline" className="w-full sm:w-auto">Back to dashboard</Button></Link>
+            <Link to="/candidate/exams"><Button className="w-full sm:w-auto">My exams</Button></Link>
+          </div>
         </Card>
       </div>
     );
@@ -239,6 +284,10 @@ function CodingExamPage() {
   return (
     <>
       <ExamWatermark label={wmLabel} />
+      {/* Live proctor PIP */}
+      <div className="fixed bottom-3 right-3 z-40 w-28 sm:w-36 aspect-video rounded-md overflow-hidden border-2 border-accent shadow-elegant bg-black pointer-events-none">
+        <video ref={proctorVideoRef} className="w-full h-full object-cover" muted playsInline />
+      </div>
       <div className="container mx-auto py-4 sm:py-6 px-3 sm:px-4 max-w-5xl animate-fade-up">
         {/* sticky bar */}
         <div className="sticky top-0 z-30 -mx-3 sm:-mx-4 mb-4 px-3 sm:px-4 py-2 bg-background/90 backdrop-blur border-b flex flex-wrap items-center gap-2 sm:gap-3">
