@@ -176,8 +176,8 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-dvh flex items-center justify-center px-4 py-10 bg-gradient-to-br from-background to-secondary">
-      <Card className="w-full max-w-2xl p-8 shadow-elegant">
+    <div className="min-h-dvh flex items-start justify-center px-3 py-6 bg-gradient-to-br from-background to-secondary sm:px-4 sm:py-10 lg:items-center">
+      <Card className="w-full max-w-3xl p-4 shadow-elegant sm:p-8">
         <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-2">
           <ParikshaLogo className="h-10 w-10" />
           <span>Pariksha</span>
@@ -197,7 +197,7 @@ function RegisterPage() {
             <div className="space-y-3">
               <Label className="text-base">I want to register as</Label>
               <p className="text-xs text-muted-foreground">Choose the account type that matches your work. Staff roles still require approval at sign-in.</p>
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {ROLES.map((r) => {
                   const active = role === r;
                   return (
@@ -221,11 +221,27 @@ function RegisterPage() {
                   <p className="text-xs text-muted-foreground">
                     Non-candidate roles need an authorisation code issued by Pariksha. If you don't have one, contact your administrator. Candidates do not need a code.
                   </p>
-                  <div>
-                    <Label htmlFor="staffCode">Enter your access code for "{ROLE_META[role].title}"</Label>
-                    <Input id="staffCode" {...register("staffCode")} placeholder="Enter the code you were issued" aria-invalid={!!errors.staffCode} autoComplete="off" />
-                    {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
-                  </div>
+                  {STAFF_DEMO_CODES[role]?.code ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setValue("staffCode", STAFF_DEMO_CODES[role]?.code ?? "", { shouldValidate: true })}
+                        className="w-full rounded-md border border-accent/40 bg-background px-3 py-2 text-left text-xs transition hover:bg-accent/5"
+                      >
+                        <span className="block font-semibold text-foreground">Demo code: {STAFF_DEMO_CODES[role]?.code}</span>
+                        <span className="text-muted-foreground">Tap to fill this code and continue.</span>
+                      </button>
+                      <div>
+                        <Label htmlFor="staffCode">Enter your access code for "{ROLE_META[role].title}"</Label>
+                        <Input id="staffCode" {...register("staffCode")} placeholder="Enter the code you were issued" aria-invalid={!!errors.staffCode} autoComplete="off" />
+                        {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="rounded-md border border-border bg-background p-3 text-xs text-muted-foreground">
+                      {STAFF_DEMO_CODES[role]?.note} <Link to="/login" className="font-semibold text-accent hover:underline">Open demo sign-in</Link>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -238,7 +254,7 @@ function RegisterPage() {
                 <Input id="fullName" {...register("fullName")} aria-invalid={!!errors.fullName} />
                 {errors.fullName && <p className="mt-1 text-sm text-destructive">{errors.fullName.message}</p>}
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="dateOfBirth">Date of birth</Label>
                   <Input id="dateOfBirth" type="date" {...register("dateOfBirth")} aria-invalid={!!errors.dateOfBirth} />
@@ -253,7 +269,7 @@ function RegisterPage() {
                   {errors.gender && <p className="mt-1 text-sm text-destructive">{errors.gender.message}</p>}
                 </div>
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="phone">Phone</Label>
                   <Input id="phone" type="tel" maxLength={10} {...register("phone")} aria-invalid={!!errors.phone} />
@@ -331,19 +347,19 @@ function RegisterPage() {
                 ["Email", getValues("email")],
                 ["Aadhaar", `XXXX-XXXX-${(getValues("aadhaar") ?? "").slice(-4)}`],
               ].map(([k, v]) => (
-                <div key={k} className="flex justify-between border-b border-border/60 py-1.5">
-                  <span className="text-muted-foreground">{k}</span><span className="font-medium capitalize">{v}</span>
+                <div key={k} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3 border-b border-border/60 py-1.5 sm:flex sm:justify-between">
+                  <span className="text-muted-foreground">{k}</span><span className="min-w-0 break-words text-right font-medium capitalize">{v}</span>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="flex justify-between pt-4 gap-2">
-            <Button type="button" variant="outline" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>Back</Button>
+          <div className="flex flex-col-reverse justify-between gap-2 pt-4 sm:flex-row">
+            <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>Back</Button>
             {step < STEPS.length ? (
-              <Button type="button" onClick={next}>Continue</Button>
+              <Button type="button" className="w-full sm:w-auto" onClick={next}>Continue</Button>
             ) : (
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create account
               </Button>
