@@ -636,3 +636,54 @@ function CodingExamPage() {
     </div>
   );
 }
+
+// --- Demo result persistence (localStorage) ---
+const DEMO_RESULTS_KEY = "pariksha:demo-coding-results";
+export type DemoCodingResult = {
+  id: string;
+  userKey: string;
+  title: string;
+  dsa: number; dsaTotal: number;
+  code: number; codeTotal: number;
+  pct: number;
+  grade: string;
+  warnings: number;
+  takenAt: string;
+};
+export function readDemoCodingResults(userKey: string): DemoCodingResult[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(DEMO_RESULTS_KEY);
+    const all: DemoCodingResult[] = raw ? JSON.parse(raw) : [];
+    return all.filter((r) => r.userKey === userKey).sort((a, b) => b.takenAt.localeCompare(a.takenAt));
+  } catch { return []; }
+}
+
+function PersistDemoResult(props: {
+  children: React.ReactNode;
+  userKey: string;
+  dsa: number; dsaTotal: number;
+  code: number; codeTotal: number;
+  pct: number; grade: string; warnings: number;
+}) {
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    try {
+      const raw = localStorage.getItem(DEMO_RESULTS_KEY);
+      const all: DemoCodingResult[] = raw ? JSON.parse(raw) : [];
+      all.push({
+        id: `demo-${Date.now()}`,
+        userKey: props.userKey,
+        title: "DSA + Coding (Demo)",
+        dsa: props.dsa, dsaTotal: props.dsaTotal,
+        code: props.code, codeTotal: props.codeTotal,
+        pct: props.pct, grade: props.grade, warnings: props.warnings,
+        takenAt: new Date().toISOString(),
+      });
+      localStorage.setItem(DEMO_RESULTS_KEY, JSON.stringify(all));
+    } catch {}
+  }, [props.userKey, props.dsa, props.dsaTotal, props.code, props.codeTotal, props.pct, props.grade, props.warnings]);
+  return <>{props.children}</>;
+}
