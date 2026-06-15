@@ -459,8 +459,34 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   const ceremony = useLockCeremonyInitiator(watch.session?.id);
   const runGenerateReport = useServerFn(generateSessionReport);
 
+  const isCodingPaper = tpl?.kind === "coding" || /\b(dsa|coding)\b/i.test(`${title} ${subject}`);
+
   function addQ() {
+    if (isCodingPaper) {
+      // Generate a random pre-made DSA MCQ from the bank, avoiding duplicates already added
+      const used = new Set(questions.map((q) => q.text));
+      const pool = DSA_MCQ_BANK.filter((q) => !used.has(q.text));
+      const pick = (pool.length ? pool : DSA_MCQ_BANK)[Math.floor(Math.random() * (pool.length || DSA_MCQ_BANK.length))];
+      setQuestions([...questions, { id: crypto.randomUUID(), ...pick }]);
+      return;
+    }
     setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
+  }
+  function addCodingQ() {
+    // Coding problems are generated WITHOUT explicit answers — institute reviews/edits before lock
+    const used = new Set(questions.map((q) => q.text));
+    const pool = CODING_PROBLEM_BANK.filter((p) => !used.has(p.description));
+    const p = (pool.length ? pool : CODING_PROBLEM_BANK)[Math.floor(Math.random() * (pool.length || CODING_PROBLEM_BANK.length))];
+    setQuestions([
+      ...questions,
+      {
+        id: crypto.randomUUID(),
+        text: `[CODING] ${p.title}\n\n${p.description}`,
+        options: ["Sample input #1", "Expected output #1", "Sample input #2", "Expected output #2"],
+        correct: 0,
+        marks: 10,
+      },
+    ]);
   }
   function updateQ(i: number, patch: Partial<Question>) {
     setQuestions(questions.map((q, idx) => idx === i ? { ...q, ...patch } : q));
