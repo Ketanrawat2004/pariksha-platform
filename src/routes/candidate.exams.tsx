@@ -60,7 +60,12 @@ function ExamsList() {
           <h1 className="text-3xl font-bold">My exams</h1>
           <p className="text-muted-foreground mt-1">Register for papers below. You can take the exam once the institute releases your admit card and the start time has arrived.</p>
         </div>
-        <Button asChild variant="outline" size="sm"><Link to="/candidate/billing"><CreditCard className="h-4 w-4 mr-1.5" /> Billing</Link></Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm"><Link to="/candidate/billing"><CreditCard className="h-4 w-4 mr-1.5" /> Billing</Link></Button>
+          <Button asChild size="sm" className="bg-accent hover:bg-accent/90">
+            <Link to="/coding-exam"><PlayCircle className="h-4 w-4 mr-1.5" /> Try demo DSA + Coding</Link>
+          </Button>
+        </div>
       </div>
 
       {(!available || available.length === 0) && (

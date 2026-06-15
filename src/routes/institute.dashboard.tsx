@@ -49,6 +49,36 @@ export const Route = createFileRoute("/institute/dashboard")({
 type Question = { id: string; text: string; options: string[]; correct: number; marks: number };
 type Template = { name: string; subject: string; description: string; durationMinutes: number; questions: Question[]; kind?: "coding" };
 
+// Pre-made DSA MCQ bank used when "Add question" is clicked on a coding paper
+const DSA_MCQ_BANK: Omit<Question, "id">[] = [
+  { text: "Time complexity of binary search on a sorted array of n elements?", options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"], correct: 1, marks: 2 },
+  { text: "Which data structure uses LIFO order?", options: ["Queue", "Stack", "Deque", "Heap"], correct: 1, marks: 2 },
+  { text: "Best-case time complexity of QuickSort?", options: ["O(n²)", "O(n log n)", "O(n)", "O(log n)"], correct: 1, marks: 2 },
+  { text: "Which traversal of a BST yields sorted output?", options: ["Preorder", "Inorder", "Postorder", "Level-order"], correct: 1, marks: 2 },
+  { text: "Hash map average lookup complexity?", options: ["O(log n)", "O(n)", "O(1)", "O(n log n)"], correct: 2, marks: 2 },
+  { text: "Worst-case complexity of insertion in a singly linked list (at tail, no tail pointer)?", options: ["O(1)", "O(log n)", "O(n)", "O(n²)"], correct: 2, marks: 2 },
+  { text: "Which algorithm is used to find shortest paths from a single source on a weighted graph with non-negative edges?", options: ["Bellman-Ford", "Dijkstra", "Floyd-Warshall", "Kruskal"], correct: 1, marks: 2 },
+  { text: "Heap-sort overall time complexity?", options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"], correct: 1, marks: 2 },
+  { text: "Which is NOT a stable sort?", options: ["Merge sort", "Bubble sort", "QuickSort", "Insertion sort"], correct: 2, marks: 2 },
+  { text: "DFS uses which data structure (iteratively)?", options: ["Queue", "Stack", "Priority queue", "Set"], correct: 1, marks: 2 },
+  { text: "Trie is best used for?", options: ["Range queries", "Prefix lookups", "Disjoint sets", "Shortest paths"], correct: 1, marks: 2 },
+  { text: "Number of edges in a tree with n nodes?", options: ["n", "n-1", "n+1", "2n"], correct: 1, marks: 2 },
+];
+
+// Coding problem bank — generated WITHOUT explicit answers; institute fills tests during review
+const CODING_PROBLEM_BANK: { title: string; description: string }[] = [
+  { title: "Two Sum", description: "Given an array of integers nums and an integer target, return the indices [i, j] of the two numbers such that they add up to target. Assume exactly one solution exists and you may not use the same element twice." },
+  { title: "Reverse a String", description: "Return the reverse of the given string s without using the built-in String.reverse. Write the loop yourself. Handle empty strings and single characters." },
+  { title: "Valid Parentheses", description: "Given a string containing only '(){}[]', determine if the input is valid. Open brackets must be closed by the same type and in the correct order." },
+  { title: "Maximum Subarray", description: "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return the sum (Kadane's algorithm)." },
+  { title: "Merge Two Sorted Lists", description: "You are given the heads of two sorted linked lists list1 and list2. Merge them into a single sorted list by splicing the nodes of the first two lists. Return the head of the merged list." },
+  { title: "FizzBuzz", description: "Print numbers from 1 to n. For multiples of 3 print 'Fizz', for multiples of 5 print 'Buzz', for multiples of both print 'FizzBuzz'. Return the result as an array of strings." },
+  { title: "Palindrome Check", description: "Given a string s, return true if it reads the same backwards as forwards considering only alphanumeric characters and ignoring case." },
+  { title: "First Non-Repeating Character", description: "Given a string s, return the index of the first non-repeating character. If it does not exist, return -1." },
+  { title: "Binary Tree Level Order Traversal", description: "Given the root of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level)." },
+  { title: "Climbing Stairs", description: "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb either 1 or 2 steps. In how many distinct ways can you climb to the top?" },
+];
+
 const TEMPLATES: Template[] = [
   {
     name: "NEET-UG Mock · Physics",
@@ -224,9 +254,9 @@ function InstitutePage() {
             Create papers, lock the schedule with teacher authentication, and publish exams to candidates.
           </p>
         </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
-          <div className="w-full sm:w-auto"><ActivityReportButton role="institute" /></div>
-          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant w-full sm:w-auto">
+        <div className="flex w-full max-w-full flex-col items-stretch gap-2 sm:w-auto sm:max-w-[260px] sm:items-end md:max-w-[280px]">
+          <div className="w-full"><ActivityReportButton role="institute" /></div>
+          <Button onClick={() => { setEditing({ blank: true }); setTab("editor"); }} size="lg" className="shadow-elegant w-full">
             <Plus className="mr-2 h-4 w-4" /> New Paper
           </Button>
         </div>
@@ -429,8 +459,34 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
   const ceremony = useLockCeremonyInitiator(watch.session?.id);
   const runGenerateReport = useServerFn(generateSessionReport);
 
+  const isCodingPaper = tpl?.kind === "coding" || /\b(dsa|coding)\b/i.test(`${title} ${subject}`);
+
   function addQ() {
+    if (isCodingPaper) {
+      // Generate a random pre-made DSA MCQ from the bank, avoiding duplicates already added
+      const used = new Set(questions.map((q) => q.text));
+      const pool = DSA_MCQ_BANK.filter((q) => !used.has(q.text));
+      const pick = (pool.length ? pool : DSA_MCQ_BANK)[Math.floor(Math.random() * (pool.length || DSA_MCQ_BANK.length))];
+      setQuestions([...questions, { id: crypto.randomUUID(), ...pick }]);
+      return;
+    }
     setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
+  }
+  function addCodingQ() {
+    // Coding problems are generated WITHOUT explicit answers — institute reviews/edits before lock
+    const used = new Set(questions.map((q) => q.text));
+    const pool = CODING_PROBLEM_BANK.filter((p) => !used.has(p.description));
+    const p = (pool.length ? pool : CODING_PROBLEM_BANK)[Math.floor(Math.random() * (pool.length || CODING_PROBLEM_BANK.length))];
+    setQuestions([
+      ...questions,
+      {
+        id: crypto.randomUUID(),
+        text: `[CODING] ${p.title}\n\n${p.description}`,
+        options: ["Sample input #1", "Expected output #1", "Sample input #2", "Expected output #2"],
+        correct: 0,
+        marks: 10,
+      },
+    ]);
   }
   function updateQ(i: number, patch: Partial<Question>) {
     setQuestions(questions.map((q, idx) => idx === i ? { ...q, ...patch } : q));
@@ -495,9 +551,18 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-bold">Questions ({questions.length})</h3>
-          <Button size="sm" variant="outline" onClick={addQ}><Plus className="h-4 w-4 mr-1" />Add question</Button>
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <h3 className="font-bold">Questions ({questions.length}){isCodingPaper && <span className="ml-2 text-xs font-normal text-accent">DSA + Coding</span>}</h3>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={addQ}>
+              <Plus className="h-4 w-4 mr-1" />{isCodingPaper ? "Add DSA question" : "Add question"}
+            </Button>
+            {isCodingPaper && (
+              <Button size="sm" variant="outline" onClick={addCodingQ} className="border-accent text-accent hover:bg-accent/10">
+                <Code2 className="h-4 w-4 mr-1" />Add coding question
+              </Button>
+            )}
+          </div>
         </div>
         <div className="space-y-3">
           {questions.map((q, i) => (
