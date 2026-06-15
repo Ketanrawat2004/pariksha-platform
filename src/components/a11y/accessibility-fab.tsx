@@ -115,7 +115,7 @@ export function AccessibilityFab() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Open accessibility & theme settings"
         aria-expanded={open}
-        className="fixed bottom-4 left-4 z-[60] h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-elegant flex items-center justify-center hover:scale-105 transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="accessibility-fab fixed bottom-4 left-4 z-40 h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-elegant flex items-center justify-center hover:scale-105 transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         <Accessibility className="h-6 w-6" />
       </button>
@@ -124,7 +124,7 @@ export function AccessibilityFab() {
         <div
           role="dialog"
           aria-label="Accessibility settings"
-          className="fixed bottom-20 left-4 z-[60] w-[19rem] max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-popover text-popover-foreground shadow-elegant p-4 space-y-3 animate-fade-up"
+          className="accessibility-fab fixed bottom-20 left-4 z-40 w-[19rem] max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-popover text-popover-foreground shadow-elegant p-4 space-y-3 animate-fade-up"
         >
           <div className="flex items-center justify-between">
             <div className="font-bold flex items-center gap-2"><Accessibility className="h-4 w-4" /> Accessibility</div>
