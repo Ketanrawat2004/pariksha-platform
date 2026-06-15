@@ -47,7 +47,7 @@ export const Route = createFileRoute("/institute/dashboard")({
 });
 
 type Question = { id: string; text: string; options: string[]; correct: number; marks: number };
-type Template = { name: string; subject: string; description: string; durationMinutes: number; questions: Question[] };
+type Template = { name: string; subject: string; description: string; durationMinutes: number; questions: Question[]; kind?: "coding" };
 
 const TEMPLATES: Template[] = [
   {
@@ -78,7 +78,19 @@ const TEMPLATES: Template[] = [
       { id: "q1", text: "Find the odd one: 2, 3, 5, 7, 9", options: ["2", "3", "7", "9"], correct: 3, marks: 2 },
     ],
   },
+  {
+    name: "DSA + Coding Round",
+    subject: "Computer Science",
+    description: "Two-phase: DSA MCQs then live coding problems with in-browser workspace & compiler. Launches in the secured coding-exam page.",
+    durationMinutes: 30,
+    kind: "coding",
+    questions: [
+      { id: "q1", text: "Time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"], correct: 1, marks: 2 },
+      { id: "q2", text: "Stack follows which order?", options: ["FIFO", "LIFO", "Random", "Priority"], correct: 1, marks: 2 },
+    ],
+  },
 ];
+
 
 async function sha256(text: string) {
   const buf = new TextEncoder().encode(text);
