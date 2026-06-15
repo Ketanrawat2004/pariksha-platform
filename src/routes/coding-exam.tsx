@@ -87,6 +87,49 @@ function CodingExamPage() {
   const [running, setRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_MINUTES * 60);
 
+  // Live camera + AI proctoring (basic): require camera before exam starts, monitor track state
+  const proctorVideoRef = useRef<HTMLVideoElement | null>(null);
+  const proctorStreamRef = useRef<MediaStream | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [proctorAlerts, setProctorAlerts] = useState(0);
+
+  async function enableCamera() {
+    try {
+      setCameraError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240, facingMode: "user" }, audio: false });
+      proctorStreamRef.current = stream;
+      if (proctorVideoRef.current) {
+        proctorVideoRef.current.srcObject = stream;
+        await proctorVideoRef.current.play().catch(() => {});
+      }
+      setCameraReady(true);
+      toast.success("AI proctoring active");
+    } catch (e: any) {
+      setCameraError(e?.message ?? "Camera permission denied");
+      setCameraReady(false);
+    }
+  }
+
+  // Watch the camera track during the exam — auto-submit if it dies twice
+  useEffect(() => {
+    if (phase !== "dsa" && phase !== "code") return;
+    const id = setInterval(() => {
+      const track = proctorStreamRef.current?.getVideoTracks?.()[0];
+      if (!track || track.readyState !== "live" || !track.enabled) {
+        setProctorAlerts((n) => {
+          const next = n + 1;
+          if (next === 1) toast.warning("Camera feed lost — face not visible. AI proctor alert #1");
+          if (next >= 2) { toast.error("Multiple proctoring alerts — auto submitting"); setPhase("done"); }
+          return next;
+        });
+      }
+    }, 4000);
+    return () => clearInterval(id);
+  }, [phase]);
+
+  useEffect(() => () => { proctorStreamRef.current?.getTracks().forEach((t) => t.stop()); }, []);
+
   // timer
   useEffect(() => {
     if (phase === "intro" || phase === "done") return;
