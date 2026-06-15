@@ -22,20 +22,20 @@ export function ChatbotWidget() {
   }, [open]);
 
   return (
-    <div className="fixed inset-x-3 bottom-3 z-[80] flex justify-end sm:inset-x-auto sm:right-4 sm:bottom-4">
+    <div className="pointer-events-none fixed inset-x-3 bottom-3 z-[80] flex justify-end sm:inset-x-auto sm:right-4 sm:bottom-4">
       {!open && (
         <Button
           size="lg"
           aria-label="Open PariBot chatbot"
           onClick={() => setOpen(true)}
-          className="rounded-full h-14 w-14 p-0 shadow-elegant bg-accent hover:bg-accent/90 animate-fade-in"
+          className="pointer-events-auto rounded-full h-14 w-14 p-0 shadow-elegant bg-accent hover:bg-accent/90 animate-fade-in"
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
       )}
 
       {open && (
-        <Card data-chatbot-panel="open" className="h-[min(32rem,calc(100dvh-1.5rem))] w-full max-w-sm flex flex-col shadow-2xl animate-fade-in overflow-hidden sm:w-[24rem]">
+        <Card data-chatbot-panel="open" className="pointer-events-auto h-[min(32rem,calc(100dvh-1.5rem))] w-full max-w-sm flex flex-col shadow-2xl animate-fade-in overflow-hidden sm:w-[24rem]">
           <header className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary to-accent text-primary-foreground">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
