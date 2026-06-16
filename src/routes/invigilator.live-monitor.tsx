@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeTables } from "@/hooks/use-realtime-tables";
 import { Activity, Flag, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/invigilator/live-monitor")({
