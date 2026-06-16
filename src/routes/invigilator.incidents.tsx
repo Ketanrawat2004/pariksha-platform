@@ -43,8 +43,8 @@ function IncidentsPage() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-        <AlertTriangle className="h-7 w-7 text-accent" /> Incidents
+      <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
+        <AlertTriangle className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Incidents</span>
       </h1>
       <p className="text-muted-foreground mt-1 mb-6">Medium-and-above integrity signals from across the live exam grid.</p>
 
@@ -58,10 +58,10 @@ function IncidentsPage() {
           </Card>
         ) : (
           (data ?? []).map((e) => (
-            <Card key={e.id} className="p-3 flex flex-wrap items-center gap-3">
+            <Card key={e.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 p-3 sm:flex sm:flex-wrap">
               <Badge variant={sevVariant[e.severity] ?? "outline"} className="text-[10px] uppercase">{e.severity}</Badge>
-              <div className="font-mono text-sm">{e.event_type}</div>
-              <div className="text-xs text-muted-foreground flex-1 min-w-[120px] truncate">session {e.session_id?.slice(0, 8)}…</div>
+              <div className="min-w-0 truncate font-mono text-sm">{e.event_type}</div>
+              <div className="min-w-0 truncate text-xs text-muted-foreground sm:flex-1 sm:min-w-[120px]">session {e.session_id?.slice(0, 8)}…</div>
               {e.auto_resolved && <Badge variant="outline" className="text-[10px]">resolved</Badge>}
               <div className="text-xs text-muted-foreground">{new Date(e.timestamp).toLocaleString()}</div>
             </Card>

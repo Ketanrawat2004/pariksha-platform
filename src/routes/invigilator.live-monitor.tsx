@@ -39,11 +39,11 @@ function LiveMonitorPage() {
 
   return (
     <>
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Activity className="h-7 w-7 text-accent" /> Live Monitor
-            <span className="relative flex h-2 w-2 ml-1">
+      <div className="grid grid-cols-[minmax(0,1fr)] items-end gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="min-w-0">
+          <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
+            <Activity className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Live Monitor</span>
+            <span className="relative ml-1 flex h-2 w-2 shrink-0">
               <span className="absolute inline-flex h-full w-full rounded-full bg-success animate-ping opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
             </span>
@@ -66,7 +66,7 @@ function LiveMonitorPage() {
             const tone = score >= 80 ? "success" : score >= 50 ? "warning" : "destructive";
             return (
               <Card key={s.id} className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                   <Badge variant={s.is_flagged ? "destructive" : "outline"} className="text-[10px]">
                     {s.is_flagged && <Flag className="h-3 w-3 mr-1" />}
                     {s.is_flagged ? "FLAGGED" : "OK"}
