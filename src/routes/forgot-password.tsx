@@ -48,10 +48,8 @@ function ForgotPasswordPage() {
     <div className="min-h-dvh flex items-center justify-center px-4 bg-gradient-to-br from-background to-secondary">
       <Card className="w-full max-w-md p-8 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-6">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-gradient-hero text-primary-foreground">
-            <Shield className="h-5 w-5" />
-          </span>
-          Pariksha
+          <ParikshaLogo className="h-10 w-10" />
+          <span>Pariksha</span>
         </Link>
         {sent ? (
           <div className="text-center">
