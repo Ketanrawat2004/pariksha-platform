@@ -114,7 +114,7 @@ function SupportInbox() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div className="mb-6 grid grid-cols-[minmax(0,1fr)] items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex items-center gap-3 min-w-0">
           <LifeBuoy className="h-7 w-7 text-accent shrink-0" />
           <div className="min-w-0">
@@ -122,10 +122,10 @@ function SupportInbox() {
             <p className="text-xs sm:text-sm text-muted-foreground">Live inbox · replies appear in the candidate's notifications instantly</p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="relative">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:justify-end">
+          <div className="relative min-w-0">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search…" className="pl-7 h-8 w-48" />
+            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search…" className="h-8 w-full pl-7 sm:w-48" />
           </div>
           <select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)} className="h-8 rounded-md border border-input bg-background px-2 text-xs">
             <option value="all">All</option>
@@ -152,8 +152,8 @@ function SupportInbox() {
                     onClick={() => setSelectedId(t.id)}
                     className={`w-full text-left p-3 hover:bg-muted/40 transition ${active ? "bg-accent/5" : ""}`}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="font-mono text-[10px] text-muted-foreground">{t.case_ref}</div>
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                      <div className="truncate font-mono text-[10px] text-muted-foreground">{t.case_ref}</div>
                       <Badge variant="outline" className={`text-[10px] ${badgeFor(t.status)}`}>{t.status}</Badge>
                     </div>
                     <div className="font-semibold text-sm mt-0.5 truncate">{t.subject}</div>
@@ -172,9 +172,9 @@ function SupportInbox() {
           ) : (
             <div className="space-y-4">
               <div>
-                <div className="flex flex-wrap items-center gap-2 justify-between">
-                  <div className="font-mono text-xs text-muted-foreground">{selected.case_ref}</div>
-                  <div className="flex gap-1">
+                <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <div className="min-w-0 truncate font-mono text-xs text-muted-foreground">{selected.case_ref}</div>
+                  <div className="flex flex-wrap gap-1 sm:justify-end">
                     <Button size="sm" variant="outline" onClick={() => setStatus("in_progress")}>In progress</Button>
                     <Button size="sm" variant="outline" onClick={() => setStatus("resolved")}>Resolve</Button>
                   </div>
@@ -188,8 +188,8 @@ function SupportInbox() {
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Reply to candidate</label>
                 <Textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={5} placeholder="Type your reply…" className="mt-1" />
-                <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                  <span>
+                <div className="mt-2 grid grid-cols-[minmax(0,1fr)] items-center gap-2 text-xs text-muted-foreground sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <span className="min-w-0">
                     {selected.replied_at ? `Last reply ${new Date(selected.replied_at).toLocaleString()}` :
                      selected.created_by ? "Will appear in their notifications in real-time" :
                      "Anonymous ticket — reply will be saved but not delivered"}
