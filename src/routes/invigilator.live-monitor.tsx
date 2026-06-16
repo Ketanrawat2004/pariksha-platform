@@ -18,9 +18,10 @@ export const Route = createFileRoute("/invigilator/live-monitor")({
 });
 
 function LiveMonitorPage() {
+  useRealtimeTables(["exam_sessions", "integrity_events"], [["invig-live"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-live"],
-    refetchInterval: 5000,
+    refetchInterval: 15000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("exam_sessions")
