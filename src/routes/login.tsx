@@ -226,7 +226,7 @@ function LoginPage() {
             variant="outline"
             className="w-full"
             onClick={async () => {
-              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/choose-role` });
               if (result.error) toast.error(result.error.message ?? "Google sign-in failed");
             }}
           >
