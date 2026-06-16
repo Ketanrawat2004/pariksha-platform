@@ -37,12 +37,12 @@ const QUICK_ACTIONS = [
 function InvigilatorDashboard() {
   return (
     <ProtectedShell requireRoles={["invigilator", "admin", "superadmin"]}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-bold">Invigilator console</h1>
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-bold sm:text-3xl">Invigilator console</h1>
           <p className="text-muted-foreground mt-1">Monitor live exam sessions, manage attendance, and respond to integrity alerts.</p>
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:justify-end">
           <Badge variant="outline" className="gap-1"><Activity className="h-3 w-3 text-success" /> On duty</Badge>
           <ActivityReportButton role="invigilator" />
         </div>
@@ -52,8 +52,8 @@ function InvigilatorDashboard() {
         {STATS.map((s) => (
           <Card key={s.label} className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</span>
-              <s.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="min-w-0 truncate text-xs uppercase tracking-wide text-muted-foreground">{s.label}</span>
+              <s.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
             </div>
             <div className="text-3xl font-extrabold mt-2">{s.value}</div>
             <div className="text-xs text-muted-foreground mt-1">{s.hint}</div>
@@ -64,9 +64,9 @@ function InvigilatorDashboard() {
       <div className="mt-6 grid gap-3 md:grid-cols-2">
         {QUICK_ACTIONS.map((a) => (
           <Card key={a.to} className="p-5 hover:shadow-elegant transition-shadow">
-            <Link to={a.to} className="flex items-start gap-4 group">
-              <span className="rounded-md bg-accent/10 p-3 text-accent"><a.icon className="h-5 w-5" /></span>
-              <div className="flex-1">
+            <Link to={a.to} className="group flex min-w-0 items-start gap-4">
+              <span className="shrink-0 rounded-md bg-accent/10 p-3 text-accent"><a.icon className="h-5 w-5" /></span>
+              <div className="min-w-0 flex-1">
                 <div className="font-semibold flex items-center gap-2">{a.label}
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -78,8 +78,8 @@ function InvigilatorDashboard() {
       </div>
 
       <Card className="mt-6 p-5">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold flex items-center gap-2"><Timer className="h-4 w-4" /> Today's shift</h2>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mb-3">
+          <h2 className="min-w-0 truncate font-semibold flex items-center gap-2"><Timer className="h-4 w-4 shrink-0" /> Today's shift</h2>
           <Button asChild size="sm" variant="outline"><Link to="/invigilator/live-monitor">Open monitor</Link></Button>
         </div>
         <p className="text-sm text-muted-foreground">Realtime session counts populate once candidates start their exams. Use the quick actions above to jump into a workflow.</p>
