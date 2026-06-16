@@ -53,34 +53,37 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
     }
   }
 
-  function skip() {
-    if (sessionKey) sessionStorage.setItem(sessionKey, "skipped");
-    setVerified(true);
-  }
-
   if (!requires || verified) return <>{children}</>;
 
   return (
-    <>
-      {children}
-      <Dialog open onOpenChange={(open) => { if (!open) skip(); }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-accent" /> Sign-in identity check
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            For audit and integrity, capture a live photo. Your photo and sign-in time are stored in the secure vault.
-          </p>
-          <FaceCapture onCapture={setPhoto} />
-          <Button onClick={submit} disabled={!photo || busy} className="w-full">
-            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Continue to dashboard
-          </Button>
-          <Button variant="ghost" size="sm" onClick={skip} className="w-full">Skip for now</Button>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Dialog open onOpenChange={() => { /* required — no dismiss */ }}>
+      <DialogContent
+        className="max-w-md"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-accent" /> Sign-in identity check (required)
+          </DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          Staff dashboards require a live photo per session. Your photo and sign-in time are stored in the secure audit vault.
+        </p>
+        <FaceCapture onCapture={setPhoto} />
+        <Button onClick={submit} disabled={!photo || busy} className="w-full">
+          {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          Verify & continue
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={async () => { await supabase.auth.signOut(); window.location.assign("/login"); }}
+          className="w-full text-muted-foreground"
+        >
+          Sign out instead
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }
