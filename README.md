@@ -63,6 +63,8 @@ Encrypted PDFs, sealed envelopes, biometric gates, CCTV — they all treat sympt
 
 ## So what is Pariksha, actually?
 
+Note: figures shown in the website are forward-looking projections meant to help candidates visualise the platform's scale. Live institutional rollouts will replace these with real-time data.
+
 ![Pariksha — About page](./screenshots/Screenshot_2026-06-10_152538.png)
 *About — the "India's exams, re-earned" manifesto, builder credit, and entry points into the TriShield Vault and live demo.*
 
