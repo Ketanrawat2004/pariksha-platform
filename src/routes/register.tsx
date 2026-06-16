@@ -68,9 +68,12 @@ const ROLE_META: Record<Role, { title: string; desc: string }> = {
 
 // Staff access codes are NEVER embedded in the client bundle. Staff must obtain
 // codes through an authorised out-of-band channel from Pariksha administrators.
-const STAFF_DEMO_CODES: Partial<Record<Role, { note: string }>> = {
-  invigilator: { note: "Invigilator codes are issued out-of-band by Pariksha. Contact your administrator to obtain a code." },
-  institute: { note: "Institute codes are issued out-of-band by Pariksha. Contact your administrator to obtain a code." },
+// Hackathon demo: surface demo access codes inline so panelists can try staff
+// roles without an out-of-band exchange. In production these MUST be removed
+// and codes delivered only via an authorised out-of-band channel.
+const STAFF_DEMO_CODES: Partial<Record<Role, { note: string; code?: string }>> = {
+  invigilator: { note: "Hackathon demo code (for panelists only — remove before launch):", code: "DEMO-INVIG-2026" },
+  institute: { note: "Hackathon demo code (for panelists only — remove before launch):", code: "DEMO-INST-2026" },
   admin: { note: "Admin accounts are approval-only. Use the Admin demo sign-in on the login page." },
   superadmin: { note: "Super Admin accounts are approval-only. Use the Superadmin demo sign-in on the login page." },
 };
