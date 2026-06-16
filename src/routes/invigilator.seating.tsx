@@ -18,6 +18,7 @@ export const Route = createFileRoute("/invigilator/seating")({
 });
 
 function SeatingPage() {
+  useRealtimeTables(["registrations", "centers"], [["invig-seating"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-seating"],
     queryFn: async () => {
