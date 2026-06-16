@@ -7,13 +7,12 @@ import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 import { toast } from "sonner";
 import { ShieldCheck, Loader2 } from "lucide-react";
 
-const STAFF_ROLES: AppRole[] = ["admin", "superadmin", "invigilator"];
+const STAFF_ROLES: AppRole[] = ["admin", "superadmin", "invigilator", "institute"];
 
 /**
- * Blocks staff (admin/superadmin/invigilator) from accessing their dashboard
- * until they capture a fresh sign-in photo for this session.
- * The capture is uploaded to face-photos/signins/<user>/<ts>.jpg and a row
- * is inserted in public.staff_signin_photos with the timestamp.
+ * Blocks staff (admin/superadmin/invigilator/institute) from accessing their
+ * dashboard until they capture a fresh sign-in photo for this session.
+ * Re-prompts on every new sign-in (SIGNED_IN event clears the session marker).
  */
 export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   const { user, roles } = useAuth();
@@ -25,8 +24,19 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!requires) { setVerified(true); return; }
-    if (sessionKey && sessionStorage.getItem(sessionKey)) setVerified(true);
+    setVerified(!!(sessionKey && sessionStorage.getItem(sessionKey)));
   }, [requires, sessionKey]);
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" && sessionKey) {
+        sessionStorage.removeItem(sessionKey);
+        setVerified(false);
+        setPhoto("");
+      }
+    });
+    return () => { sub.subscription.unsubscribe(); };
+  }, [sessionKey]);
 
   async function submit() {
     if (!user || !photo) return;

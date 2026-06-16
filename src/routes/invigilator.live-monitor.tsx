@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeTables } from "@/hooks/use-realtime-tables";
 import { Activity, Flag, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/invigilator/live-monitor")({
@@ -17,9 +18,10 @@ export const Route = createFileRoute("/invigilator/live-monitor")({
 });
 
 function LiveMonitorPage() {
+  useRealtimeTables(["exam_sessions", "integrity_events"], [["invig-live"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-live"],
-    refetchInterval: 5000,
+    refetchInterval: 15000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("exam_sessions")
@@ -46,7 +48,7 @@ function LiveMonitorPage() {
               <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
             </span>
           </h1>
-          <p className="text-muted-foreground mt-1">{sessions.length} live sessions · {flagged} flagged · refreshes every 5s</p>
+          <p className="text-muted-foreground mt-1">{sessions.length} live sessions · {flagged} flagged · live updates</p>
         </div>
       </div>
 

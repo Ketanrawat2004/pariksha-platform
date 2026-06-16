@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeTables } from "@/hooks/use-realtime-tables";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/invigilator/incidents")({
@@ -24,9 +25,10 @@ const sevVariant: Record<string, "default" | "destructive" | "secondary" | "outl
 };
 
 function IncidentsPage() {
+  useRealtimeTables(["integrity_events", "incidents"], [["invig-incidents"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-incidents"],
-    refetchInterval: 10000,
+    refetchInterval: 30000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("integrity_events")

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeTables } from "@/hooks/use-realtime-tables";
 import { ClipboardCheck, Search, CheckCircle2, Clock } from "lucide-react";
 import { useState, useMemo } from "react";
 
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/invigilator/attendance")({
 
 function AttendancePage() {
   const [q, setQ] = useState("");
+  useRealtimeTables(["registrations"], [["invig-attendance"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-attendance"],
     queryFn: async () => {
