@@ -49,10 +49,10 @@ function CentersPage() {
 
   return (
     <>
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Building2 className="h-7 w-7 text-accent" /> Exam Centers
+      <div className="grid grid-cols-[minmax(0,1fr)] items-end gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="min-w-0">
+          <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
+            <Building2 className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Exam Centers</span>
           </h1>
           <p className="text-muted-foreground mt-1">{stats.total} centers · {stats.verified} verified · {stats.capacity.toLocaleString()} total seats</p>
         </div>
@@ -73,8 +73,8 @@ function CentersPage() {
         ) : (
           filtered.map((c) => (
             <Card key={c.id} className="p-4 hover:shadow-elegant transition">
-              <div className="flex items-start justify-between gap-2">
-                <div className="font-semibold leading-tight">{c.name}</div>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                <div className="min-w-0 truncate font-semibold leading-tight">{c.name}</div>
                 <Badge variant={c.is_verified ? "default" : "outline"} className="text-[10px] shrink-0">
                   {c.is_verified ? <ShieldCheck className="h-3 w-3 mr-1" /> : <ShieldAlert className="h-3 w-3 mr-1" />}
                   {c.is_verified ? "VERIFIED" : "PENDING"}
