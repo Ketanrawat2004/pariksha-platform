@@ -30,6 +30,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/admin/candidates", label: "Candidates" },
     { to: "/admin/integrity", label: "Integrity" },
     { to: "/admin/reports", label: "Reports" },
+    { to: "/admin/support", label: "Support" },
   ],
   superadmin: [
     { to: "/superadmin/dashboard", label: "Overview" },
