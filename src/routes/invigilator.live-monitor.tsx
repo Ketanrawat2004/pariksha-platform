@@ -48,7 +48,7 @@ function LiveMonitorPage() {
               <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
             </span>
           </h1>
-          <p className="text-muted-foreground mt-1">{sessions.length} live sessions · {flagged} flagged · refreshes every 5s</p>
+          <p className="text-muted-foreground mt-1">{sessions.length} live sessions · {flagged} flagged · live updates</p>
         </div>
       </div>
 
