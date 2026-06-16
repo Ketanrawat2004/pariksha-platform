@@ -25,9 +25,10 @@ const sevVariant: Record<string, "default" | "destructive" | "secondary" | "outl
 };
 
 function IncidentsPage() {
+  useRealtimeTables(["integrity_events", "incidents"], [["invig-incidents"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-incidents"],
-    refetchInterval: 10000,
+    refetchInterval: 30000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("integrity_events")
