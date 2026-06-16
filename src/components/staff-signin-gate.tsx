@@ -15,9 +15,10 @@ const STAFF_ROLES: AppRole[] = ["admin", "superadmin", "invigilator", "institute
  * Re-prompts on every new sign-in (SIGNED_IN event clears the session marker).
  */
 export function StaffSigninGate({ children }: { children: React.ReactNode }) {
-  const { user, roles } = useAuth();
+  const { session, user, roles } = useAuth();
   const requires = roles.some((r) => STAFF_ROLES.includes(r));
-  const sessionKey = user ? `pariksha:signin-photo:${user.id}` : "";
+  const signInStamp = user?.last_sign_in_at ?? session?.expires_at ?? "current";
+  const sessionKey = user ? `pariksha:signin-photo:${user.id}:${signInStamp}` : "";
   const [verified, setVerified] = useState(false);
   const [photo, setPhoto] = useState("");
   const [busy, setBusy] = useState(false);
@@ -29,14 +30,17 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" && sessionKey) {
-        sessionStorage.removeItem(sessionKey);
+      if (event === "SIGNED_IN" && user) {
+        const prefix = `pariksha:signin-photo:${user.id}:`;
+        Object.keys(sessionStorage).forEach((key) => {
+          if (key.startsWith(prefix)) sessionStorage.removeItem(key);
+        });
         setVerified(false);
         setPhoto("");
       }
     });
     return () => { sub.subscription.unsubscribe(); };
-  }, [sessionKey]);
+  }, [user]);
 
   async function submit() {
     if (!user || !photo) return;
@@ -68,7 +72,7 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   return (
     <Dialog open onOpenChange={() => { /* required — no dismiss */ }}>
       <DialogContent
-        className="max-w-md"
+        className="max-w-md [&>button]:hidden"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
