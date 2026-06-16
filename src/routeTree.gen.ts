@@ -48,6 +48,7 @@ import { Route as CandidateExamsRouteImport } from './routes/candidate.exams'
 import { Route as CandidateDashboardRouteImport } from './routes/candidate.dashboard'
 import { Route as CandidateBillingRouteImport } from './routes/candidate.billing'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
+import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminIntegrityRouteImport } from './routes/admin.integrity'
 import { Route as AdminIncidentsRouteImport } from './routes/admin.incidents'
@@ -260,6 +261,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/admin/support',
+  path: '/admin/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin/reports',
   path: '/admin/reports',
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/admin/incidents': typeof AdminIncidentsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/api/chat': typeof ApiChatRoute
   '/candidate/billing': typeof CandidateBillingRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
@@ -408,6 +415,7 @@ export interface FileRoutesByTo {
   '/admin/incidents': typeof AdminIncidentsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/api/chat': typeof ApiChatRoute
   '/candidate/billing': typeof CandidateBillingRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
@@ -463,6 +471,7 @@ export interface FileRoutesById {
   '/admin/incidents': typeof AdminIncidentsRoute
   '/admin/integrity': typeof AdminIntegrityRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/api/chat': typeof ApiChatRoute
   '/candidate/billing': typeof CandidateBillingRoute
   '/candidate/dashboard': typeof CandidateDashboardRoute
@@ -519,6 +528,7 @@ export interface FileRouteTypes {
     | '/admin/incidents'
     | '/admin/integrity'
     | '/admin/reports'
+    | '/admin/support'
     | '/api/chat'
     | '/candidate/billing'
     | '/candidate/dashboard'
@@ -573,6 +583,7 @@ export interface FileRouteTypes {
     | '/admin/incidents'
     | '/admin/integrity'
     | '/admin/reports'
+    | '/admin/support'
     | '/api/chat'
     | '/candidate/billing'
     | '/candidate/dashboard'
@@ -627,6 +638,7 @@ export interface FileRouteTypes {
     | '/admin/incidents'
     | '/admin/integrity'
     | '/admin/reports'
+    | '/admin/support'
     | '/api/chat'
     | '/candidate/billing'
     | '/candidate/dashboard'
@@ -682,6 +694,7 @@ export interface RootRouteChildren {
   AdminIncidentsRoute: typeof AdminIncidentsRoute
   AdminIntegrityRoute: typeof AdminIntegrityRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminSupportRoute: typeof AdminSupportRoute
   ApiChatRoute: typeof ApiChatRoute
   CandidateBillingRoute: typeof CandidateBillingRoute
   CandidateDashboardRoute: typeof CandidateDashboardRoute
@@ -987,6 +1000,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/admin/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/reports': {
       id: '/admin/reports'
       path: '/admin/reports'
@@ -1106,6 +1126,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIncidentsRoute: AdminIncidentsRoute,
   AdminIntegrityRoute: AdminIntegrityRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminSupportRoute: AdminSupportRoute,
   ApiChatRoute: ApiChatRoute,
   CandidateBillingRoute: CandidateBillingRoute,
   CandidateDashboardRoute: CandidateDashboardRoute,
@@ -1138,13 +1159,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
