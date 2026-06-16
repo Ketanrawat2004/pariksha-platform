@@ -149,6 +149,11 @@ function InstitutePage() {
   const [editNote, setEditNote] = useState("");
   const [editPhoto, setEditPhoto] = useState("");
 
+  useRealtimeTables(
+    ["paper_submissions", "paper_registrations", "trishield_watch_sessions"],
+    [["paper-submissions", user?.id], ["trishield-live-by-paper"]],
+  );
+
   const { data: subs, isLoading } = useQuery({
     queryKey: ["paper-submissions", user?.id],
     queryFn: async () => {
