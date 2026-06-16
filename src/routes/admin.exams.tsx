@@ -40,10 +40,10 @@ function ExamsPage() {
 
   return (
     <>
-      <div className="grid grid-cols-[minmax(0,1fr)] items-end gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <div className="min-w-0">
-          <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
-            <FileText className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Exams</span>
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <FileText className="h-7 w-7 text-accent" /> Exams
           </h1>
           <p className="text-muted-foreground mt-1">All exams across the platform.</p>
         </div>
@@ -63,10 +63,10 @@ function ExamsPage() {
           </Card>
         ) : (
           filtered.map((e) => (
-            <Card key={e.id} className="grid grid-cols-[minmax(0,1fr)] items-center gap-3 p-4 hover:bg-muted/30 sm:flex sm:flex-wrap sm:gap-4">
-              <div className="min-w-0 sm:flex-1">
+            <Card key={e.id} className="p-4 flex flex-wrap items-center gap-4 hover:bg-muted/30">
+              <div className="flex-1 min-w-[240px]">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="min-w-0 truncate font-semibold">{e.title}</span>
+                  <span className="font-semibold">{e.title}</span>
                   <Badge variant="outline" className="text-xs">{e.subject}</Badge>
                   <Badge
                     variant={e.status === "live" || e.status === "scheduled" ? "default" : e.status === "completed" ? "secondary" : "outline"}
@@ -81,7 +81,7 @@ function ExamsPage() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" /> {e.exam_date}
               </div>
               <div className="text-xs text-muted-foreground flex items-center gap-1.5">

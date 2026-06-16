@@ -13,7 +13,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth/auth-context";
-import { useRealtimeTables } from "@/hooks/use-realtime-tables";
 import {
   Building2, FileText, Plus, Lock, Camera, Pencil, Send, ShieldCheck,
   CalendarClock, Trash2, BookOpen, CheckCircle2, AlertCircle, Library, Code2,
@@ -149,11 +148,6 @@ function InstitutePage() {
   const [editRequestFor, setEditRequestFor] = useState<any | null>(null);
   const [editNote, setEditNote] = useState("");
   const [editPhoto, setEditPhoto] = useState("");
-
-  useRealtimeTables(
-    ["paper_submissions", "paper_registrations", "trishield_watch_sessions"],
-    [["paper-submissions", user?.id], ["trishield-live-by-paper"]],
-  );
 
   const { data: subs, isLoading } = useQuery({
     queryKey: ["paper-submissions", user?.id],

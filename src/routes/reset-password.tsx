@@ -3,12 +3,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Shield, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { ParikshaLogo } from "@/components/pariksha-logo";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -52,8 +51,8 @@ function ResetPage() {
     <div className="min-h-dvh flex items-center justify-center px-4 bg-gradient-to-br from-background to-secondary">
       <Card className="w-full max-w-md p-8 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 font-bold text-xl mb-6">
-          <ParikshaLogo className="h-10 w-10" />
-          <span>Pariksha</span>
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-gradient-hero text-primary-foreground"><Shield className="h-5 w-5" /></span>
+          Pariksha
         </Link>
         <h1 className="text-2xl font-bold text-center">Set new password</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>

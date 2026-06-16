@@ -96,29 +96,13 @@ function ChooseRolePage() {
   return (
     <div className="min-h-dvh bg-gradient-to-br from-background to-secondary py-10 px-4">
       <div className="mx-auto max-w-4xl">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-8">
           <ParikshaLogo className="h-10 w-10" />
-          <div className="min-w-0">
+          <div>
             <h1 className="text-2xl font-bold">Welcome to Pariksha</h1>
-            <p className="text-sm text-muted-foreground truncate">How would you like to continue, {user?.email}?</p>
+            <p className="text-sm text-muted-foreground">How would you like to continue, {user?.email}?</p>
           </div>
         </div>
-
-        <div className="mb-6 rounded-lg border border-yellow-400/40 bg-yellow-50 dark:bg-yellow-500/10 p-4">
-          <div className="text-xs font-bold uppercase tracking-wider text-yellow-700 dark:text-yellow-300 mb-2">
-            Hackathon demo — staff access codes
-          </div>
-          <p className="text-xs text-yellow-900/80 dark:text-yellow-100/80 mb-2">
-            These shared codes are for panelist evaluation only. In production each
-            staff member receives a unique code out-of-band.
-          </p>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <code className="rounded bg-yellow-100 dark:bg-yellow-500/20 px-2 py-1 font-mono">Invigilator: DEMO-INVIG-2026</code>
-            <code className="rounded bg-yellow-100 dark:bg-yellow-500/20 px-2 py-1 font-mono">Institute: DEMO-INST-2026</code>
-            <span className="rounded bg-yellow-100 dark:bg-yellow-500/20 px-2 py-1 font-mono">Admin / Superadmin: demo sign-in on /login</span>
-          </div>
-        </div>
-
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {PICKS.map((p) => {

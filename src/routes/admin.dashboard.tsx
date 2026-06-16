@@ -15,12 +15,12 @@ export const Route = createFileRoute("/admin/dashboard")({
   component: () => (
     <ProtectedShell requireRoles={["admin", "superadmin"]}>
       <StaffWatchBanner party="admin" />
-      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <div className="min-w-0">
-          <h1 className="truncate text-2xl font-bold sm:text-3xl">Admin dashboard</h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold">Admin dashboard</h1>
           <p className="text-muted-foreground mt-1">Approve paper edit requests from institutes and monitor TriShield activity.</p>
         </div>
-        <div className="flex min-w-0 flex-wrap gap-2 sm:justify-end">
+        <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">
             <Link to="/admin/incidents"><AlertTriangle className="h-4 w-4 mr-1" /> Incidents</Link>
           </Button>

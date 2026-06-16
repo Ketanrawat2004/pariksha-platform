@@ -49,10 +49,10 @@ function CandidatesPage() {
 
   return (
     <>
-      <div className="grid grid-cols-[minmax(0,1fr)] items-end gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <div className="min-w-0">
-          <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
-            <Users className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Candidates</span>
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <Users className="h-7 w-7 text-accent" /> Candidates
           </h1>
           <p className="text-muted-foreground mt-1">{(data ?? []).length} registered candidates.</p>
         </div>
@@ -72,12 +72,12 @@ function CandidatesPage() {
           </Card>
         ) : (
           filtered.map((c) => (
-            <Card key={c.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-3 hover:bg-muted/30 sm:flex sm:flex-wrap">
-              <div className="min-w-0 sm:flex-1">
-                <div className="truncate font-semibold">{c.full_name}</div>
-                <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  <span className="flex min-w-0 items-center gap-1"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{c.email}</span></span>
-                  {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3 shrink-0" />{c.phone}</span>}
+            <Card key={c.id} className="p-3 flex flex-wrap items-center gap-4 hover:bg-muted/30">
+              <div className="flex-1 min-w-[200px]">
+                <div className="font-semibold">{c.full_name}</div>
+                <div className="text-xs text-muted-foreground flex items-center gap-3 mt-0.5">
+                  <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{c.email}</span>
+                  {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{c.phone}</span>}
                 </div>
               </div>
               {c.state && <Badge variant="outline" className="text-xs">{c.state}</Badge>}

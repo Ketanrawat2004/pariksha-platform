@@ -33,8 +33,9 @@ function load(): Prefs {
     const raw = localStorage.getItem(KEY);
     if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
   } catch {}
-  // Always default to light. Dark mode is opt-in via the theme toggle only.
-  return { ...DEFAULTS, theme: "light" };
+  // Auto dark mode from system
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  return { ...DEFAULTS, theme: prefersDark ? "dark" : "light" };
 }
 
 function apply(p: Prefs) {
