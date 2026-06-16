@@ -161,7 +161,27 @@ function RegisterPage() {
       toast.success("Verification email sent");
       setDone(true);
     } catch (err: any) {
-      toast.error(err?.message ?? "Could not create account. Please check your details and try again.");
+      const raw = (err?.message ?? "").toLowerCase();
+      const code = (err?.code ?? err?.error_code ?? "").toString().toLowerCase();
+      const isDuplicate =
+        code === "user_already_exists" ||
+        raw.includes("already registered") ||
+        raw.includes("already been registered") ||
+        raw.includes("user already") ||
+        raw.includes("duplicate key");
+      if (isDuplicate) {
+        toast.error(
+          "An account with this email already exists. Try signing in instead.",
+          {
+            action: { label: "Sign in", onClick: () => navigate({ to: "/login" }) },
+            duration: 8000,
+          },
+        );
+        form.setError("email", { message: "Email already registered — sign in instead." });
+        setStep(3);
+      } else {
+        toast.error(err?.message ?? "Could not create account. Please check your details and try again.");
+      }
     } finally {
       setLoading(false);
     }
