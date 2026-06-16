@@ -30,6 +30,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/admin/candidates", label: "Candidates" },
     { to: "/admin/integrity", label: "Integrity" },
     { to: "/admin/reports", label: "Reports" },
+    { to: "/admin/support", label: "Support" },
   ],
   superadmin: [
     { to: "/superadmin/dashboard", label: "Overview" },
@@ -37,6 +38,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/superadmin/audit-log", label: "Audit Log" },
     { to: "/superadmin/paper-leak-detector", label: "Leak Detector" },
     { to: "/superadmin/system", label: "System" },
+    { to: "/admin/support", label: "Support" },
   ],
   institute: [
     { to: "/institute/dashboard", label: "Dashboard" },
