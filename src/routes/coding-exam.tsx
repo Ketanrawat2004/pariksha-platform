@@ -37,7 +37,7 @@ function SecuredCodingExamRoute() {
   }, []);
   if (loading || !user) {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-slate-950 text-slate-300">
+      <div className="min-h-dvh flex items-center justify-center bg-slate-50 text-slate-600">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
@@ -437,18 +437,18 @@ function CodingExamPage() {
         grade={grade}
         warnings={warnings}
       >
-        <div className="min-h-dvh bg-slate-950 text-slate-100">
+        <div className="min-h-dvh bg-slate-50 text-slate-900">
           <div className="container mx-auto py-8 px-4 max-w-2xl animate-fade-up">
-            <Card className="p-6 sm:p-8 space-y-5 bg-slate-900 border-slate-800 text-slate-100">
+            <Card className="p-6 sm:p-8 space-y-5 bg-white border-slate-200 text-slate-900">
               <div className="text-center space-y-2">
                 <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
                 <h1 className="text-2xl font-bold">Scorecard</h1>
-                <p className="text-slate-400 text-sm">{grade}</p>
+                <p className="text-slate-500 text-sm">{grade}</p>
               </div>
               <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="rounded-lg border border-slate-700 p-3"><div className="text-xs text-slate-400">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
-                <div className="rounded-lg border border-slate-700 p-3"><div className="text-xs text-slate-400">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
-                <div className="rounded-lg border border-accent/40 p-3 bg-accent/10"><div className="text-xs text-slate-300">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
+                <div className="rounded-lg border border-slate-300 p-3"><div className="text-xs text-slate-500">DSA</div><div className="text-2xl font-extrabold">{dsaScore}/{DSA_QUESTIONS.length}</div></div>
+                <div className="rounded-lg border border-slate-300 p-3"><div className="text-xs text-slate-500">Coding</div><div className="text-2xl font-extrabold">{codeScore}/{PROBLEMS.length}</div></div>
+                <div className="rounded-lg border border-accent/40 p-3 bg-accent/10"><div className="text-xs text-slate-600">Overall</div><div className="text-2xl font-extrabold">{pct}%</div></div>
               </div>
               {warnings > 0 && (
                 <div className="text-xs rounded border border-destructive/40 bg-destructive/10 p-2 text-destructive text-center">
@@ -456,7 +456,7 @@ function CodingExamPage() {
                 </div>
               )}
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                <Link to="/candidate/results"><Button variant="outline" className="w-full sm:w-auto border-slate-700 text-slate-200 hover:bg-slate-800">View in Results</Button></Link>
+                <Link to="/candidate/results"><Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-100">View in Results</Button></Link>
                 <Link to="/candidate/dashboard"><Button className="w-full sm:w-auto">Back to dashboard</Button></Link>
               </div>
             </Card>
@@ -470,7 +470,7 @@ function CodingExamPage() {
   const editorKey = `${currentProblem.id}:${lang}`;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 select-none" onCopy={(e) => e.preventDefault()} onPaste={(e) => e.preventDefault()}>
+    <div className="min-h-screen bg-slate-50 text-slate-900 select-none" onCopy={(e) => e.preventDefault()} onPaste={(e) => e.preventDefault()}>
       <ExamWatermark label={wmLabel} />
       {/* Live proctor PIP */}
       <div className="fixed bottom-3 right-3 z-40 w-28 sm:w-36 aspect-video rounded-md overflow-hidden border-2 border-accent shadow-elegant bg-black pointer-events-none">
@@ -479,20 +479,20 @@ function CodingExamPage() {
       </div>
 
       {/* IDE-style top bar */}
-      <div className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur border-b border-slate-800">
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200">
         <div className="container mx-auto max-w-6xl px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2 font-bold text-sm">
             <Code2 className="h-4 w-4 text-accent" /> Pariksha Secured IDE
           </div>
-          <Badge variant="secondary" className="gap-1 bg-slate-800 text-slate-100 border-slate-700"><Timer className="h-3 w-3" /> {mins}:{secs}</Badge>
-          <Badge variant="outline" className="gap-1 border-slate-700 text-slate-200"><BookOpen className="h-3 w-3" /> DSA {Object.keys(dsaAnswers).length}/{DSA_QUESTIONS.length}</Badge>
-          <Badge variant="outline" className="gap-1 border-slate-700 text-slate-200"><Code2 className="h-3 w-3" /> Code {codeScore}/{PROBLEMS.length}</Badge>
+          <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-900 border-slate-300"><Timer className="h-3 w-3" /> {mins}:{secs}</Badge>
+          <Badge variant="outline" className="gap-1 border-slate-300 text-slate-700"><BookOpen className="h-3 w-3" /> DSA {Object.keys(dsaAnswers).length}/{DSA_QUESTIONS.length}</Badge>
+          <Badge variant="outline" className="gap-1 border-slate-300 text-slate-700"><Code2 className="h-3 w-3" /> Code {codeScore}/{PROBLEMS.length}</Badge>
           {warnings > 0 && (
             <Badge className="gap-1 bg-destructive/20 text-destructive border-destructive/40"><AlertTriangle className="h-3 w-3" /> {warnings}/2 warnings</Badge>
           )}
           <div className="ml-auto flex gap-2">
             {phase === "dsa" && (
-              <Button size="sm" variant="outline" className="border-slate-700 text-slate-200 hover:bg-slate-800" onClick={() => setPhase("code")}>
+              <Button size="sm" variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setPhase("code")}>
                 Skip to coding <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             )}
@@ -505,7 +505,7 @@ function CodingExamPage() {
 
       <div className="container mx-auto py-4 sm:py-6 px-3 sm:px-4 max-w-6xl">
         {phase === "dsa" && (
-          <Card className="p-4 sm:p-6 space-y-4 bg-slate-900 border-slate-800 text-slate-100">
+          <Card className="p-4 sm:p-6 space-y-4 bg-white border-slate-200 text-slate-900">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-lg sm:text-xl font-bold">DSA Question {dsaIdx + 1}/{DSA_QUESTIONS.length}</h2>
               <Progress value={((dsaIdx + 1) / DSA_QUESTIONS.length) * 100} className="h-2 max-w-[140px]" />
@@ -518,7 +518,7 @@ function CodingExamPage() {
                   <button
                     key={i}
                     onClick={() => setDsaAnswers((a) => ({ ...a, [DSA_QUESTIONS[dsaIdx].id]: i }))}
-                    className={`text-left rounded-md border px-3 py-2 text-sm transition ${selected ? "bg-accent text-accent-foreground border-accent" : "bg-slate-950 border-slate-700 hover:bg-slate-800"}`}
+                    className={`text-left rounded-md border px-3 py-2 text-sm transition ${selected ? "bg-accent text-accent-foreground border-accent" : "bg-slate-50 border-slate-300 hover:bg-slate-100"}`}
                   >
                     <span className="font-semibold mr-2">{String.fromCharCode(65 + i)}.</span>{opt}
                   </button>
@@ -526,7 +526,7 @@ function CodingExamPage() {
               })}
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
-              <Button variant="outline" className="border-slate-700 text-slate-200 hover:bg-slate-800" disabled={dsaIdx === 0} onClick={() => setDsaIdx((i) => i - 1)}>
+              <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" disabled={dsaIdx === 0} onClick={() => setDsaIdx((i) => i - 1)}>
                 <ArrowLeft className="mr-1 h-4 w-4" /> Previous
               </Button>
               {dsaIdx < DSA_QUESTIONS.length - 1 ? (
@@ -545,22 +545,22 @@ function CodingExamPage() {
         {phase === "code" && (
           <div className="grid gap-4 lg:grid-cols-[1fr_1.3fr]">
             {/* problem panel */}
-            <Card className="p-4 sm:p-5 space-y-3 bg-slate-900 border-slate-800 text-slate-100">
+            <Card className="p-4 sm:p-5 space-y-3 bg-white border-slate-200 text-slate-900">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="bg-accent text-accent-foreground">Problem {probIdx + 1}/{PROBLEMS.length}</Badge>
                 <h2 className="text-lg font-bold">{currentProblem.title}</h2>
               </div>
-              <p className="text-sm text-slate-300 whitespace-pre-wrap">{currentProblem.description}</p>
-              <div className="text-xs uppercase font-semibold tracking-wide text-slate-400">Sample tests</div>
-              <ul className="text-xs space-y-1 font-mono bg-slate-950 border border-slate-800 rounded p-2">
+              <p className="text-sm text-slate-600 whitespace-pre-wrap">{currentProblem.description}</p>
+              <div className="text-xs uppercase font-semibold tracking-wide text-slate-500">Sample tests</div>
+              <ul className="text-xs space-y-1 font-mono bg-slate-50 border border-slate-200 rounded p-2">
                 {currentProblem.tests.map((t, i) => (
-                  <li key={i} className="text-slate-300">
+                  <li key={i} className="text-slate-600">
                     in: {JSON.stringify(t.input)} → out: {JSON.stringify(t.expected)}
                   </li>
                 ))}
               </ul>
               <div className="flex flex-wrap gap-2 pt-2">
-                <Button variant="outline" size="sm" className="border-slate-700 text-slate-200 hover:bg-slate-800" disabled={probIdx === 0} onClick={() => setProbIdx((i) => i - 1)}>
+                <Button variant="outline" size="sm" className="border-slate-300 text-slate-700 hover:bg-slate-100" disabled={probIdx === 0} onClick={() => setProbIdx((i) => i - 1)}>
                   <ArrowLeft className="mr-1 h-4 w-4" /> Prev
                 </Button>
                 {probIdx < PROBLEMS.length - 1 ? (
@@ -576,16 +576,16 @@ function CodingExamPage() {
             </Card>
 
             {/* workspace + compiler */}
-            <Card className="p-3 sm:p-4 space-y-3 bg-slate-900 border-slate-800 text-slate-100">
+            <Card className="p-3 sm:p-4 space-y-3 bg-white border-slate-200 text-slate-900">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-xs uppercase font-semibold tracking-wide text-slate-400 flex items-center gap-1">
+                <div className="text-xs uppercase font-semibold tracking-wide text-slate-500 flex items-center gap-1">
                   <Code2 className="h-3.5 w-3.5" /> Workspace
                 </div>
                 <div className="flex items-center gap-2">
                   <select
                     value={lang}
                     onChange={(e) => setLang(e.target.value as Lang)}
-                    className="bg-slate-950 border border-slate-700 text-slate-100 text-xs rounded px-2 py-1"
+                    className="bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded px-2 py-1"
                     aria-label="Language"
                   >
                     <option value="javascript">JavaScript</option>
@@ -599,19 +599,19 @@ function CodingExamPage() {
                 </div>
               </div>
               <div className="relative">
-                <div className="absolute top-0 left-0 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded-br bg-slate-800 text-slate-400 font-mono z-10">
+                <div className="absolute top-0 left-0 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded-br bg-slate-100 text-slate-500 font-mono z-10">
                   {lang === "cpp" ? "main.cpp" : lang === "c" ? "main.c" : lang === "python" ? "main.py" : "main.js"}
                 </div>
                 <Textarea
                   value={codeByKey[editorKey] ?? ""}
                   onChange={(e) => setCodeByKey((c) => ({ ...c, [editorKey]: e.target.value }))}
                   spellCheck={false}
-                  className="font-mono text-xs sm:text-sm min-h-[300px] sm:min-h-[400px] resize-y bg-slate-950 text-slate-100 border-slate-800 pt-6 leading-relaxed"
+                  className="font-mono text-xs sm:text-sm min-h-[300px] sm:min-h-[400px] resize-y bg-slate-50 text-slate-900 border-slate-200 pt-6 leading-relaxed"
                 />
               </div>
               <div>
-                <div className="text-xs uppercase font-semibold tracking-wide text-slate-400 mb-1">Console output</div>
-                <div className="font-mono text-xs bg-black text-slate-100 rounded p-2 min-h-[120px] whitespace-pre-wrap break-words border border-slate-800">
+                <div className="text-xs uppercase font-semibold tracking-wide text-slate-500 mb-1">Console output</div>
+                <div className="font-mono text-xs bg-slate-950 text-slate-100 rounded p-2 min-h-[120px] whitespace-pre-wrap break-words border border-slate-800">
                   {results[currentProblem.id]?.logs.length
                     ? results[currentProblem.id].logs.map((l, i) => (
                         <div key={i} className="flex items-start gap-1">
@@ -624,7 +624,7 @@ function CodingExamPage() {
                     : <span className="text-slate-500">$ run to compile and execute against test cases…</span>}
                 </div>
                 {results[currentProblem.id] && (
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-500 mt-1">
                     Passed {results[currentProblem.id].passed}/{results[currentProblem.id].total} cases.
                   </div>
                 )}

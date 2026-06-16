@@ -124,6 +124,11 @@ function LandingPage() {
               </Card>
             </div>
 
+            {/* Subtle disclaimer */}
+            <p className="mt-6 mx-auto max-w-2xl text-[11px] text-muted-foreground/70 italic">
+              Note: figures shown are forward-looking projections meant to help candidates visualise the platform's scale. Live institutional rollouts will replace these with real-time data.
+            </p>
+
             {/* At a glance — quick facts */}
             <div className="mt-10 grid grid-cols-1 gap-3 max-w-4xl mx-auto text-left sm:grid-cols-2 md:grid-cols-4">
               {[
