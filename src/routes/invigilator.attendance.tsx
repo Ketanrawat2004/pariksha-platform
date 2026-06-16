@@ -21,6 +21,7 @@ export const Route = createFileRoute("/invigilator/attendance")({
 
 function AttendancePage() {
   const [q, setQ] = useState("");
+  useRealtimeTables(["registrations"], [["invig-attendance"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-attendance"],
     queryFn: async () => {
