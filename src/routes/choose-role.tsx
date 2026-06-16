@@ -57,7 +57,7 @@ function ChooseRolePage() {
     setSubmitting(role);
     const { error } = await supabase.rpc("assign_signup_role", {
       _role: role,
-      _staff_code: code ?? null,
+      _staff_code: code ?? undefined,
     });
     setSubmitting(null);
     if (error) {
