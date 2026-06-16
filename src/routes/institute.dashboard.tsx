@@ -152,7 +152,7 @@ function InstitutePage() {
 
   useRealtimeTables(
     ["paper_submissions", "paper_registrations", "trishield_watch_sessions"],
-    [["paper-submissions", user?.id ?? ""], ["trishield-live-by-paper"]],
+    [["paper-submissions", user?.id], ["trishield-live-by-paper"]],
   );
 
   const { data: subs, isLoading } = useQuery({
