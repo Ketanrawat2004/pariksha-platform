@@ -231,9 +231,19 @@ function RegisterPage() {
                     <Input id="staffCode" {...register("staffCode")} placeholder="Enter the code issued to you" aria-invalid={!!errors.staffCode} autoComplete="off" />
                     {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
                   </div>
-                  <div className="rounded-md border border-border bg-background p-3 text-xs text-muted-foreground">
-                    {STAFF_DEMO_CODES[role]?.note} {(role === "admin" || role === "superadmin") && (
+                  <div className="rounded-md border border-border bg-background p-3 text-xs text-muted-foreground space-y-2">
+                    <div>{STAFF_DEMO_CODES[role]?.note} {(role === "admin" || role === "superadmin") && (
                       <Link to="/login" className="font-semibold text-accent hover:underline">Open demo sign-in</Link>
+                    )}</div>
+                    {STAFF_DEMO_CODES[role]?.code && (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <code className="rounded bg-yellow-100 dark:bg-yellow-500/15 px-2 py-1 font-mono text-yellow-900 dark:text-yellow-200 font-semibold">{STAFF_DEMO_CODES[role]!.code}</code>
+                        <button
+                          type="button"
+                          className="text-accent hover:underline font-medium"
+                          onClick={() => setValue("staffCode", STAFF_DEMO_CODES[role]!.code!, { shouldValidate: true })}
+                        >Use this code</button>
+                      </div>
                     )}
                   </div>
                 </div>
