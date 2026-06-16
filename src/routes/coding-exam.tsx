@@ -611,7 +611,7 @@ function CodingExamPage() {
               </div>
               <div>
                 <div className="text-xs uppercase font-semibold tracking-wide text-slate-500 mb-1">Console output</div>
-                <div className="font-mono text-xs bg-black text-slate-900 rounded p-2 min-h-[120px] whitespace-pre-wrap break-words border border-slate-200">
+                <div className="font-mono text-xs bg-slate-950 text-slate-100 rounded p-2 min-h-[120px] whitespace-pre-wrap break-words border border-slate-800">
                   {results[currentProblem.id]?.logs.length
                     ? results[currentProblem.id].logs.map((l, i) => (
                         <div key={i} className="flex items-start gap-1">
