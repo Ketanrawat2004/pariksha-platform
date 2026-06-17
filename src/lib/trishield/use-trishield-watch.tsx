@@ -37,6 +37,15 @@ function buildFingerprint() {
   };
 }
 
+function generateJoinCode() {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i += 1) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
 interface InitOptions {
   party: WatchParty;
   paperSubmissionId?: string | null;
@@ -139,11 +148,11 @@ export function useTriShieldWatch(opts: InitOptions) {
             if (!cancelled && data) setSession(data as any);
           } else {
             // Generate a 6-char join code via RPC so admins/superadmins can pair this session
-            let joinCode: string | null = null;
+            let joinCode: string | null = generateJoinCode();
             try {
               const { data: codeData } = await supabase.rpc("generate_trishield_join_code" as any);
               if (typeof codeData === "string") joinCode = codeData;
-            } catch { /* fall through, server will allow null */ }
+            } catch { /* client fallback keeps the join-code display available */ }
             const { data, error } = await supabase
               .from("trishield_watch_sessions" as any)
               .insert({

@@ -6,13 +6,20 @@ interface FaceCaptureProps {
   onCapture: (dataUrl: string) => void;
   initial?: string | null;
   className?: string;
+  autoStart?: boolean;
 }
 
 /** Reusable in-browser webcam capture. Returns a JPEG data URL. */
-export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps) {
+export function FaceCapture({
+  onCapture,
+  initial,
+  className,
+  autoStart = false,
+}: FaceCaptureProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const autoStartedRef = useRef(false);
   const [photo, setPhoto] = useState<string | null>(initial ?? null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [starting, setStarting] = useState(false);
@@ -20,12 +27,20 @@ export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps)
 
   useEffect(() => () => stopStream(), []);
 
+  useEffect(() => {
+    if (!autoStart || autoStartedRef.current || photo || stream || starting) return;
+    autoStartedRef.current = true;
+    void start();
+  }, [autoStart, photo, stream, starting]);
+
   // Attach stream when both <video> element and stream are ready
   useEffect(() => {
     const v = videoRef.current;
     if (v && stream && v.srcObject !== stream) {
       v.srcObject = stream;
-      v.play().catch(() => { /* autoplay may need another tick */ });
+      v.play().catch(() => {
+        /* autoplay may need another tick */
+      });
     }
   }, [stream]);
 
@@ -47,12 +62,18 @@ export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps)
       });
       streamRef.current = s;
       setStream(s); // triggers effect that attaches to <video>
-    } catch (e: any) {
-      const name = e?.name ?? "";
-      if (name === "NotAllowedError") setErr("Permission denied. Allow camera access in your browser settings.");
-      else if (name === "NotFoundError" || name === "DevicesNotFoundError") setErr("No camera detected on this device.");
-      else if (name === "NotReadableError" || name === "TrackStartError") setErr("Camera is busy in another app. Close other tabs/apps and retry.");
-      else setErr(e?.message ?? "Could not access camera");
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : null;
+      const name = error?.name ?? "";
+      if (name === "NotAllowedError") {
+        setErr("Permission denied. Allow camera access in your browser settings.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        setErr("No camera detected on this device.");
+      } else if (name === "NotReadableError" || name === "TrackStartError") {
+        setErr("Camera is busy in another app. Close other tabs/apps and retry.");
+      } else {
+        setErr(error?.message ?? "Could not access camera");
+      }
     } finally {
       setStarting(false);
     }
@@ -102,7 +123,11 @@ export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps)
       <div className="mt-3 flex gap-2">
         {!photo && !streaming && (
           <Button type="button" onClick={start} disabled={starting} size="sm">
-            {starting ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Camera className="h-4 w-4 mr-1.5" />}
+            {starting ? (
+              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+            ) : (
+              <Camera className="h-4 w-4 mr-1.5" />
+            )}
             Start camera
           </Button>
         )}
