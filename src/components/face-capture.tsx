@@ -6,19 +6,27 @@ interface FaceCaptureProps {
   onCapture: (dataUrl: string) => void;
   initial?: string | null;
   className?: string;
+  autoStart?: boolean;
 }
 
 /** Reusable in-browser webcam capture. Returns a JPEG data URL. */
-export function FaceCapture({ onCapture, initial, className }: FaceCaptureProps) {
+export function FaceCapture({ onCapture, initial, className, autoStart = false }: FaceCaptureProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const autoStartedRef = useRef(false);
   const [photo, setPhoto] = useState<string | null>(initial ?? null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [starting, setStarting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => () => stopStream(), []);
+
+  useEffect(() => {
+    if (!autoStart || autoStartedRef.current || photo || stream || starting) return;
+    autoStartedRef.current = true;
+    void start();
+  }, [autoStart, photo, stream, starting]);
 
   // Attach stream when both <video> element and stream are ready
   useEffect(() => {
