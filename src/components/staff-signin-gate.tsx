@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AppRole } from "@/lib/auth/auth-context";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 import { toast } from "sonner";
@@ -25,7 +31,10 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!requires) { setVerified(true); return; }
+    if (!requires) {
+      setVerified(true);
+      return;
+    }
     setVerified(!!(sessionKey && sessionStorage.getItem(sessionKey)));
   }, [requires, sessionKey]);
 
@@ -34,13 +43,17 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
       if (event === "SIGNED_IN" && user) {
         const prefix = `${STAFF_IDENTITY_PREFIX}:${user.id}:`;
         Object.keys(sessionStorage).forEach((key) => {
-          if (key.startsWith(prefix) || key.startsWith(`pariksha:signin-photo:${user.id}:`)) sessionStorage.removeItem(key);
+          if (key.startsWith(prefix) || key.startsWith(`pariksha:signin-photo:${user.id}:`)) {
+            sessionStorage.removeItem(key);
+          }
         });
         setVerified(false);
         setPhoto("");
       }
     });
-    return () => { sub.subscription.unsubscribe(); };
+    return () => {
+      sub.subscription.unsubscribe();
+    };
   }, [user]);
 
   async function submit() {
@@ -50,19 +63,24 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
       const role = roles.find((r) => STAFF_ROLES.includes(r))!;
       const path = `${user.id}/signins/${Date.now()}.jpg`;
       const blob = dataUrlToBlob(photo);
-      const { error: upErr } = await supabase.storage.from("face-photos").upload(path, blob, { contentType: "image/jpeg", upsert: false });
+      const { error: upErr } = await supabase.storage
+        .from("face-photos")
+        .upload(path, blob, { contentType: "image/jpeg", upsert: false });
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from("face-photos").getPublicUrl(path);
       const photo_url = pub.publicUrl;
       const { error: rowErr } = await supabase.from("staff_signin_photos").insert({
-        user_id: user.id, role, photo_url, user_agent: navigator.userAgent,
+        user_id: user.id,
+        role,
+        photo_url,
+        user_agent: navigator.userAgent,
       });
       if (rowErr) throw rowErr;
       sessionStorage.setItem(sessionKey, "1");
       setVerified(true);
       toast.success("Sign-in identity recorded");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to record sign-in photo");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to record sign-in photo");
     } finally {
       setBusy(false);
     }
@@ -71,7 +89,12 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   if (!requires || verified) return <>{children}</>;
 
   return (
-    <Dialog open onOpenChange={() => { /* mandatory — no dismiss */ }}>
+    <Dialog
+      open
+      onOpenChange={() => {
+        /* mandatory — no dismiss */
+      }}
+    >
       <DialogContent
         showCloseButton={false}
         className="max-w-[560px] gap-4 rounded-lg p-5 sm:p-8"
@@ -85,11 +108,16 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
             <span>Sign-in identity check</span>
           </DialogTitle>
           <DialogDescription className="text-base leading-relaxed text-muted-foreground">
-            For audit and integrity, capture a live photo. Your photo and sign-in time are stored in the secure vault.
+            For audit and integrity, capture a live photo. Your photo and sign-in time are
+            stored in the secure vault.
           </DialogDescription>
         </DialogHeader>
         <FaceCapture onCapture={setPhoto} className="staff-identity-capture" autoStart />
-        <Button onClick={submit} disabled={!photo || busy} className="h-12 w-full text-base font-semibold">
+        <Button
+          onClick={submit}
+          disabled={!photo || busy}
+          className="h-12 w-full text-base font-semibold"
+        >
           {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           Continue to dashboard
         </Button>
