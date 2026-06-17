@@ -108,8 +108,8 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
             <span>Sign-in identity check</span>
           </DialogTitle>
           <DialogDescription className="text-base leading-relaxed text-muted-foreground">
-            For audit and integrity, capture a live photo. Your photo and sign-in time are
-            stored in the secure vault.
+            For audit and integrity, capture a live photo. Your photo and sign-in time are stored in
+            the secure vault.
           </DialogDescription>
         </DialogHeader>
         <FaceCapture onCapture={setPhoto} className="staff-identity-capture" autoStart />
