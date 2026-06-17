@@ -99,10 +99,10 @@ function LandingPage() {
                 <Link to="/give-exam"><PlayCircle className="mr-2 h-5 w-5" /> Give Exam</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto">
-                <Link to="/register">Create your account <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Link to="/register">Register as Candidate <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
               <Button size="lg" variant="ghost" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto">
-                <Link to="/login">Sign in</Link>
+                <Link to="/login">Institution Login</Link>
               </Button>
             </div>
 
@@ -319,8 +319,8 @@ function LandingPage() {
             <h2 className="text-3xl md:text-5xl font-bold">Stop the cheating. Start the trust.</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">Join the institutions building India's next generation of fair, verifiable examinations.</p>
             <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Button size="lg" asChild className="h-auto w-full whitespace-normal py-3 shadow-elegant sm:w-auto"><Link to="/register">Create your account</Link></Button>
-              <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto"><Link to="/login">Sign in</Link></Button>
+              <Button size="lg" asChild className="h-auto w-full whitespace-normal py-3 shadow-elegant sm:w-auto"><Link to="/register">Register as Candidate</Link></Button>
+              <Button size="lg" variant="outline" asChild className="h-auto w-full whitespace-normal py-3 sm:w-auto"><Link to="/login">Institution Login</Link></Button>
             </div>
           </div>
         </section>

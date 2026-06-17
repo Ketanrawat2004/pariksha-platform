@@ -52,9 +52,6 @@ export function SupportContactForm() {
         <p className="text-primary-foreground/75 text-xs">
           Save this case reference. Our team replies within 1 business hour on exam days.
         </p>
-        <p className="text-primary-foreground/70 text-[11px] leading-snug">
-          📩 The admin's reply will appear in your <span className="font-semibold text-accent">Candidate → Notifications</span> page once you sign in.
-        </p>
         <div className="flex items-center gap-2 rounded-lg bg-black/30 px-3 py-2 font-mono text-sm">
           <span className="flex-1 truncate">{caseRef}</span>
           <button

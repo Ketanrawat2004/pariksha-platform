@@ -51,8 +51,8 @@ function ReportsPage() {
 
   return (
     <>
-      <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
-        <BarChart3 className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Reports</span>
+      <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+        <BarChart3 className="h-7 w-7 text-accent" /> Reports
       </h1>
       <p className="text-muted-foreground mt-1 mb-6">Cross-cutting analytics and the latest published results.</p>
 
@@ -80,8 +80,8 @@ function ReportsPage() {
           </Card>
         ) : (
           data!.results.map((r) => (
-            <Card key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-3 sm:flex sm:flex-wrap">
-              <div className="min-w-0 truncate font-medium sm:flex-1 sm:min-w-[180px]">{examMap.get(r.exam_id) ?? "Exam"}</div>
+            <Card key={r.id} className="p-3 flex flex-wrap items-center gap-3">
+              <div className="flex-1 min-w-[180px] font-medium">{examMap.get(r.exam_id) ?? "Exam"}</div>
               <Badge variant={r.pass_fail ? "default" : "destructive"} className="text-[10px] uppercase">
                 {r.pass_fail ? "Pass" : "Fail"}
               </Badge>

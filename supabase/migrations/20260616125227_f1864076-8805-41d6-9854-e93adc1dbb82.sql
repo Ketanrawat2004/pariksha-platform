@@ -1,1 +1,0 @@
-REVOKE EXECUTE ON FUNCTION public.notify_support_reply() FROM PUBLIC, anon, authenticated;
