@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AppRole } from "@/lib/auth/auth-context";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 import { toast } from "sonner";
@@ -70,32 +70,27 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   if (!requires || verified) return <>{children}</>;
 
   return (
-    <Dialog open onOpenChange={() => { /* required — no dismiss */ }}>
+    <Dialog open onOpenChange={() => { /* mandatory — no dismiss */ }}>
       <DialogContent
-        className="max-w-md [&>button]:hidden"
+        showCloseButton={false}
+        className="max-w-[560px] gap-4 rounded-lg p-5 sm:p-8"
         onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-accent" /> Sign-in identity check (required)
+        <DialogHeader className="space-y-3 text-left">
+          <DialogTitle className="flex items-center gap-3 text-2xl font-bold tracking-tight">
+            <ShieldCheck className="h-6 w-6 shrink-0 text-accent" />
+            <span>Sign-in identity check</span>
           </DialogTitle>
+          <DialogDescription className="text-base leading-relaxed text-muted-foreground">
+            For audit and integrity, capture a live photo. Your photo and sign-in time are stored in the secure vault.
+          </DialogDescription>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          Staff dashboards require a live photo per session. Your photo and sign-in time are stored in the secure audit vault.
-        </p>
-        <FaceCapture onCapture={setPhoto} />
-        <Button onClick={submit} disabled={!photo || busy} className="w-full">
+        <FaceCapture onCapture={setPhoto} className="staff-identity-capture" />
+        <Button onClick={submit} disabled={!photo || busy} className="h-12 w-full text-base font-semibold">
           {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-          Verify & continue
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={async () => { await supabase.auth.signOut(); window.location.assign("/login"); }}
-          className="w-full text-muted-foreground"
-        >
-          Sign out instead
+          Continue to dashboard
         </Button>
       </DialogContent>
     </Dialog>
