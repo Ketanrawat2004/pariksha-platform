@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShieldCheck, Loader2 } from "lucide-react";
 
 const STAFF_ROLES: AppRole[] = ["admin", "superadmin", "invigilator", "institute"];
+const STAFF_IDENTITY_PREFIX = "pariksha:staff-identity:v2";
 
 /**
  * Blocks staff (admin/superadmin/invigilator/institute) from accessing their
@@ -18,7 +19,7 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   const { session, user, roles } = useAuth();
   const requires = roles.some((r) => STAFF_ROLES.includes(r));
   const signInStamp = user?.last_sign_in_at ?? session?.expires_at ?? "current";
-  const sessionKey = user ? `pariksha:signin-photo:${user.id}:${signInStamp}` : "";
+  const sessionKey = user ? `${STAFF_IDENTITY_PREFIX}:${user.id}:${signInStamp}` : "";
   const [verified, setVerified] = useState(false);
   const [photo, setPhoto] = useState("");
   const [busy, setBusy] = useState(false);
@@ -31,9 +32,9 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN" && user) {
-        const prefix = `pariksha:signin-photo:${user.id}:`;
+        const prefix = `${STAFF_IDENTITY_PREFIX}:${user.id}:`;
         Object.keys(sessionStorage).forEach((key) => {
-          if (key.startsWith(prefix)) sessionStorage.removeItem(key);
+          if (key.startsWith(prefix) || key.startsWith(`pariksha:signin-photo:${user.id}:`)) sessionStorage.removeItem(key);
         });
         setVerified(false);
         setPhoto("");
