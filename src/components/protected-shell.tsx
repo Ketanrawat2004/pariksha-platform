@@ -76,7 +76,7 @@ export function ProtectedShell({ children, requireRoles }: { children: ReactNode
     await queryClient.cancelQueries();
     queryClient.clear();
     Object.keys(sessionStorage).forEach((key) => {
-      if (key.startsWith("pariksha:signin-photo:")) sessionStorage.removeItem(key);
+      if (key.startsWith("pariksha:signin-photo:") || key.startsWith("pariksha:staff-identity:")) sessionStorage.removeItem(key);
     });
     await signOut();
     navigate({ to: "/login", replace: true });
