@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { useNavigate, Link, useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth, type AppRole } from "@/lib/auth/auth-context";
 import { LogOut, Loader2, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/admin/candidates", label: "Candidates" },
     { to: "/admin/integrity", label: "Integrity" },
     { to: "/admin/reports", label: "Reports" },
+    { to: "/admin/support", label: "Support" },
   ],
   superadmin: [
     { to: "/superadmin/dashboard", label: "Overview" },
@@ -37,6 +39,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/superadmin/audit-log", label: "Audit Log" },
     { to: "/superadmin/paper-leak-detector", label: "Leak Detector" },
     { to: "/superadmin/system", label: "System" },
+    { to: "/admin/support", label: "Support" },
   ],
   institute: [
     { to: "/institute/dashboard", label: "Dashboard" },
@@ -46,6 +49,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
 export function ProtectedShell({ children, requireRoles }: { children: ReactNode; requireRoles: AppRole[] }) {
   const { user, loading, rolesLoading, roles, signOut, hasAnyRole } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { location } = useRouterState();
 
   useEffect(() => {
@@ -68,21 +72,31 @@ export function ProtectedShell({ children, requireRoles }: { children: ReactNode
   const primaryRole = requireRoles.find((r) => roles.includes(r)) ?? roles[0]!;
   const nav = navByRole[primaryRole] ?? [];
 
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith("pariksha:signin-photo:")) sessionStorage.removeItem(key);
+    });
+    await signOut();
+    navigate({ to: "/login", replace: true });
+  };
+
   return (
     <div className="min-h-dvh flex flex-col bg-secondary/30">
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold">
-            <ParikshaLogo className="h-9 w-9" />
-            <span>Pariksha</span>
+        <div className="mx-auto grid min-h-16 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2 sm:px-6">
+          <Link to="/" className="flex min-w-0 items-center gap-2 font-bold">
+            <ParikshaLogo className="h-9 w-9 shrink-0" />
+            <span className="truncate">Pariksha</span>
             <span className="hidden sm:inline-block ml-2 text-xs uppercase tracking-wider rounded-full bg-accent/10 text-accent px-2 py-0.5 font-semibold">{primaryRole}</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/candidate/notifications" aria-label="Notifications" className="p-2 rounded-md hover:bg-muted">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <Link to="/candidate/notifications" aria-label="Notifications" className="rounded-md p-2 hover:bg-muted">
               <Bell className="h-4 w-4" />
             </Link>
-            <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate({ to: "/" }); }}>
-              <LogOut className="h-4 w-4 mr-1" /> Sign out
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="px-2 sm:px-3">
+              <LogOut className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Sign out</span>
             </Button>
           </div>
         </div>
@@ -100,7 +114,7 @@ export function ProtectedShell({ children, requireRoles }: { children: ReactNode
           </div>
         </nav>
       </header>
-      <main id="main-content" className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-8">
+      <main id="main-content" className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-5 sm:py-8">
         <StaffSigninGate>{children}</StaffSigninGate>
       </main>
     </div>

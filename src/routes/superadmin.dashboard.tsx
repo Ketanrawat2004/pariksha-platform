@@ -13,9 +13,9 @@ export const Route = createFileRoute("/superadmin/dashboard")({
   component: () => (
     <ProtectedShell requireRoles={["superadmin"]}>
       <StaffWatchBanner party="superadmin" />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-bold">National overview</h1>
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-bold sm:text-3xl">National overview</h1>
           <p className="text-muted-foreground mt-1">Review paper edit requests and oversee TriShield sessions across the network.</p>
         </div>
         <ActivityReportButton role="superadmin" />

@@ -49,8 +49,8 @@ function IntegrityPage() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-        <ShieldAlert className="h-7 w-7 text-accent" /> Integrity Events
+      <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
+        <ShieldAlert className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Integrity Events</span>
       </h1>
       <p className="text-muted-foreground mt-1 mb-6">Real-time signals from every exam session — tab-switch, copy, devtools, multi-face, prohibited objects.</p>
 
@@ -70,12 +70,12 @@ function IntegrityPage() {
           </Card>
         ) : (
           (data ?? []).map((e) => (
-            <Card key={e.id} className="p-3 flex flex-wrap items-center gap-3">
+            <Card key={e.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 p-3 sm:flex sm:flex-wrap">
               <Badge variant={(sevColor[e.severity] ?? "outline") as never} className="text-[10px] uppercase">
                 {e.severity}
               </Badge>
-              <div className="font-mono text-sm">{e.event_type}</div>
-              <div className="text-xs text-muted-foreground truncate flex-1 min-w-[140px]">
+              <div className="min-w-0 truncate font-mono text-sm">{e.event_type}</div>
+              <div className="min-w-0 truncate text-xs text-muted-foreground sm:flex-1 sm:min-w-[140px]">
                 session {e.session_id?.slice(0, 8)}…
               </div>
               {e.auto_resolved && <Badge variant="outline" className="text-[10px]">auto-resolved</Badge>}
