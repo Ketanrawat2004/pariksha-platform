@@ -47,8 +47,8 @@ export function StaffWatchBanner({ party }: { party: "admin" | "superadmin" }) {
       <div className="-mx-4 mb-4 grid grid-cols-[minmax(0,1fr)] items-center gap-3 border-y border-destructive/30 bg-destructive/10 px-4 py-3 sm:-mx-6 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6">
         <ShieldAlert className="h-5 w-5 shrink-0 text-destructive" />
         <div className="min-w-0 text-sm">
-          <strong>TriShield LiveWatch</strong> — Enter the join code from the institute to
-          monitor their paper session in real time.
+          <strong>TriShield LiveWatch</strong> — Enter the join code from the institute to monitor
+          their paper session in real time.
         </div>
         <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 sm:flex sm:shrink-0">
           <KeyRound className="h-4 w-4 shrink-0 text-muted-foreground" />
