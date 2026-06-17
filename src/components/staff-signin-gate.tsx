@@ -88,7 +88,7 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
             For audit and integrity, capture a live photo. Your photo and sign-in time are stored in the secure vault.
           </DialogDescription>
         </DialogHeader>
-        <FaceCapture onCapture={setPhoto} className="staff-identity-capture" />
+        <FaceCapture onCapture={setPhoto} className="staff-identity-capture" autoStart />
         <Button onClick={submit} disabled={!photo || busy} className="h-12 w-full text-base font-semibold">
           {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           Continue to dashboard
