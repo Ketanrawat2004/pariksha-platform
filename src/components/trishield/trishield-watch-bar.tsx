@@ -2,7 +2,8 @@ import type { WatchSessionRow } from "@/lib/trishield/use-trishield-watch";
 import { Radio } from "lucide-react";
 
 function Dot({ state }: { state: "off" | "joined" | "live" }) {
-  const cls = state === "live" ? "bg-success" : state === "joined" ? "bg-warning" : "bg-destructive";
+  const cls =
+    state === "live" ? "bg-success" : state === "joined" ? "bg-warning" : "bg-destructive";
   return <span className={`inline-block h-2.5 w-2.5 rounded-full ${cls}`} />;
 }
 
