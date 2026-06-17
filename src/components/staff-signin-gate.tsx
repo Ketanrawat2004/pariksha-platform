@@ -7,26 +7,40 @@ import { FaceCapture, dataUrlToBlob } from "@/components/face-capture";
 import { toast } from "sonner";
 import { ShieldCheck, Loader2 } from "lucide-react";
 
-const STAFF_ROLES: AppRole[] = ["admin", "superadmin", "invigilator"];
+const STAFF_ROLES: AppRole[] = ["admin", "superadmin", "invigilator", "institute"];
 
 /**
- * Blocks staff (admin/superadmin/invigilator) from accessing their dashboard
- * until they capture a fresh sign-in photo for this session.
- * The capture is uploaded to face-photos/signins/<user>/<ts>.jpg and a row
- * is inserted in public.staff_signin_photos with the timestamp.
+ * Blocks staff (admin/superadmin/invigilator/institute) from accessing their
+ * dashboard until they capture a fresh sign-in photo for this session.
+ * Re-prompts on every new sign-in (SIGNED_IN event clears the session marker).
  */
 export function StaffSigninGate({ children }: { children: React.ReactNode }) {
-  const { user, roles } = useAuth();
+  const { session, user, roles } = useAuth();
   const requires = roles.some((r) => STAFF_ROLES.includes(r));
-  const sessionKey = user ? `pariksha:signin-photo:${user.id}` : "";
+  const signInStamp = user?.last_sign_in_at ?? session?.expires_at ?? "current";
+  const sessionKey = user ? `pariksha:signin-photo:${user.id}:${signInStamp}` : "";
   const [verified, setVerified] = useState(false);
   const [photo, setPhoto] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!requires) { setVerified(true); return; }
-    if (sessionKey && sessionStorage.getItem(sessionKey)) setVerified(true);
+    setVerified(!!(sessionKey && sessionStorage.getItem(sessionKey)));
   }, [requires, sessionKey]);
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" && user) {
+        const prefix = `pariksha:signin-photo:${user.id}:`;
+        Object.keys(sessionStorage).forEach((key) => {
+          if (key.startsWith(prefix)) sessionStorage.removeItem(key);
+        });
+        setVerified(false);
+        setPhoto("");
+      }
+    });
+    return () => { sub.subscription.unsubscribe(); };
+  }, [user]);
 
   async function submit() {
     if (!user || !photo) return;
@@ -53,34 +67,37 @@ export function StaffSigninGate({ children }: { children: React.ReactNode }) {
     }
   }
 
-  function skip() {
-    if (sessionKey) sessionStorage.setItem(sessionKey, "skipped");
-    setVerified(true);
-  }
-
   if (!requires || verified) return <>{children}</>;
 
   return (
-    <>
-      {children}
-      <Dialog open onOpenChange={(open) => { if (!open) skip(); }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-accent" /> Sign-in identity check
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            For audit and integrity, capture a live photo. Your photo and sign-in time are stored in the secure vault.
-          </p>
-          <FaceCapture onCapture={setPhoto} />
-          <Button onClick={submit} disabled={!photo || busy} className="w-full">
-            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Continue to dashboard
-          </Button>
-          <Button variant="ghost" size="sm" onClick={skip} className="w-full">Skip for now</Button>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Dialog open onOpenChange={() => { /* required — no dismiss */ }}>
+      <DialogContent
+        className="max-w-md [&>button]:hidden"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-accent" /> Sign-in identity check (required)
+          </DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          Staff dashboards require a live photo per session. Your photo and sign-in time are stored in the secure audit vault.
+        </p>
+        <FaceCapture onCapture={setPhoto} />
+        <Button onClick={submit} disabled={!photo || busy} className="w-full">
+          {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          Verify & continue
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={async () => { await supabase.auth.signOut(); window.location.assign("/login"); }}
+          className="w-full text-muted-foreground"
+        >
+          Sign out instead
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }

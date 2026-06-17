@@ -68,9 +68,12 @@ const ROLE_META: Record<Role, { title: string; desc: string }> = {
 
 // Staff access codes are NEVER embedded in the client bundle. Staff must obtain
 // codes through an authorised out-of-band channel from Pariksha administrators.
-const STAFF_DEMO_CODES: Partial<Record<Role, { note: string }>> = {
-  invigilator: { note: "Invigilator codes are issued out-of-band by Pariksha. Contact your administrator to obtain a code." },
-  institute: { note: "Institute codes are issued out-of-band by Pariksha. Contact your administrator to obtain a code." },
+// Hackathon demo: surface demo access codes inline so panelists can try staff
+// roles without an out-of-band exchange. In production these MUST be removed
+// and codes delivered only via an authorised out-of-band channel.
+const STAFF_DEMO_CODES: Partial<Record<Role, { note: string; code?: string }>> = {
+  invigilator: { note: "Hackathon demo code (for panelists only — remove before launch):", code: "DEMO-INVIG-2026" },
+  institute: { note: "Hackathon demo code (for panelists only — remove before launch):", code: "DEMO-INST-2026" },
   admin: { note: "Admin accounts are approval-only. Use the Admin demo sign-in on the login page." },
   superadmin: { note: "Super Admin accounts are approval-only. Use the Superadmin demo sign-in on the login page." },
 };
@@ -158,7 +161,27 @@ function RegisterPage() {
       toast.success("Verification email sent");
       setDone(true);
     } catch (err: any) {
-      toast.error(err?.message ?? "Could not create account. Please check your details and try again.");
+      const raw = (err?.message ?? "").toLowerCase();
+      const code = (err?.code ?? err?.error_code ?? "").toString().toLowerCase();
+      const isDuplicate =
+        code === "user_already_exists" ||
+        raw.includes("already registered") ||
+        raw.includes("already been registered") ||
+        raw.includes("user already") ||
+        raw.includes("duplicate key");
+      if (isDuplicate) {
+        toast.error(
+          "An account with this email already exists. Try signing in instead.",
+          {
+            action: { label: "Sign in", onClick: () => navigate({ to: "/login" }) },
+            duration: 8000,
+          },
+        );
+        form.setError("email", { message: "Email already registered — sign in instead." });
+        setStep(3);
+      } else {
+        toast.error(err?.message ?? "Could not create account. Please check your details and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -228,9 +251,19 @@ function RegisterPage() {
                     <Input id="staffCode" {...register("staffCode")} placeholder="Enter the code issued to you" aria-invalid={!!errors.staffCode} autoComplete="off" />
                     {errors.staffCode && <p className="mt-1 text-sm text-destructive">{errors.staffCode.message as string}</p>}
                   </div>
-                  <div className="rounded-md border border-border bg-background p-3 text-xs text-muted-foreground">
-                    {STAFF_DEMO_CODES[role]?.note} {(role === "admin" || role === "superadmin") && (
+                  <div className="rounded-md border border-border bg-background p-3 text-xs text-muted-foreground space-y-2">
+                    <div>{STAFF_DEMO_CODES[role]?.note} {(role === "admin" || role === "superadmin") && (
                       <Link to="/login" className="font-semibold text-accent hover:underline">Open demo sign-in</Link>
+                    )}</div>
+                    {STAFF_DEMO_CODES[role]?.code && (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <code className="rounded bg-yellow-100 dark:bg-yellow-500/15 px-2 py-1 font-mono text-yellow-900 dark:text-yellow-200 font-semibold">{STAFF_DEMO_CODES[role]!.code}</code>
+                        <button
+                          type="button"
+                          className="text-accent hover:underline font-medium"
+                          onClick={() => setValue("staffCode", STAFF_DEMO_CODES[role]!.code!, { shouldValidate: true })}
+                        >Use this code</button>
+                      </div>
                     )}
                   </div>
                 </div>

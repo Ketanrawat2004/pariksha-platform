@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeTables } from "@/hooks/use-realtime-tables";
 import { ClipboardCheck, Search, CheckCircle2, Clock } from "lucide-react";
 import { useState, useMemo } from "react";
 
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/invigilator/attendance")({
 
 function AttendancePage() {
   const [q, setQ] = useState("");
+  useRealtimeTables(["registrations"], [["invig-attendance"]]);
   const { data, isLoading } = useQuery({
     queryKey: ["invig-attendance"],
     queryFn: async () => {
@@ -47,10 +49,10 @@ function AttendancePage() {
 
   return (
     <>
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <ClipboardCheck className="h-7 w-7 text-accent" /> Attendance
+      <div className="grid grid-cols-[minmax(0,1fr)] items-end gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="min-w-0">
+          <h1 className="flex min-w-0 items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
+            <ClipboardCheck className="h-7 w-7 shrink-0 text-accent" /> <span className="truncate">Attendance</span>
           </h1>
           <p className="text-muted-foreground mt-1">{(data ?? []).length} registered · {present} present</p>
         </div>
@@ -74,19 +76,19 @@ function AttendancePage() {
             const ex = (r as { exam: { title?: string; exam_date?: string; start_time?: string } | null }).exam;
             const isPresent = r.status === "approved";
             return (
-              <Card key={r.id} className="p-3 flex flex-wrap items-center gap-3">
+              <Card key={r.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 p-3 sm:flex sm:flex-wrap">
                 {isPresent ? (
                   <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
                 ) : (
                   <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
                 )}
-                <div className="flex-1 min-w-[180px]">
-                  <div className="font-semibold leading-tight">{cand?.full_name ?? "Candidate"}</div>
-                  <div className="text-xs text-muted-foreground">{cand?.email}</div>
+                <div className="min-w-0 sm:flex-1">
+                  <div className="truncate font-semibold leading-tight">{cand?.full_name ?? "Candidate"}</div>
+                  <div className="truncate text-xs text-muted-foreground">{cand?.email}</div>
                 </div>
                 <Badge variant="outline" className="font-mono text-[10px]">{r.admit_card_number}</Badge>
                 {r.seat_number && <Badge variant="secondary" className="text-[10px]">Seat {r.seat_number}</Badge>}
-                <div className="text-xs text-muted-foreground truncate min-w-[140px]">{ex?.title} · {ex?.exam_date}</div>
+                <div className="min-w-0 truncate text-xs text-muted-foreground sm:min-w-[140px]">{ex?.title} · {ex?.exam_date}</div>
                 <Badge variant={isPresent ? "default" : "outline"} className="text-[10px] uppercase">{r.status}</Badge>
               </Card>
             );

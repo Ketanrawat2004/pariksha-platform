@@ -56,7 +56,7 @@ export function ChatbotWidget() {
           <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-muted/30">
             {messages.length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-8 px-2">
-                👋 Hi! Ask me about Pariksha, TriShield Vault, exams, or how the platform works.
+                👋 Hi! Ask me about Pariksha, TriShield Vault, exams, or demo logins.
               </div>
             )}
             {messages.map((m) => {
