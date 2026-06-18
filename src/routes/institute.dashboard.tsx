@@ -66,6 +66,62 @@ const DSA_MCQ_BANK: Omit<Question, "id">[] = [
   { text: "Number of edges in a tree with n nodes?", options: ["n", "n-1", "n+1", "2n"], correct: 1, marks: 2 },
 ];
 
+// Subject-aware MCQ banks for non-coding papers so "Add question" inserts a real Q&A
+const SUBJECT_MCQ_BANKS: Record<string, Omit<Question, "id">[]> = {
+  physics: [
+    { text: "SI unit of magnetic flux is", options: ["Tesla", "Weber", "Henry", "Gauss"], correct: 1, marks: 4 },
+    { text: "Dimensional formula of impulse is", options: ["[MLT⁻¹]", "[MLT⁻²]", "[ML²T⁻¹]", "[ML⁰T⁰]"], correct: 0, marks: 4 },
+    { text: "Acceleration due to gravity at Earth's surface ≈", options: ["9.8 m/s²", "8.9 m/s²", "10.8 m/s²", "6.6 m/s²"], correct: 0, marks: 4 },
+    { text: "Speed of light in vacuum is approximately", options: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁵ m/s"], correct: 1, marks: 4 },
+    { text: "Unit of electric current is", options: ["Volt", "Ohm", "Ampere", "Coulomb"], correct: 2, marks: 4 },
+  ],
+  chemistry: [
+    { text: "Atomic number of Carbon is", options: ["6", "12", "14", "8"], correct: 0, marks: 4 },
+    { text: "pH of pure water at 25°C is", options: ["0", "7", "14", "1"], correct: 1, marks: 4 },
+    { text: "Which gas is most abundant in Earth's atmosphere?", options: ["Oxygen", "Nitrogen", "CO₂", "Argon"], correct: 1, marks: 4 },
+    { text: "Chemical formula of common salt is", options: ["KCl", "NaCl", "CaCl₂", "NH₄Cl"], correct: 1, marks: 4 },
+  ],
+  biology: [
+    { text: "Powerhouse of the cell is", options: ["Nucleus", "Mitochondria", "Ribosome", "Golgi"], correct: 1, marks: 4 },
+    { text: "Number of chambers in human heart", options: ["2", "3", "4", "5"], correct: 2, marks: 4 },
+    { text: "DNA stands for", options: ["Deoxyribo Nucleic Acid", "Dual Nuclear Acid", "Deoxy Nitrogen Acid", "Di-Nucleic Acid"], correct: 0, marks: 4 },
+  ],
+  mathematics: [
+    { text: "Derivative of sin(x²) w.r.t x is", options: ["cos(x²)", "2x·cos(x²)", "−cos(x²)", "x·cos(x²)"], correct: 1, marks: 4 },
+    { text: "Integral of 1/x dx is", options: ["x", "ln|x| + C", "1/x² + C", "e^x + C"], correct: 1, marks: 4 },
+    { text: "Value of sin 90°", options: ["0", "1", "−1", "1/2"], correct: 1, marks: 4 },
+    { text: "If f(x)=x², then f'(3) =", options: ["3", "6", "9", "12"], correct: 1, marks: 4 },
+  ],
+  reasoning: [
+    { text: "Find the odd one: 2, 3, 5, 7, 9", options: ["2", "3", "7", "9"], correct: 3, marks: 2 },
+    { text: "Next in series 2, 6, 12, 20, ?", options: ["28", "30", "32", "26"], correct: 1, marks: 2 },
+    { text: "If CAT = 3·1·20, then DOG = ?", options: ["4·15·7", "4·14·7", "5·15·7", "4·15·8"], correct: 0, marks: 2 },
+  ],
+  english: [
+    { text: "Choose the synonym of 'Abundant'", options: ["Scarce", "Plentiful", "Empty", "Tiny"], correct: 1, marks: 2 },
+    { text: "Antonym of 'Brave'", options: ["Bold", "Cowardly", "Strong", "Daring"], correct: 1, marks: 2 },
+    { text: "Plural of 'Child' is", options: ["Childs", "Children", "Childes", "Childer"], correct: 1, marks: 2 },
+  ],
+  general: [
+    { text: "Capital of India is", options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"], correct: 1, marks: 2 },
+    { text: "Currency of Japan is", options: ["Won", "Yuan", "Yen", "Ringgit"], correct: 2, marks: 2 },
+    { text: "Largest planet in our solar system", options: ["Earth", "Saturn", "Jupiter", "Neptune"], correct: 2, marks: 2 },
+    { text: "Who wrote the Indian national anthem?", options: ["Bankim Chandra", "Rabindranath Tagore", "Sarojini Naidu", "Subhash Bose"], correct: 1, marks: 2 },
+  ],
+};
+
+function pickSubjectBank(subject: string): Omit<Question, "id">[] {
+  const s = (subject || "").toLowerCase();
+  if (/phys/.test(s)) return SUBJECT_MCQ_BANKS.physics;
+  if (/chem/.test(s)) return SUBJECT_MCQ_BANKS.chemistry;
+  if (/bio|zoo|bot/.test(s)) return SUBJECT_MCQ_BANKS.biology;
+  if (/math|algebra|calc/.test(s)) return SUBJECT_MCQ_BANKS.mathematics;
+  if (/reason|logic|aptitude/.test(s)) return SUBJECT_MCQ_BANKS.reasoning;
+  if (/eng|verbal|language/.test(s)) return SUBJECT_MCQ_BANKS.english;
+  return SUBJECT_MCQ_BANKS.general;
+}
+
+
 // Coding problem bank — generated WITHOUT explicit answers; institute fills tests during review
 const CODING_PROBLEM_BANK: { title: string; description: string }[] = [
   { title: "Two Sum", description: "Given an array of integers nums and an integer target, return the indices [i, j] of the two numbers such that they add up to target. Assume exactly one solution exists and you may not use the same element twice." },
@@ -461,8 +517,14 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
       setQuestions([...questions, { id: crypto.randomUUID(), ...pick }]);
       return;
     }
-    setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
+    // For every other paper, insert a pre-filled subject-aware MCQ (question + 4 options + correct answer)
+    const bank = pickSubjectBank(subject);
+    const used = new Set(questions.map((q) => q.text));
+    const pool = bank.filter((q) => !used.has(q.text));
+    const pick = (pool.length ? pool : bank)[Math.floor(Math.random() * (pool.length || bank.length))];
+    setQuestions([...questions, { id: crypto.randomUUID(), ...pick }]);
   }
+
   function addCodingQ() {
     // Coding problems are generated WITHOUT explicit answers — institute reviews/edits before lock
     const used = new Set(questions.map((q) => q.text));

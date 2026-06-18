@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getRequestIP } from "@tanstack/react-start/server";
+import { getRequestIP, getRequest } from "@tanstack/react-start/server";
 
 const schema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -37,6 +37,23 @@ export const submitSupportTicket = createServerFn({ method: "POST" })
       throw new Error("Too many submissions. Please try again later.");
     }
 
+    // If the caller is logged in, capture created_by so the reply notification
+    // can be delivered back to that candidate via the support_ticket_reply_notify trigger.
+    let createdBy: string | null = null;
+    try {
+      const req = getRequest();
+      const authHeader = req.headers.get("authorization");
+      const token = authHeader && authHeader.toLowerCase().startsWith("bearer ")
+        ? authHeader.slice(7).trim()
+        : null;
+      if (token) {
+        const { data: userRes } = await supabaseAdmin.auth.getUser(token);
+        createdBy = userRes.user?.id ?? null;
+      }
+    } catch {
+      /* ignore — anonymous submission */
+    }
+
     const case_ref = makeCaseRef();
     const { error } = await supabaseAdmin.from("support_tickets").insert({
       case_ref,
@@ -44,6 +61,7 @@ export const submitSupportTicket = createServerFn({ method: "POST" })
       email: data.email,
       subject: data.subject,
       message: data.message,
+      created_by: createdBy,
     });
     if (error) throw new Error("Could not submit ticket. Please try again.");
     return { case_ref };
