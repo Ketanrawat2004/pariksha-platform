@@ -517,8 +517,14 @@ function PaperEditor({ initial, onSaved, onCancel, userId }: { initial: any; onS
       setQuestions([...questions, { id: crypto.randomUUID(), ...pick }]);
       return;
     }
-    setQuestions([...questions, { id: crypto.randomUUID(), text: "", options: ["", "", "", ""], correct: 0, marks: 4 }]);
+    // For every other paper, insert a pre-filled subject-aware MCQ (question + 4 options + correct answer)
+    const bank = pickSubjectBank(subject);
+    const used = new Set(questions.map((q) => q.text));
+    const pool = bank.filter((q) => !used.has(q.text));
+    const pick = (pool.length ? pool : bank)[Math.floor(Math.random() * (pool.length || bank.length))];
+    setQuestions([...questions, { id: crypto.randomUUID(), ...pick }]);
   }
+
   function addCodingQ() {
     // Coding problems are generated WITHOUT explicit answers — institute reviews/edits before lock
     const used = new Set(questions.map((q) => q.text));
