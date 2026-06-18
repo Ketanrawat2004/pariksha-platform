@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getRequestIP, getWebRequest } from "@tanstack/react-start/server";
+import { getRequestIP, getRequest } from "@tanstack/react-start/server";
 
 const schema = z.object({
   name: z.string().trim().min(1).max(120),
