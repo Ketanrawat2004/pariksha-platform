@@ -61,7 +61,7 @@ export function IntroVideo({ children }: { children: ReactNode }) {
           <video
             ref={videoRef}
             src={introAsset.url}
-            className="w-full h-full object-cover sm:object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
             playsInline
             autoPlay
             onEnded={finish}
