@@ -41,9 +41,8 @@ export const submitSupportTicket = createServerFn({ method: "POST" })
     // can be delivered back to that candidate via the support_ticket_reply_notify trigger.
     let createdBy: string | null = null;
     try {
-      const authHeader =
-        (getHeader("authorization") as string | undefined) ||
-        (getHeader("Authorization") as string | undefined);
+      const req = getRequest();
+      const authHeader = req.headers.get("authorization");
       const token = authHeader && authHeader.toLowerCase().startsWith("bearer ")
         ? authHeader.slice(7).trim()
         : null;
