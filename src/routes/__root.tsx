@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { AccessibilityFab } from "@/components/a11y/accessibility-fab";
+import { IntroVideo } from "@/components/intro-video";
 
 
 function NotFoundComponent() {
@@ -126,12 +127,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
-          Skip to main content
-        </a>
-        <Outlet />
-        <AccessibilityFab />
-        <Toaster richColors position="top-right" />
+        <IntroVideo>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
+            Skip to main content
+          </a>
+          <Outlet />
+          <AccessibilityFab />
+          <Toaster richColors position="top-right" />
+        </IntroVideo>
       </AuthProvider>
     </QueryClientProvider>
   );
